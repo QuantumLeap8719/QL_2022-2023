@@ -17,6 +17,5 @@ public class DuckDetectorTester extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addData("Duck Position", robot.getDuckCase());
     }
 }

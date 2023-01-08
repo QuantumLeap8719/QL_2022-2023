@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Odometry.S4T_Encoder;
 import org.firstinspires.ftc.teamcode.Odometry.S4T_Localizer;
 import org.firstinspires.ftc.teamcode.OpModes.LinearTeleOp;
-import org.firstinspires.ftc.teamcode.Vision.DuckDetector;
+import org.firstinspires.ftc.teamcode.Vision.SleeveDetector;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -22,8 +22,6 @@ import java.util.List;
 public class Robot {
     public Mecanum_Drive drive;
     public V4B_Arm arm;
-    public Intake intake;
-    public Carousel carousel;
     public Slides slides;
     public S4T_Localizer localizer;
     private S4T_Encoder encoderLY;
@@ -50,20 +48,19 @@ public class Robot {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        encoderLY = new S4T_Encoder(map, "back_left");
-        encoderLX = new S4T_Encoder(map, "front_left");
-        encoderRY = new S4T_Encoder(map, "back_right");
-        encoderRX = new S4T_Encoder(map, "front_right");
+        encoderLY = new S4T_Encoder(map, "bleft");
+        encoderLX = new S4T_Encoder(map, "fleft");
+        encoderRY = new S4T_Encoder(map, "bright");
+        encoderRX = new S4T_Encoder(map, "fright");
 
-        carousel = new Carousel(hardwareMap, telemetry);
+
+
 
         drive = new Mecanum_Drive(map, telemetry);
         arm = new V4B_Arm(map);
-        intake = new Intake(map, telemetry);
         slides = new Slides(map, telemetry);
 
         localizer = new S4T_Localizer(telemetry);
-
         telemetry.addData("Localizer Position", localizer.getPose());
         telemetry.update();
     }
@@ -74,32 +71,22 @@ public class Robot {
     }
 
     public void operate(GamepadEx gamepad1ex, GamepadEx gamepad2ex) {
-        /*if(slides.mRobotState == Slides.STATE.AUTOMATION){
-            drive.driveCentric(gamepad1ex.gamepad, 0.5,1.0, 1.0, getPos().getHeading());
-        }else{
-            drive.driveCentric(gamepad1ex.gamepad, 1.0, 1.0, getPos().getHeading());
-        }*/
-        drive.driveCentric(gamepad1ex.gamepad, 1.0, 1.0, getPos().getHeading());
+        telemetry.addLine("MAKE SURE TO HIT RIGHT TRIGGER");
+        //drive.setPower(0.5,0.5,0.5,0.5);
 
-        //drive.drive(gamepad1ex.gamepad, 1.0, 1.0);
-
-        intake.intake(gamepad1ex, gamepad2ex, telemetry);
-
+        drive.driveCentric(gamepad1ex.gamepad, 1, 1, getPos().getHeading());
         arm.operate(gamepad1ex, gamepad2ex, telemetry);
-        carousel.operate(gamepad2ex.gamepad);
+
 
         if(gamepad1ex.isPress(GamepadEx.Control.start)){
             localizer.reset();
         }
 
+
         slides.operate(gamepad1ex, gamepad2ex);
 
+        drive.write();
         arm.write();
-        intake.write();
-        if(LinearTeleOp.robotState == LinearTeleOp.mRobotState.DRIVE){
-            drive.write();
-        }
-        carousel.write();
         slides.write();
 
         telemetry.addData("Robot Position:", getPos());
@@ -118,7 +105,7 @@ public class Robot {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
-        detector = new DuckDetector(telemetry);
+        detector = new SleeveDetector(telemetry);
         webcam.setPipeline(detector);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -136,13 +123,15 @@ public class Robot {
             }
         });
     }
-    public int getDuckCase(){
-       return ((DuckDetector)detector).getDuckPosition();
+    public int getConeCase(){
+       return ((SleeveDetector)detector).getCase();
     }
 
     public void stopWebcam(){
         webcam.stopStreaming();
     }
+
+
 
     public void updatePos(){
         encoderLX.update();
@@ -188,6 +177,8 @@ public class Robot {
         localizer.setHeading(heading);
     }
 
+
+
     private void updateGoTo(Pose2d pose, Pose2d speedLimits){
         drive.goToPoint(pose, getPos(), speedLimits.getX(), speedLimits.getY(), speedLimits.getHeading());
         telemetry.addData("Position: ", getPos());
@@ -195,4 +186,9 @@ public class Robot {
         drive.write();
         updatePos();
     }
+
+
 }
+
+
+

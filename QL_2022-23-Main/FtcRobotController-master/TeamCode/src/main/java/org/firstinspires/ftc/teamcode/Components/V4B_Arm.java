@@ -1,195 +1,206 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Wrapper.Caching_Servo;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 
 public class V4B_Arm {
-    Caching_Servo left_servo;
-    Caching_Servo right_servo;
-    public Caching_Servo release_servo;
+    Caching_Servo rightArm;
+    Caching_Servo leftArm;
+    Caching_Servo grabber;
 
-    private boolean out = false;
-    private boolean release = false;
+    private double rightArmPosition;
+    private double leftArmPosition;
     ElapsedTime time = new ElapsedTime();
+    ElapsedTime secondTime = new ElapsedTime();
 
-    public Caching_Servo front;
+    private double leftGroundPos = 0.17;
+    private double rightGroundPos = 0.83;
 
-    public static boolean partialToggle;
-    public static int goal = 2;
+    private double leftHoldPos = .6;
+    private double rightHoldPos = 0.39;
 
-    /*
-         100 degree angle:
-            Right:0.6
-            Left: 0.385;
+    private double leftOutMid = 0.12;
+    private double rightOutMid = 1.0;
 
-          150 degree angle:
-          Right: 0.185
-          Left:0.8
+    private double leftFrontPos = 0.98;
+    private double rightFrontPos = 0.01;
+    private double grabberOpen = 0.35;
+    private double grabberPartialOpen = 0.7;
+    private double grabberClose = 0.9;
 
-          Low Level:
-          Right:0.1
-          Left:0.89
+    public static boolean armToggle = false;
+    public static int grabberToggle = 0;
+    private int dropToggle = 0;
 
-          Low Level 2:
-          Right:0.05
-          Left:0.945
-     */
 
     public V4B_Arm(HardwareMap map){
-        left_servo = new Caching_Servo(map, "left_arm");
-        right_servo = new Caching_Servo(map, "right_arm");
-        release_servo = new Caching_Servo(map, "release_arm");
-        front = new Caching_Servo(map, "frontGate");
-        partialToggle = false;
-        goal = 2;
-
-        close();
+        rightArm = new Caching_Servo(map, "rightarm");
+        leftArm = new Caching_Servo(map, "leftarm");
+        grabber = new Caching_Servo(map,"grabber");
+        rightArm.setPosition(rightFrontPos);
+        leftArm.setPosition(leftFrontPos);
+        grabber.setPosition(grabberClose);
+        armToggle = false;
+        rightArm.write();
+        leftArm.write();
+        grabberToggle = 0;
     }
 
     public void start(){
         time.startTime();
     }
 
+    public void secondStart() {
+        secondTime.startTime();
+    }
+
     public void reset(){
-        left_servo.setPosition(0.97);
-        right_servo.setPosition(0.03);
+        time.reset();
+        secondTime.reset();
+    }
+
+
+    public void V4BFrontPose(){
+        leftArm.setPosition(leftFrontPos);
+        rightArm.setPosition(rightFrontPos);
     }
 
     public void V4BOutPose(){
-        left_servo.setPosition(0.035);
-        right_servo.setPosition(1.0);
+        leftArm.setPosition(leftOutMid);
+        rightArm.setPosition(rightOutMid);
     }
 
-    public void V4BPartialOutPose(){
-        left_servo.setPosition(0.185);
-        right_servo.setPosition(0.819);
+    public void V4BHoldPos(){
+        leftArm.setPosition(leftHoldPos);
+        rightArm.setPosition(rightHoldPos);
     }
 
-    public void V4BAutoLowGoalPos(){
-        V4BOutPose();
+    public void setPosition(double position){
+        leftArm.setPosition(position);
     }
 
-    public void release(){
-        release_servo.setPosition(/*0.69*/0.76);
+    public void GrabberOpen(){
+        grabber.setPosition(grabberOpen);
     }
 
-    public void halfwayRelease(){
-        release_servo.setPosition(0.68);
-
+    public void GrabberClose(){
+        grabber.setPosition(grabberClose);
     }
 
-    public void close(){
-        release_servo.setPosition(/*0.45*/0.53);
-    }
+    public void GrabberPartial(){grabber.setPosition(grabberPartialOpen);}
 
-    public void closeFront(){
-        front.setPosition(0.64);
-    }
-
-    public void openFront(){
-        front.setPosition(0.1);
-    }
-
-    public boolean isOut(){
-        return out;
-    }
-
-    public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry){
-        if(gamepad.isPress(GamepadEx.Control.left_bumper) || gamepad2.isPress(GamepadEx.Control.left_bumper)){
-            if(out){
-                release();
-            }
-            time.reset();
-            out = !out;
+    public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry) {
+        if(gamepad2.isPress(GamepadEx.Control.right_bumper)) {
+                leftArm.setPosition(leftOutMid);
+                rightArm.setPosition(rightOutMid);
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.y)){
-            if(goal != 2) {
-                goal++;
+        /*
+        if(armToggle) {
+            if (time.time() > 0.4) {
+                rightArm.setPosition(rightArmPosition);
+                leftArm.setPosition(leftArmPosition);
+            } else {
+                GrabberClose();
             }
-            if(goal == 0){
-                gamepad2.gamepad.rumble(0.0, 1.0, 400);
-            }else if(goal == 2){
-                gamepad2.gamepad.rumble(1.0, 0.0, 400);
-            }
-        }
-
-        if(gamepad2.isPress(GamepadEx.Control.a)){
-            if(goal != 0) {
-                goal--;
-            }
-            if(goal == 0){
-                gamepad2.gamepad.rumble(0.0, 1.0, 400);
-            }else if(goal == 2){
-                gamepad2.gamepad.rumble(1.0, 0.0, 400);
-            }
-        }
-
-        if(goal == 2){
-            telemetry.addLine("MODE: High Goal");
-        } else if (goal == 1) {
-            telemetry.addLine("MODE: Mid Goal");
         }else{
-            telemetry.addLine("MODE: Low Goal");
+                V4BFrontPose();
+                GrabberOpen();
         }
 
-        if(gamepad.isPress(GamepadEx.Control.a)){
-            partialToggle = !partialToggle;
+
+ */
+
+
+        if(gamepad2.isPress(GamepadEx.Control.right_bumper)){
+            grabberToggle = 2;
         }
 
-        if(!out){
-            release = false;
-            if(goal == 2) {
-                openFront();
-                if (time.time() > 0.7) {
-                    close();
-                }
-                if (time.time() > 0.4) {
-                    reset();
-                } else {
-                    release();
-                }
-            }else{
-                if(time.time() > 1.5) {
-                    close();
-                    openFront();
-                    reset();
-                }
+        if(gamepad.isPress(GamepadEx.Control.right_bumper)){
+            grabberToggle += 1;
+            time.reset();
+        }
+
+        if(gamepad.isPress(GamepadEx.Control.x)){
+            time.reset();
+            grabberToggle = 4;
+        }
+/*
+        if (gamepad.isPress(GamepadEx.Control.right_bumper)) {
+            if (position < 1) {
+               position += 0.05;
             }
-        } else{
-            if(time.time() > 0.1) {
-                /*if(time.time() > 0.2) {
-                    if (!release) {
-                        halfwayRelease();
-                    } else {
-                        release();
-                    }
-                }*/
-                if(release) {
-                    release();
-                }
-
-                if (partialToggle || goal == 1) {
-                    V4BPartialOutPose();
-                } else {
-                    V4BOutPose();
-                }
+        } else if (gamepad.isPress(GamepadEx.Control.left_bumper)) {
+            if (position > 0) {
+                position -= 0.05;
             }
-
-            closeFront();
         }
 
-        telemetry.addData("Partial Toggle: ", partialToggle);
+
+ */
+
+        telemetry.addData("Drop", dropToggle);
+        telemetry.addData("LeftArm", leftArm.getPosition());
+        telemetry.addData("RightArm", rightArm.getPosition());
+
+        if(grabberToggle == 1){
+            GrabberClose();
+            if(time.time() > 0.3){
+                leftArm.setPosition(leftOutMid);
+                rightArm.setPosition(rightOutMid);
+            }
+        } else if(grabberToggle == 2){
+            GrabberClose();
+        }
+        else if(grabberToggle == 3) {
+            GrabberOpen();
+            if(time.time() > 0.2){
+                GrabberClose();
+            }
+            if(time.time() > 0.3){
+                leftArm.setPosition(leftFrontPos);
+                rightArm.setPosition(rightFrontPos);
+            }
+            if(time.time() > 1){
+                grabberToggle = 0;
+            }
+        }
+        else if(grabberToggle == 4){
+            leftArm.setPosition(leftFrontPos);
+            rightArm.setPosition(rightFrontPos);
+            if(time.time() > 0.3){
+                GrabberOpen();
+                grabberToggle = 0;
+            }
+        } else {
+            GrabberOpen();
+        }
+
+
+        //dtelemetry.addData("Position", position);
+/*
+        if(gamepad.isPress(GamepadEx.Control.x)){
+            grabberPosToggle += 1;
+        }
+
+        if(grabberPosToggle == 1){
+            GrabberClose();
+        } else {
+            grabberPosToggle = 0;
+            GrabberOpen();
+        }
+
+ */
     }
-
     public void write(){
-        left_servo.write();
-        right_servo.write();
-        release_servo.write();
-        front.write();
+        rightArm.write();
+        leftArm.write();
+        grabber.write();
     }
 }

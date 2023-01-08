@@ -24,19 +24,9 @@ public class Arm_Tester extends OpMode {
         }
 
         if(!out){
-            arm.reset();
+            //arm.V4BHold();
         } else{
             arm.V4BOutPose();
-        }
-
-        if(gamepadEx.isPress(GamepadEx.Control.b)){
-            release = !release;
-        }
-
-        if(!release){
-            arm.close();
-        } else{
-            arm.release();
         }
 
         arm.write();
