@@ -152,8 +152,7 @@ public class Slides {
                 }
                 break;
             case DOWN:
-                if(isDown()){
-                    reset();
+                if(getPosition() < 20){
                     setPower(0.0);
                 }else{
                     setPower(downPower);
@@ -174,6 +173,10 @@ public class Slides {
 
         if(gamepad1.isPress(GamepadEx.Control.left_bumper)){
             mRobotState = STATE.AUTOMATION;
+        }
+
+        if(V4B_Arm.grabberToggle == 1){
+            reset();
         }
 
         if(V4B_Arm.grabberToggle == 2){

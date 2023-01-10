@@ -188,10 +188,9 @@ public class OrvilleAuto extends LinearOpMode {
                         }
 
                         if(time.time() > 2.1){
-                            if(robot.slides.isDown()){
-                                robot.slides.reset();
+                            if(robot.slides.getPosition() < 20){
                                 robot.slides.setPower(0.0);
-                            } else {
+                            }else{
                                 robot.slides.setPower(-0.2501);
                             }
                         }
