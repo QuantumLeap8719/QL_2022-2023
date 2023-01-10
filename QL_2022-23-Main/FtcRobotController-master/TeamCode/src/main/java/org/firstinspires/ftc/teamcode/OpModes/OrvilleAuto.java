@@ -65,10 +65,8 @@ public class OrvilleAuto extends LinearOpMode {
     //public static Pose2d TRAVEL_TO_DEPOSITONE = new Pose2d(0.7, -42, Math.toRadians(90));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(5, -46, Math.toRadians(90));
     public static Pose2d DEPOSIT_ONE = new Pose2d(5.5, -44.25, Math.toRadians(93));
-    public static Pose2d DEPOSIT_ONE_TURN = new Pose2d(5.15,-45.85,Math.toRadians(91));
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -56.2, Math.toRadians(45));
-    public static Pose2d GRAB_STONE = new Pose2d(30, -51, Math.toRadians(90));
-    public static Pose2d GRAB_STONE_BACKPOSE = new Pose2d(23,-51.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE = new Pose2d(29, -53, Math.toRadians(90));
 
     public static Pose2d DEPOSIT_TWO = new Pose2d(0.6, -39, Math.toRadians(90));
     public static Pose2d DEPOSIT_THREE = new Pose2d(0.6, -38, Math.toRadians(90));
@@ -166,14 +164,14 @@ public class OrvilleAuto extends LinearOpMode {
                     break;
                 case STRAFE:
                     points.add(new CurvePoint(CLEAR,1,0.5,15));
-                    points.add(new CurvePoint(STRAFE,1,0.5,15));
+                    points.add(new CurvePoint(STRAFE,0.5,0.5,15));
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) >= Math.toRadians(2)) {
                         time.reset();
                         robot.arm.GrabberClose();
-                        robot.slides.setPosition(660);
+                        robot.slides.setPosition(640);
                     } else {
-                        robot.slides.setPosition(660);
+                        robot.slides.setPosition(640);
                         if(time.time() > 0.2){
                             robot.arm.V4BOutPose();
                         }
@@ -208,9 +206,9 @@ public class OrvilleAuto extends LinearOpMode {
                     break;
 
                 case TURN_AT_DEPOSIT_ONE:
-                    points.add(new CurvePoint(STRAFE,1,0.5,15));
-                    points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE,0.7,0.5,15));
-                    points.add(new CurvePoint(GRAB_STONE,0.7,0.5,15));
+                    points.add(new CurvePoint(STRAFE,0.5,0.5,15));
+                    points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE,0.5,0.5,15));
+                    points.add(new CurvePoint(GRAB_STONE,0.5,0.5,15));
 
 
                     if(robot.slides.isDown()){
@@ -221,17 +219,17 @@ public class OrvilleAuto extends LinearOpMode {
                     }
 
                     if(cycle == 0) {
-                        robot.arm.setPosition(0.8);
+                        robot.arm.setPosition(0.82);
                         //robot.slides.setPosition(115, -0.2501, 1);
                     } else if(cycle == 1){
-                        robot.arm.setPosition(0.84);
+                        robot.arm.setPosition(0.86);
                         //robot.slides.setPosition(90, -0.2501, 1);
 //90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
                     } else if(cycle == 2){
-                        robot.arm.setPosition(0.89);
+                        robot.arm.setPosition(0.91);
                         //robot.slides.setPosition(60, -0.2501, 1);
                     } else if (cycle == 3){
-                        robot.arm.setPosition(0.925);
+                        robot.arm.setPosition(0.95);
                         //robot.slides.setPosition(30, -0.2501, 1);
                     } else if (cycle == 4){
                         robot.arm.setPosition(0.98);
@@ -264,7 +262,7 @@ public class OrvilleAuto extends LinearOpMode {
                     points.add(new CurvePoint(DEPOSIT_ONE,1.0,1.0,15));
                     points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
 
-                    robot.slides.setPosition(685);
+                    robot.slides.setPosition(650);
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) >= Math.toRadians(2)) {
                         time.reset();
