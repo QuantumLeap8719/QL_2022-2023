@@ -22,17 +22,17 @@ public class V4B_Arm {
     private double leftGroundPos = 0.17;
     private double rightGroundPos = 0.83;
 
-    private double leftHoldPos = .64;
-    private double rightHoldPos = 0.37;
+    private double leftHoldPos = .69;
+    private double rightHoldPos = 0.32;
 
-    private double leftOutMid = 0.12;
-    private double rightOutMid = 1.0;
+    private double leftOutMid = 0.26;
+    private double rightOutMid = 0.75;
 
-    private double leftFrontPos = 0.9;
-    private double rightFrontPos = 0.11;
-    private double grabberOpen = 0.35;
-    private double grabberPartialOpen = 0.7;
-    private double grabberClose = 0.9;
+    private double leftFrontPos = 0.91;
+    private double rightFrontPos = 0.10;
+    private double grabberOpen = 0.4;
+    private double grabberPartialOpen = 0.55;
+    private double grabberClose = 0.8;
 
     public static boolean armToggle = false;
     public static int grabberToggle = 0;

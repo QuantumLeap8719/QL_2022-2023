@@ -24,7 +24,7 @@ public class Slides {
     public static double kd = 0.0002;//0.0008;
     public static double gff = 0.25;//0.25;
 
-    public static double high_goal_position = 660;//326;
+    public static double high_goal_position = 680;//326;
     public static double mid_goal_position = 450;
     public static double low_goal_position = 250;
     public static double downPower = -0.0001;//0.245;
