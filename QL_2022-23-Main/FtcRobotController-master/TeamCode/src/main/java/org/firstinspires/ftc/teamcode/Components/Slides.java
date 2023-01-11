@@ -152,7 +152,8 @@ public class Slides {
                 }
                 break;
             case DOWN:
-                if(getPosition() < 20){
+                if(isDown()){
+                    reset();
                     setPower(0.0);
                 }else{
                     setPower(downPower);
@@ -175,8 +176,8 @@ public class Slides {
             mRobotState = STATE.AUTOMATION;
         }
 
-        if(V4B_Arm.grabberToggle == 1){
-            reset();
+        if(V4B_Arm.grabberToggle == 2){
+            mRobotState = STATE.AUTOMATION;
         }
 
         if(V4B_Arm.grabberToggle == 2){

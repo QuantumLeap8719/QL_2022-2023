@@ -17,7 +17,7 @@ public class Servo_Tester extends LinearOpMode {
     private double pos;
 
     GamepadEx gamepadEx;
-    private boolean servoToPosToggle = false;
+    private boolean servoToPosToggle = true;
 
 
     @Override
@@ -28,10 +28,6 @@ public class Servo_Tester extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepadEx.isPress(GamepadEx.Control.a)) {
-                servoToPosToggle = !servoToPosToggle;
-            }
-
             if (servoToPosToggle) {
                 telemetry.addData("Mode", "In set position mode...");
                 telemetry.addData("    ", "You can tune this position through dashboard.");
