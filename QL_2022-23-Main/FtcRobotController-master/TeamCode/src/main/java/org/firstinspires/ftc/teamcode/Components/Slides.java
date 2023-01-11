@@ -172,19 +172,11 @@ public class Slides {
             time.reset();
         }
 
-        if(gamepad1.isPress(GamepadEx.Control.left_bumper)){
-            mRobotState = STATE.AUTOMATION;
-        }
-
-        if(V4B_Arm.grabberToggle == 2){
-            mRobotState = STATE.AUTOMATION;
-        }
-
-        if(V4B_Arm.grabberToggle == 2){
+        if(V4B_Arm.grabberToggle == 3){
                 mRobotState = STATE.AUTOMATION;
         }
 
-        if(V4B_Arm.grabberToggle == 3){
+        if(V4B_Arm.grabberToggle == 4){
             if(time.time() > 0.7){
                 mRobotState = STATE.DOWN;
             }
