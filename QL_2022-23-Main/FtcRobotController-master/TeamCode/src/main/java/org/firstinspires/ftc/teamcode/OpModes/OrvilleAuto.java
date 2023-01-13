@@ -193,7 +193,7 @@ public class OrvilleAuto extends LinearOpMode {
                                 robot.slides.reset();
                                 robot.slides.setPower(0.0);
                             } else {
-                                robot.slides.setPower(-0.2501);
+                                robot.slides.setPower(-0.01);
                             }
                         }
 
@@ -214,7 +214,7 @@ public class OrvilleAuto extends LinearOpMode {
                         robot.slides.reset();
                         robot.slides.setPower(0.0);
                     } else {
-                        robot.slides.setPower(-0.2501);
+                        robot.slides.setPower(-0.01);
                     }
 
                     if(cycle == 0) {
