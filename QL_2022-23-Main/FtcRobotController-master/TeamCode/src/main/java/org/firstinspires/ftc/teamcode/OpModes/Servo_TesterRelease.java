@@ -39,9 +39,6 @@ public class Servo_TesterRelease extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepadEx.isPress(GamepadEx.Control.a)) {
-                servoToPosToggle = !servoToPosToggle;
-            }
 
             if (servoToPosToggle) {
                 telemetry.addData("Mode", "In set position mode...");

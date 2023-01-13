@@ -19,20 +19,20 @@ public class V4B_Arm {
     ElapsedTime time = new ElapsedTime();
     ElapsedTime secondTime = new ElapsedTime();
 
-    private double leftGroundPos = 0.17;
-    private double rightGroundPos = 0.83;
+    private double leftGrab = 0.9;
+    private double rightGrab = 0.1;
 
-    private double leftHoldPos = .69;
-    private double rightHoldPos = 0.32;
+    private double leftHoldPos = .81;
+    private double rightHoldPos = 0.24;
 
-    private double leftOutMid = 0.28;
-    private double rightOutMid = 0.73;
+    private double leftOutMid = 0.36;
+    private double rightOutMid = 0.71;
 
-    private double leftFrontPos = 0.91;
-    private double rightFrontPos = 0.10;
-    private double grabberOpen = 0.5;
-    private double grabberPartialOpen = 0.5;
-    private double grabberClose = 0.8;
+    private double leftFrontPos = 0.99;
+    private double rightFrontPos = 0.08;
+    private double grabberOpen = 0.1;
+    private double grabberPartialOpen = 0.25;
+    private double grabberClose = 0.45;
 
     public static boolean armToggle = false;
     public static int grabberToggle = 0;
@@ -66,6 +66,11 @@ public class V4B_Arm {
     }
 
 
+    public void V4BGrab(){
+        leftArm.setPosition(leftGrab);
+        rightArm.setPosition(rightGrab);
+    }
+
     public void V4BFrontPose(){
         leftArm.setPosition(leftFrontPos);
         rightArm.setPosition(rightFrontPos);
@@ -83,6 +88,11 @@ public class V4B_Arm {
 
     public void setPosition(double position){
         leftArm.setPosition(position);
+    }
+
+    public void manualSetPosition(double left, double right){
+        leftArm.setPosition(left);
+        rightArm.setPosition(right);
     }
 
     public void GrabberOpen(){
@@ -164,7 +174,7 @@ public class V4B_Arm {
             GrabberClose();
         }
         else if(grabberToggle == 4) {
-            GrabberOpen();
+            GrabberPartial();
             if(time.time() > 0.2){
                 GrabberClose();
             }
