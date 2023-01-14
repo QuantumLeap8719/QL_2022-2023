@@ -23,8 +23,8 @@ public class SleeveDetector extends OpenCvPipeline {
 
 
     public static Rect BOUNDING_BOX = new Rect(
-            new Point(285, 215),
-            new Point(245, 145)
+            new Point(260, 280),
+            new Point(220, 210)
     );
 
     private double avg = 0.0;
@@ -65,11 +65,11 @@ public class SleeveDetector extends OpenCvPipeline {
     }
 
     public int getCase(){
-        if(avg < 160000){
+        if(avg < 180000){
             return 2; //yellow
-        }else if(avg >= 160000 && avg <= 250000){
-            return 0; //green = 200000
-        }else if(avg > 250000){
+        }else if(avg >= 180000 && avg <= 260000){
+            return 0; //green = 250000
+        }else if(avg > 260000){
             return 1; //blue = 330000
         }
         return 0;
