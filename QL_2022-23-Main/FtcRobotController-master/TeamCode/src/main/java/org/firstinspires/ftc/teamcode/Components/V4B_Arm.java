@@ -30,9 +30,9 @@ public class V4B_Arm {
 
     private double leftFrontPos = 0.997;
     private double rightFrontPos = 0.05;
-    private double grabberOpen = 0.15;
+    private double grabberOpen = 0.12;
     private double grabberPartialOpen = 0.25;
-    private double grabberClose = 0.45;
+    private double grabberClose = 0.43;
 
     public static boolean armToggle = false;
     public static int grabberToggle = 0;
@@ -101,6 +101,10 @@ public class V4B_Arm {
 
     public void GrabberClose(){
         grabber.setPosition(grabberClose);
+    }
+
+    public void GrabberAutoClose(){
+        grabber.setPosition(0.45);
     }
 
     public void GrabberPartial(){grabber.setPosition(grabberPartialOpen);}

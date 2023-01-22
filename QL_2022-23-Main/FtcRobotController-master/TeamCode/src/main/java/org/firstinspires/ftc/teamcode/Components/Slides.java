@@ -25,8 +25,8 @@ public class Slides {
     public static double gff = 0.25;//0.25;
 
     public static double high_goal_position = 680;//326;
-    public static double mid_goal_position = 450;
-    public static double low_goal_position = 250;
+    public static double mid_goal_position = 400;
+    public static double low_goal_position = 180;
     public static double downPower = -0.0001;//0.245;
 
     public static int goalToggle = 0;
@@ -125,7 +125,7 @@ public class Slides {
     public void operate(GamepadEx gamepad1, GamepadEx gamepad2){
         switch (mRobotState){
             case MANUAL:
-                setPower(gamepad2.gamepad.left_stick_y * 0.8);
+                setPower(gamepad2.gamepad.left_stick_y * 0.4);
                 if(gamepad2.isPress(GamepadEx.Control.right_trigger)){
                     if(V4B_Arm.armToggle) {
                         mRobotState = STATE.AUTOMATION;
@@ -182,16 +182,16 @@ public class Slides {
             }
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_down)){
+        if(gamepad2.isPress(GamepadEx.Control.dpad_down) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 0;
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_up)){
-            goalToggle = 1;
+        if(gamepad2.isPress(GamepadEx.Control.dpad_up) /*&& mRobotState == STATE.DOWN*/){
+            goalToggle = 2;
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_left)){
-            goalToggle = 2;
+        if(gamepad2.isPress(GamepadEx.Control.dpad_left) /*&& mRobotState == STATE.DOWN*/){
+            goalToggle = 1;
         }
 
 

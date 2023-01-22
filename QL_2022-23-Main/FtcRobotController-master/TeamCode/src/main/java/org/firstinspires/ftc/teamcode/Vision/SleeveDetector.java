@@ -23,8 +23,8 @@ public class SleeveDetector extends OpenCvPipeline {
 
 
     public static Rect BOUNDING_BOX = new Rect(
-            new Point(260, 280),
-            new Point(220, 210)
+            new Point(230, 220),
+            new Point(190, 150)
     );
 
     private double avg = 0.0;

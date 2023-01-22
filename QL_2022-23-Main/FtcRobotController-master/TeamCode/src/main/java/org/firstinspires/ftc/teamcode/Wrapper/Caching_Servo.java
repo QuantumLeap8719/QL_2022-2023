@@ -9,6 +9,9 @@ public class Caching_Servo {
 
     double query = -2.0;
 
+    private double m = 1;
+    private double b = 0;
+
     double EPSILON = 0.001;
 
     public Caching_Servo(HardwareMap map, String name){
@@ -24,9 +27,15 @@ public class Caching_Servo {
         }
     }
 
+    public void setZeros(double min, double max){
+        m = (max - min);
+        b = min;
+    }
+
     public void setPosition(double pos, double EPSILON){
-        if (Math.abs(pos - prev_pos) > EPSILON){
-            query = pos;
+        double newPos = m * pos + b;
+        if (Math.abs(newPos - prev_pos) > EPSILON){
+            query = newPos;
         }
         else{
             query = -1.0;
