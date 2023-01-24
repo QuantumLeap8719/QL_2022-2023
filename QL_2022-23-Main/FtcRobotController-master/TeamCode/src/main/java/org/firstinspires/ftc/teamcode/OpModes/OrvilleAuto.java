@@ -246,24 +246,24 @@ public class OrvilleAuto extends LinearOpMode {
                     }
 
                     if(cycle == 0) {
-                        robot.arm.manualSetPosition(0.80, 0.229);
+                        robot.arm.manualSetPosition(0.5);
                         robot.arm.GrabberOpen();
                         //robot.slides.setPosition(110, -0.2501, 1);
                     } else if(cycle == 1){
-                        robot.arm.manualSetPosition(0.843, 0.19);
+                        robot.arm.manualSetPosition(0.4);
                         robot.arm.GrabberOpen();
                         //robot.slides.setPosition(85, -0.2501, 1);
 //90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
                     } else if(cycle == 2){
-                        robot.arm.manualSetPosition(.89, 0.153);
+                        robot.arm.manualSetPosition(0.3);
                         robot.arm.GrabberOpen();
                         //robot.slides.setPosition(55, -0.2501, 1);
                     } else if (cycle == 3){
-                        robot.arm.manualSetPosition(0.92, 0.12);
+                        robot.arm.manualSetPosition(0.2);
                         robot.arm.GrabberOpen();
                         //robot.slides.setPosition(25, -0.2501, 1);
                     } else if (cycle == 4){
-                        robot.arm.manualSetPosition(0.997, 0.05);
+                        robot.arm.manualSetPosition(0.1);
                         robot.arm.GrabberOpen();
                         //robot.slides.setPosition(0, -0.2501, 1);
                     }
@@ -925,7 +925,7 @@ public class OrvilleAuto extends LinearOpMode {
                 }
             }
             robot.arm.write();
-            robot.slides.write();
+            //robot.slides.write();
 
             for(int i = 0; i < points.size(); i++){
                 telemetry.addData("Point" + i, points.get(i) );

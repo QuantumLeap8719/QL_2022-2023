@@ -19,20 +19,18 @@ public class V4B_Arm {
     ElapsedTime time = new ElapsedTime();
     ElapsedTime secondTime = new ElapsedTime();
 
-    private double leftGrab = 0.9;
-    private double rightGrab = 0.1;
 
-    private double leftHoldPos = 0.72;
-    private double rightHoldPos = 0.315;
+    private double leftHoldPos = 0.5;
+    private double rightHoldPos = 0.5;
 
-    private double leftOutMid = 0.083;
-    private double rightOutMid = 0.95;
+    private double leftOutMid = 0;
+    private double rightOutMid = 1;
 
-    private double leftFrontPos = 0.997;
-    private double rightFrontPos = 0.05;
-    private double grabberOpen = 0.12;
-    private double grabberPartialOpen = 0.25;
-    private double grabberClose = 0.43;
+    private double leftFrontPos = 1;
+    private double rightFrontPos = 0;
+    private double grabberOpen = 0.7;
+    private double grabberPartialOpen = 0.68;
+    private double grabberClose = 0.6;
 
     public static boolean armToggle = false;
     public static int grabberToggle = 0;
@@ -43,6 +41,8 @@ public class V4B_Arm {
         rightArm = new Caching_Servo(map, "rightarm");
         leftArm = new Caching_Servo(map, "leftarm");
         grabber = new Caching_Servo(map,"grabber");
+        leftArm.setZeros(.01, .88);
+        rightArm.setZeros(.07, .92);
         rightArm.setPosition(rightFrontPos);
         leftArm.setPosition(leftFrontPos);
         grabber.setPosition(grabberClose);
@@ -65,12 +65,6 @@ public class V4B_Arm {
         secondTime.reset();
     }
 
-
-    public void V4BGrab(){
-        leftArm.setPosition(leftGrab);
-        rightArm.setPosition(rightGrab);
-    }
-
     public void V4BFrontPose(){
         leftArm.setPosition(leftFrontPos);
         rightArm.setPosition(rightFrontPos);
@@ -90,9 +84,9 @@ public class V4B_Arm {
         leftArm.setPosition(position);
     }
 
-    public void manualSetPosition(double left, double right){
-        leftArm.setPosition(left);
-        rightArm.setPosition(right);
+    public void manualSetPosition(double val){
+        leftArm.setPosition(1 - val);
+        rightArm.setPosition(val);
     }
 
     public void GrabberOpen(){
@@ -114,6 +108,18 @@ public class V4B_Arm {
                 leftArm.setPosition(leftOutMid);
                 rightArm.setPosition(rightOutMid);
         }
+
+        telemetry.addData("Right M:", rightArm.m);
+        telemetry.addData("Right B:", rightArm.b);
+
+        telemetry.addData("Left M:", leftArm.m);
+        telemetry.addData("Left B:", leftArm.b);
+
+        telemetry.addData("Right Query:", rightArm.query);
+        telemetry.addData("Right Query:", rightArm.query);
+
+        telemetry.addData("Left Query:", leftArm.query);
+        telemetry.addData("Left Query:", leftArm.query);
 
         /*
         if(armToggle) {
@@ -164,15 +170,13 @@ public class V4B_Arm {
         telemetry.addData("RightArm", rightArm.getPosition());
 
         if(gamepad.isPress(GamepadEx.Control.left_bumper) && grabberToggle == 1){
-            leftArm.setPosition(leftHoldPos);
-            rightArm.setPosition(rightHoldPos);
+            manualSetPosition(0.5);
         }
 
         if(grabberToggle == 1){
             GrabberClose();
         } else if(grabberToggle == 2){
-                leftArm.setPosition(leftOutMid);
-                rightArm.setPosition(rightOutMid);
+               manualSetPosition(1);
             GrabberClose();
         } else if(grabberToggle == 3){
             GrabberClose();
@@ -183,16 +187,14 @@ public class V4B_Arm {
                 GrabberClose();
             }
             if(time.time() > 0.3){
-                leftArm.setPosition(leftFrontPos);
-                rightArm.setPosition(rightFrontPos);
+                manualSetPosition(0);
             }
             if(time.time() > 1){
                 grabberToggle = 0;
             }
         }
         else if(grabberToggle == 5){
-            leftArm.setPosition(leftFrontPos);
-            rightArm.setPosition(rightFrontPos);
+            manualSetPosition(0);
             if(time.time() > 0.5){
                 GrabberOpen();
                 grabberToggle = 0;
