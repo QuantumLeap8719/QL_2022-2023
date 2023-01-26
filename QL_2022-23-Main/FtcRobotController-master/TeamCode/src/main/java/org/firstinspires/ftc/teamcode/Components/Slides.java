@@ -19,14 +19,14 @@ public class Slides {
     Caching_Motor lSlide;
     Caching_Motor rSlide;
 
-    public static double kp = 0.015;//0.02;
+    public static double kp = 0.035;//0.02;
     public static double ki = 0.0;
-    public static double kd = 0.0002;//0.0008;
-    public static double gff = 0.25;//0.25;
+    public static double kd = 0.0005;//0.0008;
+    public static double gff = 0.35;//0.25;
 
-    public static double high_goal_position = 680;//326;
-    public static double mid_goal_position = 400;
-    public static double low_goal_position = 180;
+    public static double high_goal_position = 650;//326;
+    public static double mid_goal_position = 465;
+    public static double low_goal_position = 250;
     public static double downPower = -0.0001;//0.245;
 
     public static int goalToggle = 0;
@@ -54,7 +54,7 @@ public class Slides {
         lSlide = new Caching_Motor(map, "lslide");
         controller = new PIDFController(new PIDCoefficients(kp, ki, kd));
         reset();
-        mRobotState = STATE.MANUAL;
+        mRobotState = STATE.DOWN;
         time = new ElapsedTime();
         time.startTime();
         goalToggle = 2;
@@ -125,7 +125,18 @@ public class Slides {
     public void operate(GamepadEx gamepad1, GamepadEx gamepad2){
         switch (mRobotState){
             case MANUAL:
-                setPower(gamepad2.gamepad.left_stick_y * 0.4);
+                if(gamepad2.gamepad.left_stick_y > 0.1){
+                    setPower(gamepad2.gamepad.left_stick_y * 0.5);
+                } else if(gamepad2.gamepad.left_stick_y < -0.1){
+                    setPower(gamepad2.gamepad.left_stick_y * 0.1);
+                }else{
+                    if(getPosition() > 500){
+                        setPower(0.05);
+                    } else {
+                        setPower(0);
+                    }
+                }
+
                 if(gamepad2.isPress(GamepadEx.Control.right_trigger)){
                     if(V4B_Arm.armToggle) {
                         mRobotState = STATE.AUTOMATION;
@@ -165,6 +176,10 @@ public class Slides {
                 if(gamepad2.isPress(GamepadEx.Control.right_trigger)){
                     mRobotState = STATE.AUTOMATION;
                 }
+                if(V4B_Arm.grabberToggle == 4){
+                    mRobotState = STATE.AUTOMATION;
+                }
+
                 break;
         }
 
@@ -172,35 +187,37 @@ public class Slides {
             time.reset();
         }
 
-        if(V4B_Arm.grabberToggle == 3){
-                mRobotState = STATE.AUTOMATION;
-        }
 
-        if(V4B_Arm.grabberToggle == 4){
+
+        if(V4B_Arm.grabberToggle == 5){
             if(time.time() > 0.7){
                 mRobotState = STATE.DOWN;
             }
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_down) /*&& mRobotState == STATE.DOWN*/){
+        if(gamepad2.isPress(GamepadEx.Control.dpad_down) || gamepad1.isPress(GamepadEx.Control.a) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 0;
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_up) /*&& mRobotState == STATE.DOWN*/){
+        if(gamepad2.isPress(GamepadEx.Control.dpad_up) ||gamepad1.isPress(GamepadEx.Control.y) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 2;
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_left) /*&& mRobotState == STATE.DOWN*/){
+        if(gamepad2.isPress(GamepadEx.Control.dpad_left) || gamepad1.isPress(GamepadEx.Control.b)  /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 1;
         }
 
 
         telemetry.addData("Goal Toggle: ", goalToggle);
         telemetry.addData("State: ", mRobotState);
+
         telemetry.addData("Slide Position: ", getPosition());
         telemetry.addData("Left", lSlide.motor.getCurrentPosition());
         telemetry.addData("Right", rSlide.motor.getCurrentPosition());
         telemetry.addData("Right Slide Power: ", rSlide.motor.getPower());
         telemetry.addData("Left Slide Power: ", lSlide.motor.getPower());
+        telemetry.addData("Left Stick", gamepad2.gamepad.left_stick_y);
+
+
     }
 }

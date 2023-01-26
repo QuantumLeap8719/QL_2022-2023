@@ -20,17 +20,14 @@ public class V4B_Arm {
     ElapsedTime secondTime = new ElapsedTime();
 
 
-    private double leftHoldPos = 0.5;
-    private double rightHoldPos = 0.5;
+    private double front_hold = 0.37;
+    private double hold = 0.7;
 
-    private double leftOutMid = 0;
-    private double rightOutMid = 1;
-
-    private double leftFrontPos = 1;
-    private double rightFrontPos = 0;
-    private double grabberOpen = 0.7;
-    private double grabberPartialOpen = 0.68;
-    private double grabberClose = 0.6;
+    private double out = 1;
+    private double front = 0.02;
+    private double grabberOpen = 0.35;
+    private double grabberPartialOpen = 0.35;
+    private double grabberClose = 0.55;
 
     public static boolean armToggle = false;
     public static int grabberToggle = 0;
@@ -41,10 +38,9 @@ public class V4B_Arm {
         rightArm = new Caching_Servo(map, "rightarm");
         leftArm = new Caching_Servo(map, "leftarm");
         grabber = new Caching_Servo(map,"grabber");
-        leftArm.setZeros(.01, .88);
-        rightArm.setZeros(.07, .92);
-        rightArm.setPosition(rightFrontPos);
-        leftArm.setPosition(leftFrontPos);
+        leftArm.setZeros(.01, .93);
+        rightArm.setZeros(.01, .94);
+        manualSetPosition(front_hold);
         grabber.setPosition(grabberClose);
         armToggle = false;
         rightArm.write();
@@ -65,28 +61,24 @@ public class V4B_Arm {
         secondTime.reset();
     }
 
-    public void V4BFrontPose(){
-        leftArm.setPosition(leftFrontPos);
-        rightArm.setPosition(rightFrontPos);
-    }
-
-    public void V4BOutPose(){
-        leftArm.setPosition(leftOutMid);
-        rightArm.setPosition(rightOutMid);
-    }
-
-    public void V4BHoldPos(){
-        leftArm.setPosition(leftHoldPos);
-        rightArm.setPosition(rightHoldPos);
-    }
-
-    public void setPosition(double position){
-        leftArm.setPosition(position);
+    public void grabberPos(double pos){
+        grabber.setPosition(pos);
     }
 
     public void manualSetPosition(double val){
         leftArm.setPosition(1 - val);
         rightArm.setPosition(val);
+    }
+
+    public void V4BHoldPos(){
+        manualSetPosition(hold);
+    }
+    public void V4BFrontPose(){
+        manualSetPosition(front);
+    }
+
+    public void V4BOutPose(){
+        manualSetPosition(out);
     }
 
     public void GrabberOpen(){
@@ -98,44 +90,12 @@ public class V4B_Arm {
     }
 
     public void GrabberAutoClose(){
-        grabber.setPosition(0.45);
+        grabber.setPosition(0.55);
     }
 
     public void GrabberPartial(){grabber.setPosition(grabberPartialOpen);}
 
     public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry) {
-        if(gamepad2.isPress(GamepadEx.Control.right_bumper)) {
-                leftArm.setPosition(leftOutMid);
-                rightArm.setPosition(rightOutMid);
-        }
-
-        telemetry.addData("Right M:", rightArm.m);
-        telemetry.addData("Right B:", rightArm.b);
-
-        telemetry.addData("Left M:", leftArm.m);
-        telemetry.addData("Left B:", leftArm.b);
-
-        telemetry.addData("Right Query:", rightArm.query);
-        telemetry.addData("Right Query:", rightArm.query);
-
-        telemetry.addData("Left Query:", leftArm.query);
-        telemetry.addData("Left Query:", leftArm.query);
-
-        /*
-        if(armToggle) {
-            if (time.time() > 0.4) {
-                rightArm.setPosition(rightArmPosition);
-                leftArm.setPosition(leftArmPosition);
-            } else {
-                GrabberClose();
-            }
-        }else{
-                V4BFrontPose();
-                GrabberOpen();
-        }
-
-
- */
 
 
         if(gamepad2.isPress(GamepadEx.Control.right_bumper)){
@@ -149,58 +109,48 @@ public class V4B_Arm {
 
         if(gamepad.isPress(GamepadEx.Control.x)){
             time.reset();
-            grabberToggle = 5;
+            grabberToggle = 1;
         }
 /*
-        if (gamepad.isPress(GamepadEx.Control.right_bumper)) {
-            if (position < 1) {
-               position += 0.05;
-            }
-        } else if (gamepad.isPress(GamepadEx.Control.left_bumper)) {
-            if (position > 0) {
-                position -= 0.05;
-            }
-        }
-
-
- */
-
         telemetry.addData("Drop", dropToggle);
         telemetry.addData("LeftArm", leftArm.getPosition());
         telemetry.addData("RightArm", rightArm.getPosition());
 
-        if(gamepad.isPress(GamepadEx.Control.left_bumper) && grabberToggle == 1){
-            manualSetPosition(0.5);
+ */
+        telemetry.addData("GrabberToggle", grabberToggle);
+
+
+
+        if(gamepad.isPress(GamepadEx.Control.left_bumper) && grabberToggle == 2){
+            manualSetPosition(hold);
         }
 
         if(grabberToggle == 1){
-            GrabberClose();
+            GrabberOpen();
         } else if(grabberToggle == 2){
-               manualSetPosition(1);
             GrabberClose();
+
         } else if(grabberToggle == 3){
+            manualSetPosition(out);
             GrabberClose();
         }
         else if(grabberToggle == 4) {
-            GrabberPartial();
+            GrabberClose();
+
+        }
+        else if(grabberToggle == 5){
+            GrabberOpen();
             if(time.time() > 0.2){
                 GrabberClose();
             }
             if(time.time() > 0.3){
-                manualSetPosition(0);
+                manualSetPosition(front_hold);
             }
-            if(time.time() > 1){
-                grabberToggle = 0;
+        } else{
+            manualSetPosition(front);
+            if(time.time() > 0.25){
+                grabberToggle = 1;
             }
-        }
-        else if(grabberToggle == 5){
-            manualSetPosition(0);
-            if(time.time() > 0.5){
-                GrabberOpen();
-                grabberToggle = 0;
-            }
-        } else {
-            GrabberOpen();
         }
 
 

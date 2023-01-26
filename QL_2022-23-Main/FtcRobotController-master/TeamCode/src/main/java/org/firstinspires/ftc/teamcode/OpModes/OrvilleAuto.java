@@ -131,7 +131,7 @@ public class OrvilleAuto extends LinearOpMode {
         time = new ElapsedTime();
 
         robot.localizer.reset();
-        robot.setStartPose(new Pose2d(0, 0, 0));
+        robot.setStartPose(new Pose2d(0, 2, 0));
 
         robot.arm.GrabberClose();
         robot.arm.V4BHoldPos();
@@ -246,31 +246,31 @@ public class OrvilleAuto extends LinearOpMode {
                     }
 
                     if(cycle == 0) {
-                        robot.arm.manualSetPosition(0.5);
-                        robot.arm.GrabberOpen();
-                        //robot.slides.setPosition(110, -0.2501, 1);
+                        robot.arm.manualSetPosition(0.07);
+                        robot.arm.grabberPos(0.4);
+                        robot.slides.setPosition(100, -0.2501, 1);
                     } else if(cycle == 1){
-                        robot.arm.manualSetPosition(0.4);
-                        robot.arm.GrabberOpen();
+                        robot.arm.manualSetPosition(0.18);
+                        robot.arm.grabberPos(0.4);
                         //robot.slides.setPosition(85, -0.2501, 1);
 //90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
                     } else if(cycle == 2){
-                        robot.arm.manualSetPosition(0.3);
-                        robot.arm.GrabberOpen();
+                        robot.arm.manualSetPosition(0.13);
+                        robot.arm.grabberPos(0.4);
                         //robot.slides.setPosition(55, -0.2501, 1);
                     } else if (cycle == 3){
-                        robot.arm.manualSetPosition(0.2);
-                        robot.arm.GrabberOpen();
+                        robot.arm.manualSetPosition(0.08);
+                        robot.arm.grabberPos(0.4);
                         //robot.slides.setPosition(25, -0.2501, 1);
                     } else if (cycle == 4){
-                        robot.arm.manualSetPosition(0.1);
-                        robot.arm.GrabberOpen();
+                        robot.arm.manualSetPosition(0.02);
+                        robot.arm.grabberPos(0.4);
                         //robot.slides.setPosition(0, -0.2501, 1);
                     }
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2) {
                         time.reset();
-                        robot.arm.GrabberOpen();
+                        robot.arm.grabberPos(0.4);
                     } else {
                         if(time.time() > 0.2) {
                             robot.arm.GrabberAutoClose();
@@ -925,7 +925,7 @@ public class OrvilleAuto extends LinearOpMode {
                 }
             }
             robot.arm.write();
-            //robot.slides.write();
+            robot.slides.write();
 
             for(int i = 0; i < points.size(); i++){
                 telemetry.addData("Point" + i, points.get(i) );
