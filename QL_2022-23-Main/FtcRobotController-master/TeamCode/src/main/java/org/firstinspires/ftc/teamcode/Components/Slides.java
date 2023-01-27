@@ -136,7 +136,7 @@ public class Slides {
                         setPower(0);
                     }
                 }
-
+/*
                 if(gamepad2.isPress(GamepadEx.Control.right_trigger)){
                     if(V4B_Arm.armToggle) {
                         mRobotState = STATE.AUTOMATION;
@@ -144,6 +144,8 @@ public class Slides {
                         mRobotState = STATE.DOWN;
                     }
                 }
+
+ */
                 break;
             case AUTOMATION:
                 if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
@@ -173,9 +175,6 @@ public class Slides {
                     mRobotState = STATE.MANUAL;
                 }
 
-                if(gamepad2.isPress(GamepadEx.Control.right_trigger)){
-                    mRobotState = STATE.AUTOMATION;
-                }
                 if(V4B_Arm.grabberToggle == 4){
                     mRobotState = STATE.AUTOMATION;
                 }
@@ -195,10 +194,6 @@ public class Slides {
             }
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_down) || gamepad1.isPress(GamepadEx.Control.a) /*&& mRobotState == STATE.DOWN*/){
-            goalToggle = 0;
-        }
-
         if(gamepad2.isPress(GamepadEx.Control.dpad_up) ||gamepad1.isPress(GamepadEx.Control.y) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 2;
         }
@@ -207,6 +202,13 @@ public class Slides {
             goalToggle = 1;
         }
 
+        if(gamepad2.isPress(GamepadEx.Control.dpad_down) || gamepad1.isPress(GamepadEx.Control.a) /*&& mRobotState == STATE.DOWN*/){
+            goalToggle = 0;
+        }
+
+        if(gamepad2.isPress(GamepadEx.Control.dpad_right)  /*&& mRobotState == STATE.DOWN*/){
+            goalToggle = 3;
+        }
 
         telemetry.addData("Goal Toggle: ", goalToggle);
         telemetry.addData("State: ", mRobotState);

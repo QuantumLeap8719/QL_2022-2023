@@ -61,19 +61,20 @@ public class OrvilleAuto extends LinearOpMode {
     public static Pose2d CLEAR = new Pose2d(7 , -42, Math.toRadians(0));
     public static Pose2d START = new Pose2d(0 , 0, 0);
     //public static Pose2d STRAFE = new Pose2d(2.5, -6, Math.toRadians(0));
-    public static Pose2d STRAFE = new Pose2d(-2.2, -50.5, Math.toRadians(35));
+    public static Pose2d STRAFE = new Pose2d(-2.2, -52, Math.toRadians(35));
+    public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(-2.2, -53, Math.toRadians(35));
     //public static Pose2d TRAVEL_TO_DEPOSITONE = new Pose2d(0.7, -42, Math.toRadians(90));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(5, -44, Math.toRadians(90));
     public static Pose2d BACK_AT_DEPOSIT_ONE = new Pose2d(5, -48, Math.toRadians(90));
     public static Pose2d DEPOSIT_ONE = new Pose2d(5.5, -42.25, Math.toRadians(93));
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -54.2, Math.toRadians(45));
-    public static Pose2d GRAB_STONE = new Pose2d(27.5, -50.8, Math.toRadians(90));
+    public static Pose2d GRAB_STONE = new Pose2d(26.7, -50.3, Math.toRadians(90));
 
-    public static Pose2d GRAB_STONE2 = new Pose2d(27.5, -50.8, Math.toRadians(90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(26.7, -50.8, Math.toRadians(90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(26.7, -50.8, Math.toRadians(90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(24.4, -50.8, Math.toRadians(92));
-    public static Pose2d GRAB_STONE6 = new Pose2d(33.5, -50.8, Math.toRadians(94));
+    public static Pose2d GRAB_STONE2 = new Pose2d(26.6, -50.3, Math.toRadians(90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(26.5, -49.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(26.6, -48, Math.toRadians(90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(26.7, -47.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE6 = new Pose2d(34.5, -47, Math.toRadians(90));
 
 
     public static Pose2d DEPOSIT_TWO = new Pose2d(0.6, -39, Math.toRadians(90));
@@ -137,15 +138,15 @@ public class OrvilleAuto extends LinearOpMode {
         robot.arm.V4BHoldPos();
         robot.arm.write();
 
-        robot.initializeWebcam();
+       // robot.initializeWebcam();
         while (!isStarted() && !isStopRequested()) {
-            coneCase = robot.getConeCase();
+            coneCase = 2;//robot.getConeCase();
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }
 
 
-       robot.stopWebcam();
+       //robot.stopWebcam();
 
         waitForStart();
 
@@ -159,7 +160,7 @@ public class OrvilleAuto extends LinearOpMode {
                     points.add(new CurvePoint(START,1.0,1.0,15));
                     points.add(new CurvePoint(CLEAR,1.0,1.0,15));
 
-                    if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 10)) {
+                    if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 15)) {
                         time.reset();
                         robot.arm.GrabberAutoClose();
                         robot.arm.V4BOutPose();
@@ -169,8 +170,8 @@ public class OrvilleAuto extends LinearOpMode {
                     }
                     break;
                 case STRAFE:
-                    points.add(new CurvePoint(CLEAR,1,0.5,15));
-                    points.add(new CurvePoint(STRAFE,0.5,0.5,15));
+                    points.add(new CurvePoint(CLEAR,1,1,15));
+                    points.add(new CurvePoint(STRAFE,1,1,15));
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) >= Math.toRadians(2)) {
                         time.reset();
@@ -213,29 +214,29 @@ public class OrvilleAuto extends LinearOpMode {
 
                 case TURN_AT_DEPOSIT_ONE:
                     if(cycle == 0) {
-                        points.add(new CurvePoint(STRAFE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(GRAB_STONE, 0.5, 0.5, 15));
+                        points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(GRAB_STONE, 0.75, 0.75, 15));
                     } else if(cycle == 1){
-                        points.add(new CurvePoint(STRAFE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(GRAB_STONE2, 0.5, 0.5, 15));
+                        points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(GRAB_STONE2, 0.75, 0.75, 15));
                     } else if (cycle == 2){
-                        points.add(new CurvePoint(STRAFE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(GRAB_STONE3, 0.5, 0.5, 15));
+                        points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(GRAB_STONE3, 0.75, 0.75, 15));
                     } else if (cycle == 3){
-                        points.add(new CurvePoint(STRAFE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(GRAB_STONE4, 0.5, 0.5, 15));
+                        points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(GRAB_STONE4, 0.75, 0.75, 15));
                     } else if(cycle == 4){
-                        points.add(new CurvePoint(STRAFE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(GRAB_STONE5, 0.5, 0.5, 15));
+                        points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(GRAB_STONE5, 0.75, 0.75, 15));
                     }else {
-                        points.add(new CurvePoint(STRAFE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 0.5, 0.5, 15));
-                        points.add(new CurvePoint(GRAB_STONE6, 0.5, 0.5, 15));
+                        points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(GRAB_STONE6, 0.75, 0.75, 15));
                     }
 
                     if(robot.slides.isDown()){
@@ -250,7 +251,7 @@ public class OrvilleAuto extends LinearOpMode {
                         robot.arm.grabberPos(0.4);
                         robot.slides.setPosition(100, -0.2501, 1);
                     } else if(cycle == 1){
-                        robot.arm.manualSetPosition(0.18);
+                        robot.arm.manualSetPosition(0.16);
                         robot.arm.grabberPos(0.4);
                         //robot.slides.setPosition(85, -0.2501, 1);
 //90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
@@ -268,15 +269,12 @@ public class OrvilleAuto extends LinearOpMode {
                         //robot.slides.setPosition(0, -0.2501, 1);
                     }
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5) {
                         time.reset();
                         robot.arm.grabberPos(0.4);
                     } else {
-                        if(time.time() > 0.2) {
-                            robot.arm.GrabberAutoClose();
-                        }
-                        if (time.time() > 0.8) {
-                            robot.arm.GrabberAutoClose();
+                        robot.arm.GrabberAutoClose();
+                        if (time.time() > 0.5) {
                             newState(State.LIFT_SLIDES);
                         }
                     }
@@ -316,9 +314,15 @@ public class OrvilleAuto extends LinearOpMode {
                     }
                     break;
                 case DEPOSIT_ONE:
-                    points.add(new CurvePoint(GRAB_STONE,1.0,1.0,15));
-                    points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE,1.0,1.0,15));
-                    points.add(new CurvePoint(STRAFE, 0.7, 0.7, 15));
+                    if(cycle == 0||cycle == 1||cycle == 2 || cycle == 3) {
+                        points.add(new CurvePoint(GRAB_STONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
+                    } else if (cycle == 4 || cycle == 5){
+                        points.add(new CurvePoint(GRAB_STONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(FOUR_FIVE_DEPSOIT, 1.0, 1.0, 15));
+                    }
 
                     robot.slides.setPosition(650);
 
@@ -346,7 +350,7 @@ public class OrvilleAuto extends LinearOpMode {
                                 robot.slides.setPower(-0.2501);
                             }
                             cycle++;
-                            if (cycle < 4) {
+                            if (cycle < 5) {
                                 newState(State.TURN_AT_DEPOSIT_ONE);
                             } else {
                                 if(coneCase == 0){

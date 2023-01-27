@@ -97,11 +97,6 @@ public class V4B_Arm {
 
     public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry) {
 
-
-        if(gamepad2.isPress(GamepadEx.Control.right_bumper)){
-            grabberToggle = 2;
-        }
-
         if(gamepad.isPress(GamepadEx.Control.right_bumper)){
             grabberToggle += 1;
             time.reset();
