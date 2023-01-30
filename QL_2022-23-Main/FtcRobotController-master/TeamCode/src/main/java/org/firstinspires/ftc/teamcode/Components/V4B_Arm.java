@@ -25,9 +25,9 @@ public class V4B_Arm {
 
     private double out = 1;
     private double front = 0.02;
-    private double grabberOpen = 0.35;
-    private double grabberPartialOpen = 0.35;
-    private double grabberClose = 0.55;
+    private double grabberOpen = 0.1;
+    private double grabberPartialOpen = 0.1;
+    private double grabberClose = 0.42;
 
     public static boolean armToggle = false;
     public static int grabberToggle = 0;
@@ -38,7 +38,7 @@ public class V4B_Arm {
         rightArm = new Caching_Servo(map, "rightarm");
         leftArm = new Caching_Servo(map, "leftarm");
         grabber = new Caching_Servo(map,"grabber");
-        leftArm.setZeros(.01, .93);
+        leftArm.setZeros(.01, .92);
         rightArm.setZeros(.01, .94);
         manualSetPosition(front_hold);
         grabber.setPosition(grabberClose);
@@ -70,6 +70,10 @@ public class V4B_Arm {
         rightArm.setPosition(val);
     }
 
+    public void V4BFrontHoldPos(){
+        manualSetPosition(front_hold);
+    }
+
     public void V4BHoldPos(){
         manualSetPosition(hold);
     }
@@ -90,7 +94,7 @@ public class V4B_Arm {
     }
 
     public void GrabberAutoClose(){
-        grabber.setPosition(0.55);
+        grabber.setPosition(0.42);
     }
 
     public void GrabberPartial(){grabber.setPosition(grabberPartialOpen);}

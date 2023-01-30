@@ -36,7 +36,7 @@ public class Arm_Tester extends LinearOpMode {
         pos2 = ArmTester.pos2;
         waitForStart();
         while (opModeIsActive()) {
-        slides.setPosition(100);
+        //slides.setPosition(100);
         telemetry.addData("Position", slides.getPosition());
             if (servoToPosToggle) {
                 telemetry.addData("Mode", "In set position mode...");
@@ -61,7 +61,7 @@ public class Arm_Tester extends LinearOpMode {
                 telemetry.addData("    ", "Press A again to go back into set position mode");
             }
 
-            slides.write();
+           // slides.write();
             arm.write();
             telemetry.update();
             gamepadEx.loop();

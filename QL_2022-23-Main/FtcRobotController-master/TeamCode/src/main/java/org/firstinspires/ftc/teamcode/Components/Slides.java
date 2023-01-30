@@ -19,14 +19,14 @@ public class Slides {
     Caching_Motor lSlide;
     Caching_Motor rSlide;
 
-    public static double kp = 0.035;//0.02;
+    public static double kp = 0.02;//0.02;
     public static double ki = 0.0;
-    public static double kd = 0.0005;//0.0008;
-    public static double gff = 0.35;//0.25;
+    public static double kd = 0.0008;//0.0008;
+    public static double gff = 0.25;//0.25;
 
-    public static double high_goal_position = 650;//326;
-    public static double mid_goal_position = 465;
-    public static double low_goal_position = 250;
+    public static double high_goal_position = 640;//326;
+    public static double mid_goal_position = 455;
+    public static double low_goal_position = 240;
     public static double downPower = -0.0001;//0.245;
 
     public static int goalToggle = 0;
