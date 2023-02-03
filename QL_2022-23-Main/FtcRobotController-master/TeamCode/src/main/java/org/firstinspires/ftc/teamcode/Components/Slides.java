@@ -188,6 +188,10 @@ public class Slides {
                     mRobotState = STATE.AUTOMATION;
                 }
 
+                if(V4B_Arm.stackCase == 2){
+                    mRobotState = STATE.AUTOMATION;
+                }
+
                 break;
         }
 
@@ -200,7 +204,17 @@ public class Slides {
              mRobotState = STATE.DEPOSIT;
         }
 
+        if(V4B_Arm.stackCase == 3){
+            mRobotState = STATE.DEPOSIT;
+        }
+
         if(V4B_Arm.grabberToggle == 3){
+            if(time.time() > 0.55){
+                mRobotState = STATE.DOWN;
+            }
+        }
+
+        if(V4B_Arm.stackCase == 3){
             if(time.time() > 0.55){
                 mRobotState = STATE.DOWN;
             }
