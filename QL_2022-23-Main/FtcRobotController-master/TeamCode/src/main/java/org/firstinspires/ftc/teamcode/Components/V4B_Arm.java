@@ -24,13 +24,14 @@ public class V4B_Arm {
     private double hold = 0.7;
 
     private double out = 1;
-    private double front = 0.02;
-    private double grabberOpen = 0.1;
-    private double grabberPartialOpen = 0.1;
-    private double grabberClose = 0.42;
+    private double front = 0.0;
+    private double terminal = 0.04;
+    private double grabberOpen = 0.6;
+    private double grabberPartialOpen = 0.6;
+    private double grabberClose = 0.77;
 
     public static boolean armToggle = false;
-    public static int grabberToggle = 0;
+    public static int grabberToggle = 5;
     private int dropToggle = 0;
 
 
@@ -38,14 +39,14 @@ public class V4B_Arm {
         rightArm = new Caching_Servo(map, "rightarm");
         leftArm = new Caching_Servo(map, "leftarm");
         grabber = new Caching_Servo(map,"grabber");
-        leftArm.setZeros(.01, .92);
-        rightArm.setZeros(.01, .94);
+        leftArm.setZeros(.01, .93);
+        rightArm.setZeros(.01, .92);
+        grabberToggle = 5;
         manualSetPosition(front_hold);
         grabber.setPosition(grabberClose);
         armToggle = false;
         rightArm.write();
         leftArm.write();
-        grabberToggle = 0;
     }
 
     public void start(){
@@ -107,8 +108,14 @@ public class V4B_Arm {
         }
 
         if(gamepad.isPress(GamepadEx.Control.x)){
+            grabberToggle = 7;
             time.reset();
-            grabberToggle = 1;
+        }
+
+
+        if(gamepad.isPress(GamepadEx.Control.left_bumper)){
+            time.reset();
+            grabberToggle = 0;
         }
 /*
         telemetry.addData("Drop", dropToggle);
@@ -119,36 +126,36 @@ public class V4B_Arm {
         telemetry.addData("GrabberToggle", grabberToggle);
 
 
-
-        if(gamepad.isPress(GamepadEx.Control.left_bumper) && grabberToggle == 2){
-            manualSetPosition(hold);
-        }
-
         if(grabberToggle == 1){
-            GrabberOpen();
-        } else if(grabberToggle == 2){
             GrabberClose();
+            if(time.time() > 0.2){
+                manualSetPosition(hold);
+            }
+        } else if(grabberToggle == 2){
+            manualSetPosition(out);
 
         } else if(grabberToggle == 3){
-            manualSetPosition(out);
-            GrabberClose();
-        }
-        else if(grabberToggle == 4) {
-            GrabberClose();
-
-        }
-        else if(grabberToggle == 5){
-            GrabberOpen();
             if(time.time() > 0.2){
-                GrabberClose();
+                GrabberOpen();
+                if(time.time() > 0.39){
+                    GrabberClose();
+                }
+                if(time.time() > 0.45){
+                    manualSetPosition(front_hold);
+                }
             }
-            if(time.time() > 0.3){
-                manualSetPosition(front_hold);
-            }
-        } else{
+        } else if (grabberToggle == 5){
+            manualSetPosition(front_hold);
+            grabber.setPosition(grabberClose);
+        }
+        else if (grabberToggle == 7){
+            manualSetPosition(terminal);
+        }
+        else{
+            grabberToggle = 0;
             manualSetPosition(front);
-            if(time.time() > 0.25){
-                grabberToggle = 1;
+            if(time.time() > 0.2){
+                GrabberOpen();
             }
         }
 

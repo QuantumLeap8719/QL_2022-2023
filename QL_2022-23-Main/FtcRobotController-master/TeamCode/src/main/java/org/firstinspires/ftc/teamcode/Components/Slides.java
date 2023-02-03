@@ -24,9 +24,9 @@ public class Slides {
     public static double kd = 0.0008;//0.0008;
     public static double gff = 0.25;//0.25;
 
-    public static double high_goal_position = 640;//326;
-    public static double mid_goal_position = 455;
-    public static double low_goal_position = 240;
+    public static double high_goal_position = 630;//326;
+    public static double mid_goal_position = 445;
+    public static double low_goal_position = 230;
     public static double downPower = -0.0001;//0.245;
 
     public static int goalToggle = 0;
@@ -45,6 +45,7 @@ public class Slides {
     public enum STATE{
         AUTOMATION,
         MANUAL,
+        DEPOSIT,
         DOWN
     }
 
@@ -58,7 +59,6 @@ public class Slides {
         time = new ElapsedTime();
         time.startTime();
         goalToggle = 2;
-        V4B_Arm.grabberToggle = 0;
         digitalTouch = map.get(DigitalChannel.class, "sensor_digital");
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
         setBrake();
@@ -147,6 +147,15 @@ public class Slides {
 
  */
                 break;
+            case DEPOSIT:
+                if (goalToggle == 0){
+                    setPosition(low_goal_position - 50);
+                } else if (goalToggle == 1){
+                    setPosition(mid_goal_position - 50);
+                } else if (goalToggle == 2){
+                    setPosition(high_goal_position - 50);
+                }
+                break;
             case AUTOMATION:
                 if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
                     mRobotState = STATE.MANUAL;
@@ -175,7 +184,7 @@ public class Slides {
                     mRobotState = STATE.MANUAL;
                 }
 
-                if(V4B_Arm.grabberToggle == 4){
+                if(V4B_Arm.grabberToggle == 2){
                     mRobotState = STATE.AUTOMATION;
                 }
 
@@ -187,26 +196,29 @@ public class Slides {
         }
 
 
+        if(V4B_Arm.grabberToggle == 3){
+             mRobotState = STATE.DEPOSIT;
+        }
 
-        if(V4B_Arm.grabberToggle == 5){
-            if(time.time() > 0.7){
+        if(V4B_Arm.grabberToggle == 3){
+            if(time.time() > 0.55){
                 mRobotState = STATE.DOWN;
             }
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_up) ||gamepad1.isPress(GamepadEx.Control.y) /*&& mRobotState == STATE.DOWN*/){
+        if(gamepad1.isPress(GamepadEx.Control.y) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 2;
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_left) || gamepad1.isPress(GamepadEx.Control.b)  /*&& mRobotState == STATE.DOWN*/){
+        if(gamepad1.isPress(GamepadEx.Control.b)  /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 1;
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_down) || gamepad1.isPress(GamepadEx.Control.a) /*&& mRobotState == STATE.DOWN*/){
+        if(gamepad1.isPress(GamepadEx.Control.a) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 0;
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_right)  /*&& mRobotState == STATE.DOWN*/){
+        if(gamepad2.isPress(GamepadEx.Control.dpad_right) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 3;
         }
 
