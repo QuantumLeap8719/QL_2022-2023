@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import android.service.vr.VrListenerService;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
@@ -149,11 +151,11 @@ public class Slides {
                 break;
             case DEPOSIT:
                 if (goalToggle == 0){
-                    setPosition(low_goal_position - 50);
+                    setPosition(low_goal_position - 50, -0.3, 1);
                 } else if (goalToggle == 1){
-                    setPosition(mid_goal_position - 50);
+                    setPosition(mid_goal_position - 50, -0.3, 1);
                 } else if (goalToggle == 2){
-                    setPosition(high_goal_position - 50);
+                    setPosition(high_goal_position - 50, -0.3, 1);
                 }
                 break;
             case AUTOMATION:
@@ -208,6 +210,14 @@ public class Slides {
             mRobotState = STATE.DEPOSIT;
         }
 
+        if(V4B_Arm.slideToggle && V4B_Arm.stackToggle == 5 && V4B_Arm.stackCase == 1){
+            setPosition(125);
+        }
+
+        if(V4B_Arm.slideToggle && V4B_Arm.stackToggle == 5 && V4B_Arm.stackCase == 0){
+            setPosition(125);
+        }
+
         if(V4B_Arm.grabberToggle == 3){
             if(time.time() > 0.55){
                 mRobotState = STATE.DOWN;
@@ -232,7 +242,7 @@ public class Slides {
             goalToggle = 0;
         }
 
-        if(gamepad2.isPress(GamepadEx.Control.dpad_right) /*&& mRobotState == STATE.DOWN*/){
+        if(gamepad2.isPress(GamepadEx.Control.dpad_up) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 3;
         }
 

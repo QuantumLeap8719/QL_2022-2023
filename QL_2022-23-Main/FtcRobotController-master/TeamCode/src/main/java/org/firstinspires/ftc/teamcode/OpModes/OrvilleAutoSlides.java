@@ -173,7 +173,7 @@ public class OrvilleAutoSlides extends LinearOpMode {
 
                     if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 10)) {
                         time.reset();
-                        robot.arm.GrabberAutoClose();
+                        robot.arm.GrabberClose();
                         robot.arm.V4BOutPose();
                     } else {
                         newState(State.STRAFE);
@@ -186,7 +186,7 @@ public class OrvilleAutoSlides extends LinearOpMode {
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) >= Math.toRadians(2)) {
                         time.reset();
                         robot.arm.V4BOutPose();
-                        robot.arm.GrabberAutoClose();
+                        robot.arm.GrabberClose();
                         robot.slides.setPosition(640);
                     } else {
                         robot.slides.setPosition(640);
@@ -286,7 +286,7 @@ public class OrvilleAutoSlides extends LinearOpMode {
                         time.reset();
                         robot.arm.grabberPos(0.4);
                     } else {
-                        robot.arm.GrabberAutoClose();
+                        robot.arm.GrabberClose();
                         if (time.time() > 0.5) {
                             newState(State.LIFT_SLIDES);
                         }
@@ -320,7 +320,7 @@ public class OrvilleAutoSlides extends LinearOpMode {
                         points.add(new CurvePoint(GRAB_STONE6, 1.0, 1.0, 15));
                     }
 
-                    robot.arm.GrabberAutoClose();
+                    robot.arm.GrabberClose();
                     robot.arm.V4BOutPose();
                     if(time.time() > 0.7) {
                         newState(State.DEPOSIT_ONE);

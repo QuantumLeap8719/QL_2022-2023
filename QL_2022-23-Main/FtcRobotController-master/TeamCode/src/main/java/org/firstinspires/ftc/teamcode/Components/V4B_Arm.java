@@ -19,6 +19,7 @@ public class V4B_Arm {
     Caching_Servo rightArm;
     Caching_Servo leftArm;
     Caching_Servo grabber;
+    Robot robot;
 
     private double rightArmPosition;
     private double leftArmPosition;
@@ -27,28 +28,31 @@ public class V4B_Arm {
 
 
     private double front_hold = 0.37;
+    private double auto_hold = 0.86;
     private double hold = 0.7;
 
     private double out = 1;
     private double front = 0.0;
+    private double hover = 0.08;
     private double terminal = 0.04;
     private double grabberOpen = 0.6;
     private double grabberPartialOpen = 0.6;
     private double grabberClose = 0.77;
 
-    private double stack_five;
-    private double stack_four;
-    private double stack_three;
-    private double stack_two;
-    private double stack_one;
+    private double stack_five = 0;
+    private double stack_four = 0.15;
+    private double stack_three = 0.09;
+    private double stack_two = 0.04;
+    private double stack_one = 0;
 
 
+
+    public static boolean slideToggle;
     public static boolean armToggle = false;
     public static int grabberToggle = 5;
     public static int stackToggle = 5;
     public static int stackCase = 0;
     private int dropToggle = 0;
-
 
     public V4B_Arm(HardwareMap map){
         mRobotState = ARM_STATE.NORMAL;
@@ -59,6 +63,7 @@ public class V4B_Arm {
         rightArm.setZeros(.01, .92);
         grabberToggle = 5;
         stackToggle = 5;
+        stackCase = 0;
         manualSetPosition(front_hold);
         grabber.setPosition(grabberClose);
         armToggle = false;
@@ -99,6 +104,10 @@ public class V4B_Arm {
         manualSetPosition(front);
     }
 
+    public void V4BAutoHold(){
+        manualSetPosition(auto_hold);
+    }
+
     public void V4BOutPose(){
         manualSetPosition(out);
     }
@@ -111,9 +120,6 @@ public class V4B_Arm {
         grabber.setPosition(grabberClose);
     }
 
-    public void GrabberAutoClose(){
-        grabber.setPosition(0.42);
-    }
 
     public void GrabberPartial(){grabber.setPosition(grabberPartialOpen);}
 
@@ -121,6 +127,7 @@ public class V4B_Arm {
 
         switch(mRobotState){
             case NORMAL:
+                slideToggle = false;
                 if(gamepad.isPress(GamepadEx.Control.right_bumper)){
                     grabberToggle += 1;
                     time.reset();
@@ -137,8 +144,11 @@ public class V4B_Arm {
                 }
 
                 if(grabberToggle == 1){
-                    GrabberClose();
-                    if(time.time() > 0.2){
+                    manualSetPosition(front);
+                    if(time.time() > 0.1) {
+                        GrabberClose();
+                    }
+                    if(time.time() > 0.3){
                         manualSetPosition(hold);
                     }
                 } else if(grabberToggle == 2){
@@ -163,13 +173,13 @@ public class V4B_Arm {
                 }
                 else{
                     grabberToggle = 0;
-                    manualSetPosition(front);
+                    manualSetPosition(hover);
                     if(time.time() > 0.2){
                         GrabberOpen();
                     }
                 }
 
-                if(gamepad2.isPress(GamepadEx.Control.right_bumper)){
+                if(gamepad2.isPress(GamepadEx.Control.left_bumper)){
                     grabberToggle = 0;
                     mRobotState = ARM_STATE.STACK;
                 }
@@ -180,7 +190,7 @@ public class V4B_Arm {
 
 
             case STACK:
-
+            slideToggle = true;
                 if(gamepad.isPress(GamepadEx.Control.right_bumper)){
                     stackCase += 1;
                     time.reset();
@@ -219,34 +229,59 @@ public class V4B_Arm {
                 }
                 else{
                     if (stackToggle == 5) {
+                    grabberPos(0.66);
                     manualSetPosition(stack_five);
                     } else if (stackToggle == 4) {
+                    grabberPos(0.66);
                     manualSetPosition(stack_four);
                     } else if (stackToggle == 3) {
+                    grabberPos(0.64);
                     manualSetPosition(stack_three);
                     } else if (stackToggle == 2) {
                     manualSetPosition(stack_two);
+                    grabberPos(0.6);
                     } else if (stackToggle == 1) {
                     manualSetPosition(stack_one);
+                    grabberPos(0.6);
                     }
                     stackCase = 0;
                     if(time.time() > 0.2){
-                        GrabberOpen();
+                        if(stackToggle == 5){
+                            grabberPos(0.6);
+                        } else if(stackToggle == 4){
+                            grabberPos(0.66);
+                        }else if(stackToggle == 3){
+                            grabberPos(0.64);
+                        }else if(stackToggle == 2){
+                            grabberPos(0.6);
+                        }else if(stackToggle == 1){
+                            grabberPos(0.6);
+                        }
                     }
                 }
-                if(gamepad2.isPress(GamepadEx.Control.right_bumper)){
+                if(gamepad2.isPress(GamepadEx.Control.left_bumper)){
                     stackCase = 0;
                     mRobotState = ARM_STATE.NORMAL;
                 }
                 break;
         }
         if(gamepad2.isPress(GamepadEx.Control.dpad_down)){
-            stackCase -= 1;
+            if(stackToggle > 1){
+                stackToggle -= 1;
+            }
         }
 
         if(gamepad2.isPress(GamepadEx.Control.dpad_up)){
-            stackCase += 1;
+            if(stackToggle < 5){
+                stackToggle += 1;
+
+            }
         }
+
+        telemetry.addData("Case", mRobotState);
+        telemetry.addData("GrabberToggle", grabberToggle);
+        telemetry.addData("StackToggle", stackToggle);
+        telemetry.addData("StackCase", stackCase);
     }
     public void write(){
         rightArm.write();
