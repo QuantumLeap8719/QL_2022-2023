@@ -6,15 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Components.Robot;
-import org.firstinspires.ftc.teamcode.Components.Slides;
-import org.firstinspires.ftc.teamcode.Components.V4B_Arm;
 import org.firstinspires.ftc.teamcode.PurePusuit.CurvePoint;
 import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
 @Autonomous
-public class OrvilleAuto extends LinearOpMode {
+public class RedAutoLeft extends LinearOpMode {
 
     private enum State {
         CLEAR,
@@ -158,7 +156,7 @@ public class OrvilleAuto extends LinearOpMode {
 
         robot.arm.GrabberClose();
         robot.arm.V4BAutoHold();
-        //robot.arm.write();
+        robot.arm.write();
 
         robot.initializeWebcam();
         while (!isStarted() && !isStopRequested()) {
@@ -989,8 +987,8 @@ public class OrvilleAuto extends LinearOpMode {
                     robot.updatePos();
                 }
             }
-            //robot.arm.write();
-            //robot.slides.write();
+            robot.arm.write();
+            robot.slides.write();
 
             for(int i = 0; i < points.size(); i++){
                 telemetry.addData("Point" + i, points.get(i) );
