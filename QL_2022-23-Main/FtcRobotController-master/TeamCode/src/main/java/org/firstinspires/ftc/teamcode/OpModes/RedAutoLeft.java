@@ -272,31 +272,33 @@ public class RedAutoLeft extends LinearOpMode {
 
            //ARM TUNING AREA
 
-                    if(cycle == 0) {
-                        robot.arm.manualSetPosition(armCycleOne);
-                        robot.arm.grabberPos(grabberCycleOne);
+                    if(cycle == 0){
                         robot.slides.setPosition(125, -0.2501, 1);
-                    } else if(cycle == 1){
-                        robot.arm.manualSetPosition(armCycleTwo);
-                        robot.arm.grabberPos(grabberCycleTwo);
-                        //robot.slides.setPosition(85, -0.2501, 1);
-//90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
-                    } else if(cycle == 2){
-                        robot.arm.manualSetPosition(armCycleThree);
-                        robot.arm.grabberPos(grabberCycleThree);
-                        //robot.slides.setPosition(55, -0.2501, 1);
-                    } else if (cycle == 3){
-                        robot.arm.manualSetPosition(armCycleFour);
-                        robot.arm.grabberPos(grabberCycleFour);
-                        //robot.slides.setPosition(25, -0.2501, 1);
-                    } else if (cycle == 4){
-                        robot.arm.manualSetPosition(armCycleFive);
-                        robot.arm.grabberPos(grabberCycleFive);
-                        //robot.slides.setPosition(0, -0.2501, 1);
                     }
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5) {
                         time.reset();
+                        if(cycle == 0) {
+                            robot.arm.manualSetPosition(armCycleOne);
+                            robot.arm.grabberPos(grabberCycleOne);
+                        } else if(cycle == 1){
+                            robot.arm.manualSetPosition(armCycleTwo);
+                            robot.arm.grabberPos(grabberCycleTwo);
+                            //robot.slides.setPosition(85, -0.2501, 1);
+                            //90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
+                        } else if(cycle == 2){
+                            robot.arm.manualSetPosition(armCycleThree);
+                            robot.arm.grabberPos(grabberCycleThree);
+                            //robot.slides.setPosition(55, -0.2501, 1);
+                        } else if (cycle == 3){
+                            robot.arm.manualSetPosition(armCycleFour);
+                            robot.arm.grabberPos(grabberCycleFour);
+                            //robot.slides.setPosition(25, -0.2501, 1);
+                        } else if (cycle == 4){
+                            robot.arm.manualSetPosition(armCycleFive);
+                            robot.arm.grabberPos(grabberCycleFive);
+                            //robot.slides.setPosition(0, -0.2501, 1);
+                        }
                     } else {
                         robot.arm.GrabberClose();
                         if (time.time() > 0.4) {
@@ -468,20 +470,12 @@ public class RedAutoLeft extends LinearOpMode {
                     points.add(new CurvePoint(STRAFE,1.0,1.0,10));
                     points.add(new CurvePoint(CASE_3_MID,1.0,1.0,10));
                     points.add(new CurvePoint(CASE_3,1.0,1.0,10));
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2) {
-                        time.reset();
-                        robot.arm.V4BFrontHoldPos();
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.2501);
-                        }
+                    robot.arm.V4BFrontHoldPos();
+                    if(robot.slides.isDown()){
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
                     } else {
-                        if(time.time() > 0.2){
-                            newState(State.PARK);
-                        }
-
+                        robot.slides.setPower(-0.2501);
                     }
                     break;
                     /*
