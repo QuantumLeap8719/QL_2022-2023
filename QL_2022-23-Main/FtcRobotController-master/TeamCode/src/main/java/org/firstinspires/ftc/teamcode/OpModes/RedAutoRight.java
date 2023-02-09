@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous
+@Autonomous(name="RightHigh")
 public class RedAutoRight extends LinearOpMode {
 
     private enum State {

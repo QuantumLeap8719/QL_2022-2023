@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous
+@Autonomous(name="LeftHigh")
 public class RedAutoLeft extends LinearOpMode {
 
     private enum State {
@@ -90,7 +90,6 @@ public class RedAutoLeft extends LinearOpMode {
     public static Pose2d GRAB_STONE3 = new Pose2d(28.7, -49.5, Math.toRadians(90));
     public static Pose2d GRAB_STONE4 = new Pose2d(28.1, -47, Math.toRadians(90));
     public static Pose2d GRAB_STONE5 = new Pose2d(28.1, -47, Math.toRadians(90));
-
 
 
 

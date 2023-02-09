@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous
+@Autonomous(name="LeftMid")
 public class RedLeftBackup extends LinearOpMode {
 
     private enum State {
@@ -73,27 +73,23 @@ public class RedLeftBackup extends LinearOpMode {
     public static Pose2d START = new Pose2d(0 , 0, 0);
 
     //DEPOSI
-    public static Pose2d STRAFE = new Pose2d(-3.2, -51, Math.toRadians(35));
+    public static Pose2d STRAFE = new Pose2d(-3.5, -52.5, Math.toRadians(35));
 
 
 
-    public static Pose2d MID_DEPOSIT = new Pose2d(0.299, -45.185, Math.toRadians(125)); //MID
-    public static Pose2d BACKUP_HIGHDEPOSIT = new Pose2d(-26, -44.5, Math.toRadians(132)); //SECOND HIGH
+    public static Pose2d MID_DEPOSIT = new Pose2d(0, -44.0, Math.toRadians(125)); //MID
+    public static Pose2d BACKUP_HIGHDEPOSIT = new Pose2d(-25.5, -43.5, Math.toRadians(132)); //SECOND HIGH
     //public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(-3.5, -52.5, Math.toRadians(35));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(5, -44, Math.toRadians(90));
     public static Pose2d BACK_AT_DEPOSIT_ONE = new Pose2d(5, -48, Math.toRadians(90));
     public static Pose2d CURVE_FORBACKUPHIGH = new Pose2d(-6.669, -52.358, Math.toRadians(90)); //Curve
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -54.2, Math.toRadians(45));
 
-
     public static Pose2d GRAB_STONE = new Pose2d(27.5, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE2 = new Pose2d(28.5, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(28.7, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(28.1, -48.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(28.1, -47, Math.toRadians(90));
-
-
-
+    public static Pose2d GRAB_STONE2 = new Pose2d(27.9, -49.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(27.7, -49.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(27.8, -48.75, Math.toRadians(90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(27.7, -48.25, Math.toRadians(90));
 
     public static Pose2d GRAB_STONE6 = new Pose2d(34.5, -47, Math.toRadians(90));
 
@@ -195,32 +191,32 @@ public class RedLeftBackup extends LinearOpMode {
                     break;
                 case STRAFE:
                     points.add(new CurvePoint(CLEAR,1,1,4));
-                    points.add(new CurvePoint(STRAFE,0.75,1,4));
+                    points.add(new CurvePoint(STRAFE,0.6,1,4));
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) >= Math.toRadians(2)) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) >= Math.toRadians(1)) {
                         time.reset();
                         robot.arm.V4BOutPose();
                         robot.arm.GrabberClose();
                         robot.slides.setPosition(625);
                     } else {
-                        if(time.time() > 1.2) {
+                        if(time.time() > 0.5) {
                             robot.slides.setPosition(580, -0.3, 1);
                         } else {
                             robot.slides.setPosition(625);
                         }
-                        if(time.time() > 1.4) {
+                        if(time.time() > 0.7) {
                             robot.arm.GrabberPartial();
                         }
 
-                        if(time.time() > 1.6){
+                        if(time.time() > 0.9){
                             robot.arm.GrabberClose();
                         }
 
-                        if(time.time() > 1.7){
+                        if(time.time() > 1.0){
                             robot.arm.V4BFrontPose();
                         }
 
-                        if(time.time() > 2) {
+                        if(time.time() > 1.3) {
                             robot.arm.GrabberOpen();
                             if(robot.slides.isDown()){
                                 robot.slides.reset();
@@ -230,7 +226,7 @@ public class RedLeftBackup extends LinearOpMode {
                             }
                         }
 
-                        if(time.time() > 2.2){
+                        if(time.time() > 1.5){
                             newState(State.TURN_AT_DEPOSIT_ONE);
                         }
 
@@ -271,37 +267,38 @@ public class RedLeftBackup extends LinearOpMode {
                         robot.slides.setPower(-0.2501);
                     }
 
+                    if(cycle==0){
+                        robot.slides.setPosition(125, -0.2501, 1);
+                    }
 
                     //ARM TUNING AREA
 
-                    if(cycle == 0) {
-                        robot.arm.manualSetPosition(armCycleOne);
-                        robot.arm.grabberPos(grabberCycleOne);
-                        robot.slides.setPosition(125, -0.2501, 1);
-                    } else if(cycle == 1){
-                        robot.arm.manualSetPosition(armCycleTwo);
-                        robot.arm.grabberPos(grabberCycleTwo);
-                        //robot.slides.setPosition(85, -0.2501, 1);
-//90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
-                    } else if(cycle == 2){
-                        robot.arm.manualSetPosition(armCycleThree);
-                        robot.arm.grabberPos(grabberCycleThree);
-                        //robot.slides.setPosition(55, -0.2501, 1);
-                    } else if (cycle == 3){
-                        robot.arm.manualSetPosition(armCycleFour);
-                        robot.arm.grabberPos(grabberCycleFour);
-                        //robot.slides.setPosition(25, -0.2501, 1);
-                    } else if (cycle == 4){
-                        robot.arm.manualSetPosition(armCycleFive);
-                        robot.arm.grabberPos(grabberCycleFive);
-                        //robot.slides.setPosition(0, -0.2501, 1);
-                    }
-
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5) {
+                        if(cycle == 0) {
+                            robot.arm.manualSetPosition(armCycleOne);
+                            robot.arm.grabberPos(grabberCycleOne);
+                        } else if(cycle == 1){
+                            robot.arm.manualSetPosition(armCycleTwo);
+                            robot.arm.grabberPos(grabberCycleTwo);
+                            //robot.slides.setPosition(85, -0.2501, 1);
+//90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
+                        } else if(cycle == 2){
+                            robot.arm.manualSetPosition(armCycleThree);
+                            robot.arm.grabberPos(grabberCycleThree);
+                            //robot.slides.setPosition(55, -0.2501, 1);
+                        } else if (cycle == 3){
+                            robot.arm.manualSetPosition(armCycleFour);
+                            robot.arm.grabberPos(grabberCycleFour);
+                            //robot.slides.setPosition(25, -0.2501, 1);
+                        } else if (cycle == 4){
+                            robot.arm.manualSetPosition(armCycleFive);
+                            robot.arm.grabberPos(grabberCycleFive);
+                            //robot.slides.setPosition(0, -0.2501, 1);
+                        }
                         time.reset();
                     } else {
                         robot.arm.GrabberClose();
-                        if (time.time() > 0.4) {
+                        if (time.time() > 0.3) {
                             newState(State.LIFT_SLIDES);
                         }
                     }
@@ -336,14 +333,10 @@ public class RedLeftBackup extends LinearOpMode {
 
                     robot.arm.GrabberClose();
                     robot.arm.V4BOutPose();
-                    if(time.time() > 0.3) {
+                    if(time.time() > 0.2) {
                         newState(State.DEPOSIT_ONE);
                     }
                     break;
-
-
-
-
 
                 //STACK TO DEPOSIT
                 case DEPOSIT_ONE:
@@ -431,24 +424,24 @@ public class RedLeftBackup extends LinearOpMode {
                         time.reset();
                         robot.arm.GrabberClose();
                     } else {
-                        if (time.time() > 0.7) {
+                        if (time.time() > 0.5) {
                             robot.slides.setPosition(580, -0.3, 1);
                         } else {
                             robot.slides.setPosition(640);
                         }
-                        if (time.time() > 0.9) {
+                        if (time.time() > 0.7) {
                             robot.arm.GrabberPartial();
                         }
 
-                        if (time.time() > 1.1) {
+                        if (time.time() > 0.9) {
                             robot.arm.GrabberClose();
                         }
 
-                        if (time.time() > 1.2) {
+                        if (time.time() > 1.0) {
                             robot.arm.V4BFrontPose();
                         }
 
-                        if (time.time() > 1.4) {
+                        if (time.time() > 1.2) {
                             if (robot.slides.isDown()) {
                                 robot.slides.reset();
                                 robot.slides.setPower(0.0);
@@ -476,60 +469,39 @@ public class RedLeftBackup extends LinearOpMode {
                     points.add(new CurvePoint(BACKUP_HIGHDEPOSIT,1.0,1.0,15));
                     points.add(new CurvePoint(CURVE_FORBACKUPHIGH,1.0,1.0,15));
                     points.add(new CurvePoint(CASE_1,1.0,1.0,15));
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2) {
-                        time.reset();
-                        robot.arm.V4BFrontHoldPos();
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.2501);
-                        }
-                        robot.arm.GrabberClose();
+
+                    robot.arm.V4BFrontHoldPos();
+                    if(robot.slides.isDown()){
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
                     } else {
-                        if(time.time() > 0.2){
-                            newState(State.PARK);
-                        }
+                        robot.slides.setPower(-0.2501);
                     }
+
                     break;
 
                 case CASE_1:
                     points.add(new CurvePoint(STRAFE,0.1,0.1,15));
                     points.add(new CurvePoint(CASE_2_TURN,0.1,0.1,15));
 
-                    if(Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) > Math.toRadians(3)) {
-                        time.reset();
-                        robot.arm.V4BFrontHoldPos();
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.2501);
-                        }
-                    }  else {
-                        if(time.time() > 0.2){
-                            newState(State.PARK);
-                        }
+                    robot.arm.V4BFrontHoldPos();
+                    if(robot.slides.isDown()){
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
+                    } else {
+                        robot.slides.setPower(-0.2501);
                     }
                     break;
 
                 case CASE_2:
                     points.add(new CurvePoint(STRAFE,1.0,1.0,10));
                     points.add(new CurvePoint(CASE_3,1.0,1.0,10));
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2) {
-                        time.reset();
-                        robot.arm.V4BFrontHoldPos();
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.2501);
-                        }
+                    robot.arm.V4BFrontHoldPos();
+                    if(robot.slides.isDown()){
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
                     } else {
-                        if(time.time() > 0.2){
-                            newState(State.PARK);
-                        }
-
+                        robot.slides.setPower(-0.2501);
                     }
                     break;
                     /*
