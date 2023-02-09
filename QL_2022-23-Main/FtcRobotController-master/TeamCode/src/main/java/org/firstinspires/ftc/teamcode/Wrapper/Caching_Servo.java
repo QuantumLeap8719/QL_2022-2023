@@ -7,7 +7,10 @@ public class Caching_Servo {
     public Servo servo;
     double prev_pos = -1.0;
 
-    double query = -2.0;
+    public double query = -2.0;
+
+    public double m = 1;
+    public double b = 0;
 
     double EPSILON = 0.001;
 
@@ -16,17 +19,24 @@ public class Caching_Servo {
     }
 
     public void setPosition(double pos){
-        if (Math.abs(pos - prev_pos) > EPSILON){
-            query = pos;
+        double newPos = m * pos + b;
+        if (Math.abs(newPos - prev_pos) > EPSILON){
+            query = newPos;
         }
         else{
             query = -1.0;
         }
     }
 
+    public void setZeros(double min, double max){
+        m = (max - min);
+        b = min;
+    }
+
     public void setPosition(double pos, double EPSILON){
-        if (Math.abs(pos - prev_pos) > EPSILON){
-            query = pos;
+        double newPos = m * pos + b;
+        if (Math.abs(newPos - prev_pos) > EPSILON){
+            query = newPos;
         }
         else{
             query = -1.0;

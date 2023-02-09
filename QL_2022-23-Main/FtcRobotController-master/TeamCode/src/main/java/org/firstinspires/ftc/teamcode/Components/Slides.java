@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import android.service.vr.VrListenerService;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
@@ -7,24 +9,34 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Wrapper.Caching_Motor;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 
 @Config
 public class Slides {
-    Caching_Motor rSlides;
-    Caching_Motor lSlides;
+    Caching_Motor lSlide;
+    Caching_Motor rSlide;
 
-    public static double kp = 0.01;//0.02;
+    public static double kp = 0.02;//0.02;
     public static double ki = 0.0;
-    public static double kd = 0.0;//0.0008;
-    public static double gff = 0.0;//0.25;
+    public static double kd = 0.0008;//0.0008;
+    public static double gff = 0.25;//0.25;
 
-    public static double high_goal_position = 1612;//326;
+    public static double high_goal_position = 630;//326;
+    public static double mid_goal_position = 445;
+    public static double low_goal_position = 230;
+    public static double downPower = -0.0001;//0.245;
 
-    public static double downPower = 1.0;//0.245;
+    public static int goalToggle = 0;
+    boolean low;
+    boolean mid;
+    boolean high;
+
+    private int bumper = 0;
 
     public PIDFController controller;
     Telemetry telemetry;
@@ -35,27 +47,28 @@ public class Slides {
     public enum STATE{
         AUTOMATION,
         MANUAL,
-        IDLE,
+        DEPOSIT,
         DOWN
     }
 
     public Slides(HardwareMap map, Telemetry telemetry){
         this.telemetry = telemetry;
-        rSlides = new Caching_Motor(map, "rSlide");
-        lSlides = new Caching_Motor(map, "lSlide");
+        rSlide = new Caching_Motor(map, "rslide");
+        lSlide = new Caching_Motor(map, "lslide");
         controller = new PIDFController(new PIDCoefficients(kp, ki, kd));
         reset();
-        mRobotState = STATE.IDLE;
+        mRobotState = STATE.DOWN;
         time = new ElapsedTime();
         time.startTime();
+        goalToggle = 2;
         digitalTouch = map.get(DigitalChannel.class, "sensor_digital");
         digitalTouch.setMode(DigitalChannel.Mode.INPUT);
         setBrake();
     }
 
     public void write(){
-        lSlides.write();
-        rSlides.write();
+        rSlide.write();
+        lSlide.write();
     }
 
     public void setPosition(double target){
@@ -66,129 +79,183 @@ public class Slides {
         telemetry.addData("Error", controller.getLastError());
     }
 
+    public void setPosition(double target, double lowerBound, double upperBound){
+        controller.setTargetPosition(target);
+        setPower(Range.clip(controller.update(getPosition()), lowerBound, upperBound));
+
+        telemetry.addData("Target", target);
+        telemetry.addData("Error", controller.getLastError());
+    }
+
     public void reset(){
-        rSlides.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lSlides.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rSlides.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        lSlides.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        lSlide.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lSlide.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rSlide.motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rSlide.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public double getPosition(){
-        double lSlidePos = lSlides.motor.getCurrentPosition();
-        double rSlidePos = rSlides.motor.getCurrentPosition();
-        telemetry.addData("Left Slide Position", lSlidePos);
-        telemetry.addData("Right Slide Position", rSlidePos);
-        return Math.abs((rSlidePos - lSlidePos)/2.0);
+        double slidePos = (rSlide.motor.getCurrentPosition() - lSlide.motor.getCurrentPosition())/2;
+        telemetry.addData("Slide Position", slidePos);
+        return Math.abs(slidePos);
     }
 
     public void setCoast(){
-        lSlides.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rSlides.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rSlide.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        lSlide.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     public void setBrake(){
-        lSlides.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rSlides.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rSlide.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lSlide.motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void setPower(double power){
-        /*if(getPosition() > 50 || mRobotState == STATE.MANUAL) {
-            power += gff;
-            telemetry.addLine("Gff on");
-        }else{
-            telemetry.addLine("Gff Off");
-        }
-        if(power < 0 && mRobotState != STATE.IDLE) { //Change the 30% for PID it will mess with the constants.
-            rSlides.setPower(power * 0.3);
-            lSlides.setPower(-power * 0.3);
-        }else {
-            rSlides.setPower(power);
-            lSlides.setPower(-power);
-        }*/
-        if(getPosition() > 50 || mRobotState == STATE.MANUAL) {
+        if(getPosition() > 10 && (mRobotState == STATE.MANUAL || mRobotState == STATE.AUTOMATION)) {
             power += gff;
         }
-        rSlides.setPower(power);
-        lSlides.setPower(-power);
+
+        rSlide.setPower(power);
+        lSlide.setPower(-power);
     }
 
     public boolean isDown(){
         return !digitalTouch.getState();
     }
 
-    public void drop(){
-        if(isDown()){
-            setPower(0);
-        }else{
-            setPower(-0.4);
-        }
-    }
-
-    boolean prevDown = false;
-
     public void operate(GamepadEx gamepad1, GamepadEx gamepad2){
-        if(mRobotState == STATE.MANUAL) {
-            setBrake();
-            double power = gamepad2.gamepad.right_stick_y;
-
-            setPower(power);
-
-            if(gamepad2.isPress(GamepadEx.Control.b)){
-                mRobotState = STATE.DOWN;
-            }
-
-            if(gamepad2.isPress(GamepadEx.Control.left_bumper) || gamepad1.isPress(GamepadEx.Control.left_bumper)){
-                time.reset();
-                mRobotState = STATE.AUTOMATION;
-            }
-        }else if(mRobotState == STATE.AUTOMATION){
-            setBrake();
-            if(gamepad1.isPress(GamepadEx.Control.left_bumper)){
-                time.reset();
-                mRobotState = STATE.DOWN;
-            }else{
-                if(time.time() > 0.75 && V4B_Arm.goal == 2) {
-                    setPosition(V4B_Arm.partialToggle ? 818.71 : high_goal_position);
-                }else if(V4B_Arm.goal == 1){
-                    setPosition(98.5);
+        switch (mRobotState){
+            case MANUAL:
+                if(gamepad2.gamepad.left_stick_y > 0.1){
+                    setPower(gamepad2.gamepad.left_stick_y * 0.5);
+                } else if(gamepad2.gamepad.left_stick_y < -0.1){
+                    setPower(gamepad2.gamepad.left_stick_y * 0.1);
+                }else{
+                    if(getPosition() > 500){
+                        setPower(0.05);
+                    } else {
+                        setPower(0);
+                    }
                 }
-            }
-
-            if(gamepad2.gamepad.right_stick_y >= 0.1){
-                mRobotState = STATE.MANUAL;
-            }
-        }else if(mRobotState == STATE.IDLE){
-            setBrake();
-            if(!isDown()){
-                telemetry.addLine("not down");
-                setPower(-0.5);
-            }else{
-                reset();
-                telemetry.addLine("down");
-                setPower(0.0);
-            }
-
-            if(gamepad2.isPress(GamepadEx.Control.left_bumper) || gamepad1.isPress(GamepadEx.Control.left_bumper)){
-                time.reset();
-                mRobotState = STATE.AUTOMATION;
-            }
-
-            if(gamepad2.gamepad.right_stick_y >= 0.1){
-                time.reset();
-                mRobotState = STATE.MANUAL;
-            }
-        }else if(mRobotState == STATE.DOWN){
-            setCoast();
-            if(time.time() > 0.75) {
-                if (getPosition() < 300 || isDown()) {
-                    mRobotState = STATE.IDLE;
-                } else {
-                    setPower(-downPower);
+/*
+                if(gamepad2.isPress(GamepadEx.Control.right_trigger)){
+                    if(V4B_Arm.armToggle) {
+                        mRobotState = STATE.AUTOMATION;
+                    }else{
+                        mRobotState = STATE.DOWN;
+                    }
                 }
+
+ */
+                break;
+            case DEPOSIT:
+                if (goalToggle == 0){
+                    setPosition(low_goal_position - 50, -0.3, 1);
+                } else if (goalToggle == 1){
+                    setPosition(mid_goal_position - 50, -0.3, 1);
+                } else if (goalToggle == 2){
+                    setPosition(high_goal_position - 50, -0.3, 1);
+                }
+                break;
+            case AUTOMATION:
+                if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
+                    mRobotState = STATE.MANUAL;
+                }
+
+                if (goalToggle == 0){
+                    setPosition(low_goal_position);
+                } else if (goalToggle == 1){
+                    setPosition(mid_goal_position);
+                } else if (goalToggle == 2){
+                    setPosition(high_goal_position);
+                }
+
+                if(gamepad2.isPress(GamepadEx.Control.right_trigger)){
+                    mRobotState = STATE.DOWN;
+                }
+                break;
+            case DOWN:
+                if(isDown()){
+                    reset();
+                    setPower(0.0);
+                }else{
+                    setPower(downPower);
+                }
+                if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
+                    mRobotState = STATE.MANUAL;
+                }
+
+                if(V4B_Arm.grabberToggle == 2){
+                    mRobotState = STATE.AUTOMATION;
+                }
+
+                if(V4B_Arm.stackCase == 2){
+                    mRobotState = STATE.AUTOMATION;
+                }
+
+                break;
+        }
+
+        if(gamepad1.isPress(GamepadEx.Control.right_bumper)){
+            time.reset();
+        }
+
+
+        if(V4B_Arm.grabberToggle == 3){
+             mRobotState = STATE.DEPOSIT;
+        }
+
+        if(V4B_Arm.stackCase == 3){
+            mRobotState = STATE.DEPOSIT;
+        }
+
+        if(V4B_Arm.slideToggle && V4B_Arm.stackToggle == 5 && V4B_Arm.stackCase == 1){
+            setPosition(125);
+        }
+
+        if(V4B_Arm.slideToggle && V4B_Arm.stackToggle == 5 && V4B_Arm.stackCase == 0){
+            setPosition(125);
+        }
+
+        if(V4B_Arm.grabberToggle == 3){
+            if(time.time() > 0.55){
+                mRobotState = STATE.DOWN;
             }
         }
 
-        telemetry.addData("Slide Position", getPosition());
-        telemetry.addData("Slide State", mRobotState);
+        if(V4B_Arm.stackCase == 3){
+            if(time.time() > 0.55){
+                mRobotState = STATE.DOWN;
+            }
+        }
+
+        if(gamepad1.isPress(GamepadEx.Control.y) /*&& mRobotState == STATE.DOWN*/){
+            goalToggle = 2;
+        }
+
+        if(gamepad1.isPress(GamepadEx.Control.b)  /*&& mRobotState == STATE.DOWN*/){
+            goalToggle = 1;
+        }
+
+        if(gamepad1.isPress(GamepadEx.Control.a) /*&& mRobotState == STATE.DOWN*/){
+            goalToggle = 0;
+        }
+
+        if(gamepad2.isPress(GamepadEx.Control.dpad_up) /*&& mRobotState == STATE.DOWN*/){
+            goalToggle = 3;
+        }
+
+        telemetry.addData("Goal Toggle: ", goalToggle);
+        telemetry.addData("State: ", mRobotState);
+
+        telemetry.addData("Slide Position: ", getPosition());
+        telemetry.addData("Left", lSlide.motor.getCurrentPosition());
+        telemetry.addData("Right", rSlide.motor.getCurrentPosition());
+        telemetry.addData("Right Slide Power: ", rSlide.motor.getPower());
+        telemetry.addData("Left Slide Power: ", lSlide.motor.getPower());
+        telemetry.addData("Left Stick", gamepad2.gamepad.left_stick_y);
+
+
     }
 }

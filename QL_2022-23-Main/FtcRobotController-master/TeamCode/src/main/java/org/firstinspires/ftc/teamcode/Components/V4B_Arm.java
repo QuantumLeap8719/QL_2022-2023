@@ -1,195 +1,291 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Wrapper.Caching_Servo;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 
 public class V4B_Arm {
-    Caching_Servo left_servo;
-    Caching_Servo right_servo;
-    public Caching_Servo release_servo;
+    public enum ARM_STATE{
+        STACK,
+        NORMAL
+    }
 
-    private boolean out = false;
-    private boolean release = false;
+    public ARM_STATE mRobotState;
+    Caching_Servo rightArm;
+    Caching_Servo leftArm;
+    Caching_Servo grabber;
+    Robot robot;
+
+    private double rightArmPosition;
+    private double leftArmPosition;
     ElapsedTime time = new ElapsedTime();
+    ElapsedTime secondTime = new ElapsedTime();
 
-    public Caching_Servo front;
 
-    public static boolean partialToggle;
-    public static int goal = 2;
+    private double front_hold = 0.37;
+    private double auto_hold = 0.86;
+    private double hold = 0.7;
 
-    /*
-         100 degree angle:
-            Right:0.6
-            Left: 0.385;
+    private double out = 1;
+    private double front = 0.0;
+    private double hover = 0.08;
+    private double terminal = 0.04;
+    private double grabberOpen = 0.6;
+    private double grabberPartialOpen = 0.6;
+    private double grabberClose = 0.77;
 
-          150 degree angle:
-          Right: 0.185
-          Left:0.8
+    private double stack_five = 0;
+    private double stack_four = 0.15;
+    private double stack_three = 0.09;
+    private double stack_two = 0.04;
+    private double stack_one = 0;
 
-          Low Level:
-          Right:0.1
-          Left:0.89
 
-          Low Level 2:
-          Right:0.05
-          Left:0.945
-     */
+
+    public static boolean slideToggle;
+    public static boolean armToggle = false;
+    public static int grabberToggle = 5;
+    public static int stackToggle = 5;
+    public static int stackCase = 0;
+    private int dropToggle = 0;
 
     public V4B_Arm(HardwareMap map){
-        left_servo = new Caching_Servo(map, "left_arm");
-        right_servo = new Caching_Servo(map, "right_arm");
-        release_servo = new Caching_Servo(map, "release_arm");
-        front = new Caching_Servo(map, "frontGate");
-        partialToggle = false;
-        goal = 2;
-
-        close();
+        mRobotState = ARM_STATE.NORMAL;
+        rightArm = new Caching_Servo(map, "rightarm");
+        leftArm = new Caching_Servo(map, "leftarm");
+        grabber = new Caching_Servo(map,"grabber");
+        leftArm.setZeros(.01, .93);
+        rightArm.setZeros(.01, .92);
+        grabberToggle = 5;
+        stackToggle = 5;
+        stackCase = 0;
+        manualSetPosition(front_hold);
+        grabber.setPosition(grabberClose);
+        armToggle = false;
+        rightArm.write();
+        leftArm.write();
     }
 
     public void start(){
         time.startTime();
     }
 
+    public void secondStart() {
+        secondTime.startTime();
+    }
+
     public void reset(){
-        left_servo.setPosition(0.97);
-        right_servo.setPosition(0.03);
+        time.reset();
+        secondTime.reset();
+    }
+
+    public void grabberPos(double pos){
+        grabber.setPosition(pos);
+    }
+
+    public void manualSetPosition(double val){
+        leftArm.setPosition(1 - val);
+        rightArm.setPosition(val);
+    }
+
+    public void V4BFrontHoldPos(){
+        manualSetPosition(front_hold);
+    }
+
+    public void V4BHoldPos(){
+        manualSetPosition(hold);
+    }
+    public void V4BFrontPose(){
+        manualSetPosition(front);
+    }
+
+    public void V4BAutoHold(){
+        manualSetPosition(auto_hold);
     }
 
     public void V4BOutPose(){
-        left_servo.setPosition(0.035);
-        right_servo.setPosition(1.0);
+        manualSetPosition(out);
     }
 
-    public void V4BPartialOutPose(){
-        left_servo.setPosition(0.185);
-        right_servo.setPosition(0.819);
+    public void GrabberOpen(){
+        grabber.setPosition(grabberOpen);
     }
 
-    public void V4BAutoLowGoalPos(){
-        V4BOutPose();
+    public void GrabberClose(){
+        grabber.setPosition(grabberClose);
     }
 
-    public void release(){
-        release_servo.setPosition(/*0.69*/0.76);
-    }
 
-    public void halfwayRelease(){
-        release_servo.setPosition(0.68);
+    public void GrabberPartial(){grabber.setPosition(grabberPartialOpen);}
 
-    }
+    public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry) {
 
-    public void close(){
-        release_servo.setPosition(/*0.45*/0.53);
-    }
-
-    public void closeFront(){
-        front.setPosition(0.64);
-    }
-
-    public void openFront(){
-        front.setPosition(0.1);
-    }
-
-    public boolean isOut(){
-        return out;
-    }
-
-    public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry){
-        if(gamepad.isPress(GamepadEx.Control.left_bumper) || gamepad2.isPress(GamepadEx.Control.left_bumper)){
-            if(out){
-                release();
-            }
-            time.reset();
-            out = !out;
-        }
-
-        if(gamepad2.isPress(GamepadEx.Control.y)){
-            if(goal != 2) {
-                goal++;
-            }
-            if(goal == 0){
-                gamepad2.gamepad.rumble(0.0, 1.0, 400);
-            }else if(goal == 2){
-                gamepad2.gamepad.rumble(1.0, 0.0, 400);
-            }
-        }
-
-        if(gamepad2.isPress(GamepadEx.Control.a)){
-            if(goal != 0) {
-                goal--;
-            }
-            if(goal == 0){
-                gamepad2.gamepad.rumble(0.0, 1.0, 400);
-            }else if(goal == 2){
-                gamepad2.gamepad.rumble(1.0, 0.0, 400);
-            }
-        }
-
-        if(goal == 2){
-            telemetry.addLine("MODE: High Goal");
-        } else if (goal == 1) {
-            telemetry.addLine("MODE: Mid Goal");
-        }else{
-            telemetry.addLine("MODE: Low Goal");
-        }
-
-        if(gamepad.isPress(GamepadEx.Control.a)){
-            partialToggle = !partialToggle;
-        }
-
-        if(!out){
-            release = false;
-            if(goal == 2) {
-                openFront();
-                if (time.time() > 0.7) {
-                    close();
+        switch(mRobotState){
+            case NORMAL:
+                slideToggle = false;
+                if(gamepad.isPress(GamepadEx.Control.right_bumper)){
+                    grabberToggle += 1;
+                    time.reset();
                 }
-                if (time.time() > 0.4) {
-                    reset();
-                } else {
-                    release();
+
+                if(gamepad.isPress(GamepadEx.Control.x)){
+                    grabberToggle = 7;
+                    time.reset();
                 }
-            }else{
-                if(time.time() > 1.5) {
-                    close();
-                    openFront();
-                    reset();
+
+                if(gamepad.isPress(GamepadEx.Control.left_bumper)){
+                    time.reset();
+                    grabberToggle = 0;
                 }
-            }
-        } else{
-            if(time.time() > 0.1) {
-                /*if(time.time() > 0.2) {
-                    if (!release) {
-                        halfwayRelease();
-                    } else {
-                        release();
+
+                if(grabberToggle == 1){
+                    manualSetPosition(front);
+                    if(time.time() > 0.1) {
+                        GrabberClose();
                     }
-                }*/
-                if(release) {
-                    release();
+                    if(time.time() > 0.3){
+                        manualSetPosition(hold);
+                    }
+                } else if(grabberToggle == 2){
+                    manualSetPosition(out);
+
+                } else if(grabberToggle == 3){
+                    if(time.time() > 0.2){
+                        GrabberOpen();
+                        if(time.time() > 0.39){
+                            GrabberClose();
+                        }
+                        if(time.time() > 0.45){
+                            manualSetPosition(front_hold);
+                        }
+                    }
+                } else if (grabberToggle == 5){
+                    manualSetPosition(front_hold);
+                    grabber.setPosition(grabberClose);
+                }
+                else if (grabberToggle == 7){
+                    manualSetPosition(terminal);
+                }
+                else{
+                    grabberToggle = 0;
+                    manualSetPosition(hover);
+                    if(time.time() > 0.2){
+                        GrabberOpen();
+                    }
                 }
 
-                if (partialToggle || goal == 1) {
-                    V4BPartialOutPose();
-                } else {
-                    V4BOutPose();
+                if(gamepad2.isPress(GamepadEx.Control.left_bumper)){
+                    grabberToggle = 0;
+                    mRobotState = ARM_STATE.STACK;
                 }
+                break;
+
+
+
+
+
+            case STACK:
+            slideToggle = true;
+                if(gamepad.isPress(GamepadEx.Control.right_bumper)){
+                    stackCase += 1;
+                    time.reset();
+                }
+
+                if(gamepad.isPress(GamepadEx.Control.x)){
+                    stackCase = 7;
+                    time.reset();
+                }
+
+                if(gamepad.isPress(GamepadEx.Control.left_bumper)){
+                    time.reset();
+                    stackCase = 0;
+                }
+
+            if(stackCase == 1){
+                    GrabberClose();
+                    if(time.time() > 0.2){
+                        manualSetPosition(hold);
+                    }
+                } else if(stackCase == 2){
+                    manualSetPosition(out);
+
+                } else if(stackCase == 3){
+                    if(time.time() > 0.2){
+                        GrabberOpen();
+                        if(time.time() > 0.39){
+                            GrabberClose();
+                        }
+                        if(time.time() > 0.45){
+                            manualSetPosition(front_hold);
+                        }
+                    }
+                } else if (stackCase == 7){
+                    manualSetPosition(terminal);
+                }
+                else{
+                    if (stackToggle == 5) {
+                    grabberPos(0.66);
+                    manualSetPosition(stack_five);
+                    } else if (stackToggle == 4) {
+                    grabberPos(0.66);
+                    manualSetPosition(stack_four);
+                    } else if (stackToggle == 3) {
+                    grabberPos(0.64);
+                    manualSetPosition(stack_three);
+                    } else if (stackToggle == 2) {
+                    manualSetPosition(stack_two);
+                    grabberPos(0.6);
+                    } else if (stackToggle == 1) {
+                    manualSetPosition(stack_one);
+                    grabberPos(0.6);
+                    }
+                    stackCase = 0;
+                    if(time.time() > 0.2){
+                        if(stackToggle == 5){
+                            grabberPos(0.6);
+                        } else if(stackToggle == 4){
+                            grabberPos(0.66);
+                        }else if(stackToggle == 3){
+                            grabberPos(0.64);
+                        }else if(stackToggle == 2){
+                            grabberPos(0.6);
+                        }else if(stackToggle == 1){
+                            grabberPos(0.6);
+                        }
+                    }
+                }
+                if(gamepad2.isPress(GamepadEx.Control.left_bumper)){
+                    stackCase = 0;
+                    mRobotState = ARM_STATE.NORMAL;
+                }
+                break;
+        }
+        if(gamepad2.isPress(GamepadEx.Control.dpad_down)){
+            if(stackToggle > 1){
+                stackToggle -= 1;
             }
-
-            closeFront();
         }
 
-        telemetry.addData("Partial Toggle: ", partialToggle);
-    }
+        if(gamepad2.isPress(GamepadEx.Control.dpad_up)){
+            if(stackToggle < 5){
+                stackToggle += 1;
 
+            }
+        }
+
+        telemetry.addData("Case", mRobotState);
+        telemetry.addData("GrabberToggle", grabberToggle);
+        telemetry.addData("StackToggle", stackToggle);
+        telemetry.addData("StackCase", stackCase);
+    }
     public void write(){
-        left_servo.write();
-        right_servo.write();
-        release_servo.write();
-        front.write();
+        rightArm.write();
+        leftArm.write();
+        grabber.write();
     }
 }

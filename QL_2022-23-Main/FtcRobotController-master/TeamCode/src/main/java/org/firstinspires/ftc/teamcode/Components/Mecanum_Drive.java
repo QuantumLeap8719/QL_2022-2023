@@ -29,13 +29,13 @@ public class Mecanum_Drive{
     PIDFController PID_Y;
     PIDFController PID_Z;
 
-    public static double kp = 0.12;
+    public static double kp = 0.127;
     public static double ki = 0;
-    public static double kd = 0.011;
+    public static double kd = 0.01385;
 
-    public static double kpr = 2.5;
+    public static double kpr = 2.7;
     public static double kir = 0;
-    public static double kdr = 0.15;
+    public static double kdr = 0.115;
 
     TelemetryPacket packet = new TelemetryPacket();
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -46,10 +46,10 @@ public class Mecanum_Drive{
 
     public Mecanum_Drive(HardwareMap map, Telemetry telemetry){
         this.telemetry = telemetry;
-        motors[0] = new Caching_Motor(map, "front_left");
-        motors[1] = new Caching_Motor(map, "front_right");
-        motors[2] = new Caching_Motor(map, "back_left");
-        motors[3] = new Caching_Motor(map, "back_right");
+        motors[0] = new Caching_Motor(map, "fleft");
+        motors[1] = new Caching_Motor(map, "fright");
+        motors[2] = new Caching_Motor(map, "bleft");
+        motors[3] = new Caching_Motor(map, "bright");
 
         motors[0].motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motors[1].motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -60,6 +60,8 @@ public class Mecanum_Drive{
         motors[1].motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motors[2].motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motors[3].motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
 
         PID_X = new PIDFController(new PIDCoefficients(kp, ki, kd));
         PID_Y = new PIDFController(new PIDCoefficients(kp, ki, kd));
@@ -94,9 +96,6 @@ public class Mecanum_Drive{
     }
 
     public void setPower(double x, double y, double rot){
-        isTurning = rot > 0.05 && x == 0 && y == 0;
-        telemetry.addData("Is turning", isTurning);
-
         //Calculating the 4 motor powers
         double frontLeftMotorPower = y - x - rot;
         double frontRightMotorPower = y + x + rot;
@@ -157,9 +156,9 @@ public class Mecanum_Drive{
 
     public void driveCentric(Gamepad gamepad, double maxMove, double maxTurn, double heading){
         if(blue) {
-            setPowerCentic(Range.clip(-gamepad.left_stick_x, -maxMove, maxMove), Range.clip(-gamepad.left_stick_y, -maxMove, maxMove), Range.clip(-gamepad.right_stick_x, -maxTurn, maxTurn), heading);
+            setPowerCentic(Range.clip(gamepad.left_stick_x, -maxMove, maxMove), Range.clip(gamepad.left_stick_y, -maxMove, maxMove), Range.clip(gamepad.right_stick_x, -maxTurn, maxTurn), heading);
         }else{
-            setPowerCentic(Range.clip(gamepad.left_stick_x, -maxMove, maxMove), Range.clip(gamepad.left_stick_y, -maxMove, maxMove), Range.clip(-gamepad.right_stick_x, -maxTurn, maxTurn), heading);
+            setPowerCentic(Range.clip(-gamepad.left_stick_x, -maxMove, maxMove), Range.clip(-gamepad.left_stick_y, -maxMove, maxMove), Range.clip(-gamepad.right_stick_x, -maxTurn, maxTurn), heading);
         }
     }
 

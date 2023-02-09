@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.OpModes.ServoTester;
+import org.firstinspires.ftc.teamcode.OpModes.Servo_Tester;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 
 @TeleOp
@@ -34,11 +34,6 @@ public class GrabberV4B extends LinearOpMode {
         clamp_servo = hardwareMap.servo.get(name);
         rotate_servo = hardwareMap.servo.get(name2);
         balance_servo = hardwareMap.servo.get(name3);
-
-        pos = ServoTester.pos;
-        pos2 = ServoTester.pos2;
-        pos3 = ServoTester.pos3;
-
 
 
         waitForStart();

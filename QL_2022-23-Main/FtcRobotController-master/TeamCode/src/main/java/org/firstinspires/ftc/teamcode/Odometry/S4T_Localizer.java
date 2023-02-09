@@ -11,8 +11,9 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 
 @Config
 public class S4T_Localizer {
-    public static double TRACK_WIDTH1 = 2703.5252295662530948720862674681;
-    public static double TRACK_WIDTH2 = 2853.4889746945914750003169935058;
+
+    public static double TRACK_WIDTH1 = 3638.202421609181428008798388814;//3641.9823515076139422333093781941;//<Manual//3638.8788301173219831858161448083;//3641.5844641498842038938871687857;//3637.4862243652678989978384118788;//3625.3506599545108796454610249217;//3657.221437308662920633179998537;//3654.5953807476466475929934164414;//3647.2742533654194621476247633262;//3666.2534803291279809380641521084;//3635.8150974628029979722651323634;//3637.8841117229976373372606212872; //3622.8970212485108265523574002363;//3625.4965519856784503699158350381//3624.8068805656135705815840053968;//3605.4165033322509888404083335593;//3602.3925594135049774607995420552;//3599.2094605516670707454218667877;//3625.7087585764676441509410133892;//3617.4327015356890866909590576939;//3605.5756582753428841761772173226;//2814.7745347874879345745360180654;//2798.0632657628389243188032229113;//2805.503759352385031265998538849;//2703.5252295662530948720862674681;
+    public static double TRACK_WIDTH2 = 1957.0328422351818067485023079338;//1961.2663637214262226799546160395;//<Manual//1956.8100253148531532784258706651;//1954.9399547335233830831414864454;//1966.9163642011885070997499896392;//1947.6188273512961976377728333303;//1811.0240974426770257141283434158;//1811.8198721581365023929727622327;//1812.4564919305040837360482972862;//1817.7881825240825774843059033592;//1826.9594861197530462079878302235;//1826.1438170364070826121723009362;//1821.6079011582880655427591136801;//1822.642408288385385225256858142;//1825.7724555025259934953782388217;//1810.5466326134013397068216921257;//1809.1672897732715801301580328432;//1806.9656463938336946520218074498;//1822.9209294387962020628524047279;//1819.857196784277216849301392283;//1811.4219848004067640535505528243;//2577.4347259016990151091881059362;//2570.2329647267907511656461156436;//2572.3019789869853905306416045674;//2587.620642259580316598396666792;//2584.6364870766072790527300962288;//2853.4889746945914750003169935058;
 
     private final double EPSILON = 1e-6;
     private static Pose2d myPose = new Pose2d(0, 0,0);
@@ -34,9 +35,9 @@ public class S4T_Localizer {
     private static double heading = 0;
     Telemetry telemetry;
     public static double k_strafe = 1.0;
-    public static double k_vert = 1.0;
-    public double TICKS_TO_INCHES_VERT = 303.547368;
-    public double TICKS_TO_INCHES_STRAFE = 303.347368 * (46.892/46.75);//335.381388888888888;
+    public static double k_vert = 1.5; //Gear Ratio Offset!!! //0.6
+    public double TICKS_TO_INCHES_VERT = 333.791666;//303.547368;
+    public double TICKS_TO_INCHES_STRAFE = 197.958333;//335.381388888888888;
 
     public static double clipping_strafe = 0.05;
     public static double clipping_vert = 0.05;
@@ -111,10 +112,10 @@ public class S4T_Localizer {
         preverxRaw = erxRaw;
         preveryRaw = eryRaw;
 
-        double dthetastrafe = (dErxRaw - dElxRaw) / TRACK_WIDTH2;
+        double dthetastrafe = -((dErxRaw - dElxRaw) / TRACK_WIDTH2);
         double dthetavert = (dEryRaw - dElyRaw) / TRACK_WIDTH1;
 
-        dtheta = weightedTheta(dx, dy, dthetavert, -dthetastrafe);
+        dtheta = weightedTheta(dx, dy, dthetavert, dthetastrafe);
 
         heading += dtheta;
         heading %= 2 * Math.PI;
@@ -127,6 +128,11 @@ public class S4T_Localizer {
 
         myPose = myPose.plus(new Pose2d(myVec.x, myVec.y, dtheta));
         myPose = new Pose2d(myPose.getX(), myPose.getY(), (Math.toRadians(360) - heading) % Math.toRadians(360));
+
+        addPacket("X Pos: ", myPose.getX());
+        addPacket("Y Pos: ", myPose.getY());
+        addPacket("Theta Pos: ", Math.toRadians(myPose.getHeading()));
+
 
         dashboardPos = new Pose2d(myPose.getY() + DASHBOARD_OFFSET_FROM_CENTER.getY(), -myPose.getX() + DASHBOARD_OFFSET_FROM_CENTER.getX(), (2 * Math.PI) - myPose.getHeading());
     }
@@ -219,16 +225,14 @@ public class S4T_Localizer {
     }
 
     public Pose2d getPose(){
-        if(blue){
-            return new Pose2d(-myPose.getX(), myPose.getY(), 2 * Math.PI - myPose.getHeading());
-        }
-        return myPose;
+        return new Pose2d(myPose.getX(), myPose.getY(), myPose.getHeading());
     }
 
     private Vector2 circleUpdate(double dr, double dx, double dy, double dtheta){
         if(dtheta <= EPSILON){
             double sineTerm = 1.0 - dtheta * dtheta / 6.0;
             double cosTerm = dtheta / 2.0;
+
 
             return new Vector2(
                     sineTerm * dx - cosTerm * dy,
@@ -258,7 +262,7 @@ public class S4T_Localizer {
             costerm = (1 - Math.cos(delta_theta)) / delta_theta;
         }
 
-        Vector2 FeildCentricDelta = new Vector2((sinterm * RawRobotDelta.getX()) - (costerm * RawRobotDelta.getY()), (costerm * RawRobotDelta.getX()) + (sinterm * RawRobotDelta.getY()));
+        Vector2 FeildCentricDelta = new Vector2((sinterm * -RawRobotDelta.getX()) - (costerm * RawRobotDelta.getY()), (costerm * RawRobotDelta.getX()) + (sinterm * RawRobotDelta.getY()));
         FeildCentricDelta.rotate(prev_heading);
 
         return FeildCentricDelta;
