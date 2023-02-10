@@ -192,6 +192,8 @@ public class V4B_Arm {
             case STACK:
             slideToggle = true;
                 if(gamepad.isPress(GamepadEx.Control.right_bumper)){
+                    gamepad.gamepad.rumble(500);
+                    gamepad2.gamepad.rumble(500);
                     stackCase += 1;
                     time.reset();
                 }

@@ -81,24 +81,23 @@ public class RedAutoRight extends LinearOpMode {
     public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(3.5, -52.5, Math.toRadians(-35));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(-5, -44, Math.toRadians(-90));
     public static Pose2d BACK_AT_DEPOSIT_ONE = new Pose2d(-5, -48, Math.toRadians(-90));
-    public static Pose2d DEPOSIT_ONE = new Pose2d(5.5, -42.25, Math.toRadians(93));
-    public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -54.2, Math.toRadians(45));
+    public static Pose2d DEPOSIT_ONE = new Pose2d(-5.5, -42.25, Math.toRadians(-90));
+    public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(1.5, -54.2, Math.toRadians(-45));
 
 
     public static Pose2d GRAB_STONE = new Pose2d(-27.5, -49.5, Math.toRadians(-90));
     public static Pose2d GRAB_STONE2 = new Pose2d(-28.5, -49.5, Math.toRadians(-90));
     public static Pose2d GRAB_STONE3 = new Pose2d(-28.7, -49.5, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(-28.1, -47, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(-28.1, -47, Math.toRadians(-90));
-
+    public static Pose2d GRAB_STONE4 = new Pose2d(-28.9, -47, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(-28.9, -47, Math.toRadians(-90));
 
 
 
     public static Pose2d GRAB_STONE6 = new Pose2d(-34.5, -47, Math.toRadians(-90));
 
 
-    public static Pose2d DEPOSIT_TWO = new Pose2d(0.6, -39, Math.toRadians(90));
-    public static Pose2d DEPOSIT_THREE = new Pose2d(0.6, -38, Math.toRadians(90));
+    public static Pose2d DEPOSIT_TWO = new Pose2d(-0.6, -39, Math.toRadians(-90));
+    public static Pose2d DEPOSIT_THREE = new Pose2d(-0.6, -38, Math.toRadians(-90));
 
 
 
@@ -152,7 +151,7 @@ public class RedAutoRight extends LinearOpMode {
         time = new ElapsedTime();
 
         robot.localizer.reset();
-        robot.setStartPose(new Pose2d(-0.687, 2, 0));
+        robot.setStartPose(new Pose2d(2.25, 3, 0));
 
         robot.arm.GrabberClose();
         robot.arm.V4BAutoHold();
@@ -273,31 +272,33 @@ public class RedAutoRight extends LinearOpMode {
 
                     //ARM TUNING AREA
 
-                    if(cycle == 0) {
-                        robot.arm.manualSetPosition(armCycleOne);
-                        robot.arm.grabberPos(grabberCycleOne);
+                    if(cycle == 0){
                         robot.slides.setPosition(125, -0.2501, 1);
-                    } else if(cycle == 1){
-                        robot.arm.manualSetPosition(armCycleTwo);
-                        robot.arm.grabberPos(grabberCycleTwo);
-                        //robot.slides.setPosition(85, -0.2501, 1);
-//90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
-                    } else if(cycle == 2){
-                        robot.arm.manualSetPosition(armCycleThree);
-                        robot.arm.grabberPos(grabberCycleThree);
-                        //robot.slides.setPosition(55, -0.2501, 1);
-                    } else if (cycle == 3){
-                        robot.arm.manualSetPosition(armCycleFour);
-                        robot.arm.grabberPos(grabberCycleFour);
-                        //robot.slides.setPosition(25, -0.2501, 1);
-                    } else if (cycle == 4){
-                        robot.arm.manualSetPosition(armCycleFive);
-                        robot.arm.grabberPos(grabberCycleFive);
-                        //robot.slides.setPosition(0, -0.2501, 1);
                     }
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5) {
                         time.reset();
+                        if(cycle == 0) {
+                            robot.arm.manualSetPosition(armCycleOne);
+                            robot.arm.grabberPos(grabberCycleOne);
+                        } else if(cycle == 1){
+                            robot.arm.manualSetPosition(armCycleTwo);
+                            robot.arm.grabberPos(grabberCycleTwo);
+                            //robot.slides.setPosition(85, -0.2501, 1);
+                            //90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
+                        } else if(cycle == 2){
+                            robot.arm.manualSetPosition(armCycleThree);
+                            robot.arm.grabberPos(grabberCycleThree);
+                            //robot.slides.setPosition(55, -0.2501, 1);
+                        } else if (cycle == 3){
+                            robot.arm.manualSetPosition(armCycleFour);
+                            robot.arm.grabberPos(grabberCycleFour);
+                            //robot.slides.setPosition(25, -0.2501, 1);
+                        } else if (cycle == 4){
+                            robot.arm.manualSetPosition(armCycleFive);
+                            robot.arm.grabberPos(grabberCycleFive);
+                            //robot.slides.setPosition(0, -0.2501, 1);
+                        }
                     } else {
                         robot.arm.GrabberClose();
                         if (time.time() > 0.4) {
@@ -469,20 +470,12 @@ public class RedAutoRight extends LinearOpMode {
                     points.add(new CurvePoint(STRAFE,1.0,1.0,10));
                     points.add(new CurvePoint(CASE_3_MID,1.0,1.0,10));
                     points.add(new CurvePoint(CASE_3,1.0,1.0,10));
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2) {
-                        time.reset();
-                        robot.arm.V4BFrontHoldPos();
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.2501);
-                        }
+                    robot.arm.V4BFrontHoldPos();
+                    if(robot.slides.isDown()){
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
                     } else {
-                        if(time.time() > 0.2){
-                            newState(State.PARK);
-                        }
-
+                        robot.slides.setPower(-0.2501);
                     }
                     break;
                     /*

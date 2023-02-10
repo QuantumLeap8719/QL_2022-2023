@@ -78,18 +78,20 @@ public class RedLeftBackup extends LinearOpMode {
 
 
     public static Pose2d MID_DEPOSIT = new Pose2d(0, -44.0, Math.toRadians(125)); //MID
-    public static Pose2d BACKUP_HIGHDEPOSIT = new Pose2d(-25.5, -43.5, Math.toRadians(132)); //SECOND HIGH
+    public static Pose2d BACKUP_HIGHDEPOSIT = new Pose2d(-24, -44, Math.toRadians(132)); //SECOND HIGH
+    public static Pose2d BACKUP_HIGHDEPOSIT_4_5 = new Pose2d(-24, -44, Math.toRadians(132)); //SECOND HIGH
     //public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(-3.5, -52.5, Math.toRadians(35));
-    public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(5, -44, Math.toRadians(90));
+    public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(5, -49.5, Math.toRadians(90));
+    public static Pose2d MID_CLEAR = new Pose2d(10, -55, Math.toRadians(90));
     public static Pose2d BACK_AT_DEPOSIT_ONE = new Pose2d(5, -48, Math.toRadians(90));
-    public static Pose2d CURVE_FORBACKUPHIGH = new Pose2d(-6.669, -52.358, Math.toRadians(90)); //Curve
+    public static Pose2d CURVE_FORBACKUPHIGH = new Pose2d(-9, -50, Math.toRadians(90)); //Curve
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -54.2, Math.toRadians(45));
 
     public static Pose2d GRAB_STONE = new Pose2d(27.5, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE2 = new Pose2d(27.9, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(27.7, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(27.8, -48.75, Math.toRadians(90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(27.7, -48.25, Math.toRadians(90));
+    public static Pose2d GRAB_STONE2 = new Pose2d(27.5, -49.75, Math.toRadians(90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(27.5, -50.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(27.9, -50.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(27.9, -50.5, Math.toRadians(90));
 
     public static Pose2d GRAB_STONE6 = new Pose2d(34.5, -47, Math.toRadians(90));
 
@@ -199,24 +201,24 @@ public class RedLeftBackup extends LinearOpMode {
                         robot.arm.GrabberClose();
                         robot.slides.setPosition(625);
                     } else {
-                        if(time.time() > 0.5) {
+                        if(time.time() > 0.7) {
                             robot.slides.setPosition(580, -0.3, 1);
                         } else {
                             robot.slides.setPosition(625);
                         }
-                        if(time.time() > 0.7) {
+                        if(time.time() > 0.9) {
                             robot.arm.GrabberPartial();
                         }
 
-                        if(time.time() > 0.9){
+                        if(time.time() > 1.1){
                             robot.arm.GrabberClose();
                         }
 
-                        if(time.time() > 1.0){
+                        if(time.time() > 1.2){
                             robot.arm.V4BFrontPose();
                         }
 
-                        if(time.time() > 1.3) {
+                        if(time.time() > 1.5) {
                             robot.arm.GrabberOpen();
                             if(robot.slides.isDown()){
                                 robot.slides.reset();
@@ -226,7 +228,7 @@ public class RedLeftBackup extends LinearOpMode {
                             }
                         }
 
-                        if(time.time() > 1.5){
+                        if(time.time() > 1.7){
                             newState(State.TURN_AT_DEPOSIT_ONE);
                         }
 
@@ -237,27 +239,27 @@ public class RedLeftBackup extends LinearOpMode {
                     if(cycle == 0) {
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE, 0.5, 0.5, 6));
+                        points.add(new CurvePoint(GRAB_STONE, 0.5, 1, 15));
                     } else if(cycle == 1){
                         points.add(new CurvePoint(MID_DEPOSIT, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE2, 0.9, 0.9, 6));
+                        points.add(new CurvePoint(MID_CLEAR, 1.0, 1.0, 15));
+                        points.add(new CurvePoint(GRAB_STONE2, 0.5, 1, 15));
                     } else if (cycle == 2){
                         points.add(new CurvePoint(BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE3, 0.75, 0.75, 6));
+                        points.add(new CurvePoint(GRAB_STONE3, 0.75, 1, 15));
                     } else if (cycle == 3){
                         points.add(new CurvePoint( BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE4, 0.75, 0.75, 6));
+                        points.add(new CurvePoint(GRAB_STONE4, 0.75, 1, 15));
                     } else if(cycle == 4){
                         points.add(new CurvePoint(BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE5, 0.75, 0.75, 6));
+                        points.add(new CurvePoint(GRAB_STONE5, 0.75, 1, 15));
                     }else {
                         points.add(new CurvePoint(BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE6, 0.75, 0.75, 6));
+                        points.add(new CurvePoint(GRAB_STONE6, 0.75, 1, 15));
                     }
 
                     if(robot.slides.isDown()){
@@ -269,20 +271,22 @@ public class RedLeftBackup extends LinearOpMode {
 
                     if(cycle==0){
                         robot.slides.setPosition(125, -0.2501, 1);
+                    }else if(cycle==1){
+                        robot.slides.setPosition(110, -0.2501, 1);
                     }
 
                     //ARM TUNING AREA
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5) {
-                        if(cycle == 0) {
+                        if(cycle == 0 || cycle == 1) {
                             robot.arm.manualSetPosition(armCycleOne);
                             robot.arm.grabberPos(grabberCycleOne);
-                        } else if(cycle == 1){
+                        }/* else if(cycle == 1){
                             robot.arm.manualSetPosition(armCycleTwo);
                             robot.arm.grabberPos(grabberCycleTwo);
                             //robot.slides.setPosition(85, -0.2501, 1);
 //90 for 2nd Cone //60 for 3rd Cone // 25 for 4th Cone
-                        } else if(cycle == 2){
+                        } */else if(cycle == 2){
                             robot.arm.manualSetPosition(armCycleThree);
                             robot.arm.grabberPos(grabberCycleThree);
                             //robot.slides.setPosition(55, -0.2501, 1);
@@ -344,7 +348,7 @@ public class RedLeftBackup extends LinearOpMode {
                         points.add(new CurvePoint(GRAB_STONE, 1.0, 1.0, 15));
                         if(robot.getPos().vec().distTo(BACK_AT_DEPOSIT_ONE.vec()) > 15) {
                             points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 6));
-                            points.add(new CurvePoint(MID_DEPOSIT, 1.0, 1.0, 6));
+                            points.add(new CurvePoint(MID_DEPOSIT, 0.75, 1.0, 6));
                         }else{
                             points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
                             points.add(new CurvePoint(MID_DEPOSIT, 1.0, 1.0, 15));
@@ -358,7 +362,7 @@ public class RedLeftBackup extends LinearOpMode {
                             points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
                             points.add(new CurvePoint(BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         }
-                    } else if (cycle == 2 || cycle == 3|| cycle == 4|| cycle == 5){
+                    } else if (cycle == 2 || cycle == 3){
                         points.add(new CurvePoint(GRAB_STONE, 1.0, 1.0, 15));
                         if(robot.getPos().vec().distTo(CURVE_FORBACKUPHIGH.vec()) > 15) {
                             points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 6));
@@ -366,6 +370,15 @@ public class RedLeftBackup extends LinearOpMode {
                         }else{
                             points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
                             points.add(new CurvePoint(BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
+                        }
+                    } else if(cycle == 4|| cycle == 5){
+                        points.add(new CurvePoint(GRAB_STONE, 1.0, 1.0, 15));
+                        if(robot.getPos().vec().distTo(CURVE_FORBACKUPHIGH.vec()) > 15) {
+                            points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 6));
+                            points.add(new CurvePoint(BACKUP_HIGHDEPOSIT_4_5, 1.0, 1.0, 6));
+                        }else{
+                            points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
+                            points.add(new CurvePoint(BACKUP_HIGHDEPOSIT_4_5, 1.0, 1.0, 15));
                         }
                     }
 
