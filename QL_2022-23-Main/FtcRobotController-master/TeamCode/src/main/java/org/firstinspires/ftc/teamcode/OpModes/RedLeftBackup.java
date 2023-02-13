@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous(name="LeftMid")
+//@Autonomous(name="LeftMid")
 public class RedLeftBackup extends LinearOpMode {
 
     private enum State {
@@ -54,9 +54,9 @@ public class RedLeftBackup extends LinearOpMode {
 
     double armCycleOne = 0;
     double armCycleTwo = 0.15;
-    double armCycleThree = 0.09;
-    double armCycleFour = 0.04;
-    double armCycleFive = 0;
+    double armCycleThree = 0.105;
+    double armCycleFour = 0.055;
+    double armCycleFive = 0.02;
 
     double grabberCycleOne = 0.6;
     double grabberCycleTwo = 0.66;
@@ -73,13 +73,13 @@ public class RedLeftBackup extends LinearOpMode {
     public static Pose2d START = new Pose2d(0 , 0, 0);
 
     //DEPOSI
-    public static Pose2d STRAFE = new Pose2d(-3.5, -52.5, Math.toRadians(35));
+    public static Pose2d STRAFE = new Pose2d(-2.5, -52.5, Math.toRadians(35));
 
 
 
     public static Pose2d MID_DEPOSIT = new Pose2d(0, -44.0, Math.toRadians(125)); //MID
-    public static Pose2d BACKUP_HIGHDEPOSIT = new Pose2d(-24, -44, Math.toRadians(132)); //SECOND HIGH
-    public static Pose2d BACKUP_HIGHDEPOSIT_4_5 = new Pose2d(-24, -44, Math.toRadians(132)); //SECOND HIGH
+    public static Pose2d BACKUP_HIGHDEPOSIT = new Pose2d(-24, -43.5, Math.toRadians(132)); //SECOND HIGH
+    public static Pose2d BACKUP_HIGHDEPOSIT_4_5 = new Pose2d(-24, -43.5, Math.toRadians(132)); //SECOND HIGH
     //public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(-3.5, -52.5, Math.toRadians(35));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(5, -49.5, Math.toRadians(90));
     public static Pose2d MID_CLEAR = new Pose2d(10, -55, Math.toRadians(90));
@@ -87,11 +87,11 @@ public class RedLeftBackup extends LinearOpMode {
     public static Pose2d CURVE_FORBACKUPHIGH = new Pose2d(-9, -50, Math.toRadians(90)); //Curve
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -54.2, Math.toRadians(45));
 
-    public static Pose2d GRAB_STONE = new Pose2d(27.5, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE2 = new Pose2d(27.5, -49.75, Math.toRadians(90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(27.5, -50.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(27.9, -50.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(27.9, -50.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE = new Pose2d(26.5, -49.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE2 = new Pose2d(26.5, -49.75, Math.toRadians(90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(25.5, -50.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(25.9, -50.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(25.9, -50.5, Math.toRadians(90));
 
     public static Pose2d GRAB_STONE6 = new Pose2d(34.5, -47, Math.toRadians(90));
 
@@ -103,8 +103,8 @@ public class RedLeftBackup extends LinearOpMode {
 
     public static Pose2d CASE_3_MID = new Pose2d(-27, -53, Math.toRadians(0));
     public static Pose2d CASE_1 = new Pose2d(28.5, -47, Math.toRadians(90));
-    public static Pose2d CASE_3 = new Pose2d(-18.7, -31, Math.toRadians(0));
-    public static Pose2d CASE_2_TURN = new Pose2d(3.2, -28.4, Math.toRadians(0));
+    public static Pose2d CASE_3 = new Pose2d(-18.7, -50.25, Math.toRadians(90));
+    public static Pose2d CASE_2_TURN = new Pose2d(3.2, -50.25, Math.toRadians(90));
 
 
 
@@ -159,7 +159,7 @@ public class RedLeftBackup extends LinearOpMode {
 
         robot.initializeWebcam();
         while (!isStarted() && !isStopRequested()) {
-            coneCase = 0;//robot.getConeCase();
+            coneCase = robot.getConeCase();
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }
@@ -183,7 +183,7 @@ public class RedLeftBackup extends LinearOpMode {
                         robot.slides.setPosition(625);
                     }
 
-                    if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 10)) {
+                    if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 5)) {
                         time.reset();
                         robot.arm.GrabberClose();
                         robot.arm.V4BOutPose();
@@ -237,6 +237,7 @@ public class RedLeftBackup extends LinearOpMode {
 
                 case TURN_AT_DEPOSIT_ONE:
                     if(cycle == 0) {
+
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(GRAB_STONE, 0.5, 1, 15));
@@ -247,19 +248,19 @@ public class RedLeftBackup extends LinearOpMode {
                     } else if (cycle == 2){
                         points.add(new CurvePoint(BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE3, 0.75, 1, 15));
+                        points.add(new CurvePoint(GRAB_STONE3, 0.5, 1, 15));
                     } else if (cycle == 3){
                         points.add(new CurvePoint( BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE4, 0.75, 1, 15));
+                        points.add(new CurvePoint(GRAB_STONE4, 0.5, 1, 15));
                     } else if(cycle == 4){
                         points.add(new CurvePoint(BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE5, 0.75, 1, 15));
+                        points.add(new CurvePoint(GRAB_STONE5, 0.5, 1, 15));
                     }else {
                         points.add(new CurvePoint(BACKUP_HIGHDEPOSIT, 1.0, 1.0, 15));
                         points.add(new CurvePoint(CURVE_FORBACKUPHIGH, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE6, 0.75, 1, 15));
+                        points.add(new CurvePoint(GRAB_STONE6, 0.5, 1, 15));
                     }
 
                     if(robot.slides.isDown()){
@@ -270,7 +271,7 @@ public class RedLeftBackup extends LinearOpMode {
                     }
 
                     if(cycle==0){
-                        robot.slides.setPosition(125, -0.2501, 1);
+                        robot.slides.setPosition(130, -0.2501, 1);
                     }else if(cycle==1){
                         robot.slides.setPosition(110, -0.2501, 1);
                     }
@@ -494,8 +495,8 @@ public class RedLeftBackup extends LinearOpMode {
                     break;
 
                 case CASE_1:
-                    points.add(new CurvePoint(STRAFE,0.1,0.1,15));
-                    points.add(new CurvePoint(CASE_2_TURN,0.1,0.1,15));
+                    points.add(new CurvePoint(BACKUP_HIGHDEPOSIT_4_5,1.0,1.0,15));
+                    points.add(new CurvePoint(CASE_2_TURN,1.0,1.0,15));
 
                     robot.arm.V4BFrontHoldPos();
                     if(robot.slides.isDown()){
@@ -507,7 +508,7 @@ public class RedLeftBackup extends LinearOpMode {
                     break;
 
                 case CASE_2:
-                    points.add(new CurvePoint(STRAFE,1.0,1.0,10));
+                    points.add(new CurvePoint(BACKUP_HIGHDEPOSIT_4_5,1.0,1.0,10));
                     points.add(new CurvePoint(CASE_3,1.0,1.0,10));
                     robot.arm.V4BFrontHoldPos();
                     if(robot.slides.isDown()){

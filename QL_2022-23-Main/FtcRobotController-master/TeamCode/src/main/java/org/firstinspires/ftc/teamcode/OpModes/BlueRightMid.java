@@ -8,11 +8,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePusuit.CurvePoint;
 import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
+import org.firstinspires.ftc.teamcode.Vision.BlueSleeveDetector;
 
 import java.util.ArrayList;
 
-@Autonomous(name="RedRightMid")
-public class RedRightBackup extends LinearOpMode {
+@Autonomous(name="BlueRightMid")
+public class BlueRightMid extends LinearOpMode {
 
     private enum State {
         CLEAR,
@@ -53,8 +54,8 @@ public class RedRightBackup extends LinearOpMode {
     double topGoalPos;
 
     double armCycleOne = 0;
-    double armCycleTwo = 0.165;
-    double armCycleThree = 0.09;
+    double armCycleTwo = 0.17;
+    double armCycleThree = 0.105;
     double armCycleFour = 0.055;
     double armCycleFive = 0;
 
@@ -73,13 +74,13 @@ public class RedRightBackup extends LinearOpMode {
     public static Pose2d START = new Pose2d(0 , 0, 0);
 
     //DEPOSIT
-    public static Pose2d STRAFE = new Pose2d(2.75, -50.5, Math.toRadians(-35));
+    public static Pose2d STRAFE = new Pose2d(2.5, -50.5, Math.toRadians(-35));
 
 
 
-    public static Pose2d MID_DEPOSIT = new Pose2d(0.75, -43.5, Math.toRadians(-125)); //MID
-    public static Pose2d BACKUP_HIGHDEPOSIT = new Pose2d(25, -41.5, Math.toRadians(-132)); //SECOND HIGH
-    public static Pose2d BACKUP_HIGHDEPOSIT_4_5 = new Pose2d(23, -41.5, Math.toRadians(-132)); //SECOND HIGH
+    public static Pose2d MID_DEPOSIT = new Pose2d(0.5, -43.75, Math.toRadians(-125)); //MID
+    public static Pose2d BACKUP_HIGHDEPOSIT = new Pose2d(25, -42, Math.toRadians(-132)); //SECOND HIGH
+    public static Pose2d BACKUP_HIGHDEPOSIT_4_5 = new Pose2d(21.5, -42, Math.toRadians(-132)); //SECOND HIGH
     //public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(-3.5, -52.5, Math.toRadians(35));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(-5, -46.5, Math.toRadians(-90));
     public static Pose2d MID_CLEAR = new Pose2d(-10, -50, Math.toRadians(-90));
@@ -87,11 +88,11 @@ public class RedRightBackup extends LinearOpMode {
     public static Pose2d CURVE_FORBACKUPHIGH = new Pose2d(9, -50, Math.toRadians(-90)); //Curve
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(1.5, -54.2, Math.toRadians(-45));
 
-    public static Pose2d GRAB_STONE = new Pose2d(-26, -49.25, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE2 = new Pose2d(-25.75, -48.6, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(-25, -50, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(-24.5, -50.5, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(-24.5, -51, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE = new Pose2d(-26.5, -49.25, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE2 = new Pose2d(-26.75, -48.6, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(-25.5, -50, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(-24.75, -50.5, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(-24.75, -51, Math.toRadians(-90));
 
     public static Pose2d GRAB_STONE6 = new Pose2d(-34.5, -47, Math.toRadians(-90));
 
@@ -148,15 +149,15 @@ public class RedRightBackup extends LinearOpMode {
         time = new ElapsedTime();
 
         robot.localizer.reset();
-        robot.setStartPose(new Pose2d(2.25, 3, 0));
+        robot.setStartPose(new Pose2d(0, 3, 0));
 
         robot.arm.GrabberClose();
         robot.arm.V4BAutoHold();
         robot.arm.write();
 
-        robot.initializeWebcam();
+        robot.blueInitializeWebcam();
         while (!isStarted() && !isStopRequested()) {
-            coneCase = robot.getConeCase();
+            coneCase = robot.blueConeCase();
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }
@@ -477,6 +478,7 @@ public class RedRightBackup extends LinearOpMode {
 
                 case CASE_0:
                     points.add(new CurvePoint(BACKUP_HIGHDEPOSIT,1.0,1.0,15));
+                    points.add(new CurvePoint(CURVE_FORBACKUPHIGH,1.0,1.0,15));
                     points.add(new CurvePoint(CASE_1,1.0,1.0,15));
 
                     robot.arm.V4BFrontHoldPos();

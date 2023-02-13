@@ -28,7 +28,7 @@ public class V4B_Arm {
 
 
     private double front_hold = 0.37;
-    private double auto_hold = 0.86;
+    private double auto_hold = 0.83;
     private double hold = 0.7;
 
     private double out = 1;
@@ -148,7 +148,7 @@ public class V4B_Arm {
                     if(time.time() > 0.1) {
                         GrabberClose();
                     }
-                    if(time.time() > 0.3){
+                    if(time.time() > 0.4){
                         manualSetPosition(hold);
                     }
                 } else if(grabberToggle == 2){

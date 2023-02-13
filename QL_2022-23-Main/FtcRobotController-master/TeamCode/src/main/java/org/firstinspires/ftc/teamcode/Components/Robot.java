@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Odometry.S4T_Encoder;
 import org.firstinspires.ftc.teamcode.Odometry.S4T_Localizer;
 import org.firstinspires.ftc.teamcode.OpModes.LinearTeleOp;
+import org.firstinspires.ftc.teamcode.Vision.BlueSleeveDetector;
 import org.firstinspires.ftc.teamcode.Vision.SleeveDetector;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -31,6 +32,7 @@ public class Robot {
     private HardwareMap hardwareMap;
     OpenCvCamera webcam;
     OpenCvPipeline detector;
+    OpenCvPipeline blueDetector;
 
     private Telemetry telemetry;
 
@@ -123,8 +125,39 @@ public class Robot {
             }
         });
     }
+
+    public void blueInitializeWebcam(){
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        blueDetector = new BlueSleeveDetector(telemetry);
+        webcam.setPipeline(blueDetector);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                FtcDashboard.getInstance().startCameraStream(webcam, 30);
+                webcam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+    }
+
+
     public int getConeCase(){
        return ((SleeveDetector)detector).getCase();
+    }
+
+    public int blueConeCase(){
+        {
+            return ((BlueSleeveDetector) blueDetector).getCase();
+        }
     }
 
     public void stopWebcam(){

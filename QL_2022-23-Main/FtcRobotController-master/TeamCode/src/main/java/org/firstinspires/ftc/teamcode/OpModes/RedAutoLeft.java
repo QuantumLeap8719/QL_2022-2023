@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous(name="LeftHigh")
+//@Autonomous(name="LeftHigh")
 public class RedAutoLeft extends LinearOpMode {
 
     private enum State {
@@ -85,11 +85,11 @@ public class RedAutoLeft extends LinearOpMode {
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -54.2, Math.toRadians(45));
 
 
-    public static Pose2d GRAB_STONE = new Pose2d(27.5, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE2 = new Pose2d(28.5, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(28.7, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(28.1, -47, Math.toRadians(90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(28.1, -47, Math.toRadians(90));
+    public static Pose2d GRAB_STONE = new Pose2d(26, -50, Math.toRadians(90));
+    public static Pose2d GRAB_STONE2 = new Pose2d(27, -49.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(27.5, -48.5, Math.toRadians(90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(27.1, -47, Math.toRadians(90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(27.1, -46.75, Math.toRadians(90));
 
 
 
@@ -159,7 +159,7 @@ public class RedAutoLeft extends LinearOpMode {
 
         robot.initializeWebcam();
         while (!isStarted() && !isStopRequested()) {
-            coneCase = 0;//robot.getConeCase();
+            coneCase = robot.getConeCase();
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }
@@ -193,7 +193,7 @@ public class RedAutoLeft extends LinearOpMode {
                     break;
                 case STRAFE:
                     points.add(new CurvePoint(CLEAR,1,1,4));
-                    points.add(new CurvePoint(STRAFE,0.75,1,4));
+                    points.add(new CurvePoint(STRAFE,0.6,1,4));
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) >= Math.toRadians(2)) {
                         time.reset();
@@ -239,27 +239,27 @@ public class RedAutoLeft extends LinearOpMode {
                     if(cycle == 0) {
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE, 0.5, 0.5, 6));
+                        points.add(new CurvePoint(GRAB_STONE, 0.6, 0.5, 6));
                     } else if(cycle == 1){
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE2, 0.5, 0.5, 6));
+                        points.add(new CurvePoint(GRAB_STONE2, 0.6, 0.5, 6));
                     } else if (cycle == 2){
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE3, 0.5, 0.5, 6));
+                        points.add(new CurvePoint(GRAB_STONE3, 0.6, 0.5, 6));
                     } else if (cycle == 3){
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE4, 0.5, 0.5, 6));
+                        points.add(new CurvePoint(GRAB_STONE4, 0.6, 0.5, 6));
                     } else if(cycle == 4){
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE5, 0.5, 0.5, 6));
+                        points.add(new CurvePoint(GRAB_STONE5, 0.6, 0.5, 6));
                     }else {
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
-                        points.add(new CurvePoint(GRAB_STONE6, 0.5, 0.5, 6));
+                        points.add(new CurvePoint(GRAB_STONE6, 0.6, 0.5, 6));
                     }
 
                     if(robot.slides.isDown()){
@@ -350,8 +350,8 @@ public class RedAutoLeft extends LinearOpMode {
                     if(cycle == 0 || cycle == 1) {
                         points.add(new CurvePoint(GRAB_STONE, 1.0, 1.0, 15));
                         if(robot.getPos().vec().distTo(BACK_AT_DEPOSIT_ONE.vec()) > 15) {
-                            points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 6));
-                            points.add(new CurvePoint(ONE_TWO_DEPOSIT, 1.0, 1.0, 6));
+                            points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 0.75, 1.0, 4));
+                            points.add(new CurvePoint(ONE_TWO_DEPOSIT, 0.75, 1.0, 4));
                         }else{
                             points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
                             points.add(new CurvePoint(ONE_TWO_DEPOSIT, 1.0, 1.0, 15));
@@ -359,8 +359,8 @@ public class RedAutoLeft extends LinearOpMode {
                     } else if(cycle == 2){
                         points.add(new CurvePoint(GRAB_STONE, 1.0, 1.0, 15));
                         if(robot.getPos().vec().distTo(BACK_AT_DEPOSIT_ONE.vec()) > 15) {
-                            points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 6));
-                            points.add(new CurvePoint(THREE_DEPOSIT, 1.0, 1.0, 6));
+                            points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 0.75, 1.0, 4));
+                            points.add(new CurvePoint(THREE_DEPOSIT, 0.75, 1.0, 4));
                         }else{
                             points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
                             points.add(new CurvePoint(THREE_DEPOSIT, 1.0, 1.0, 15));
@@ -368,8 +368,8 @@ public class RedAutoLeft extends LinearOpMode {
                 } else if (cycle == 3 || cycle == 4 || cycle == 5){
                         points.add(new CurvePoint(GRAB_STONE, 1.0, 1.0, 15));
                         if(robot.getPos().vec().distTo(BACK_AT_DEPOSIT_ONE.vec()) > 15) {
-                            points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 6));
-                            points.add(new CurvePoint(FOUR_FIVE_DEPSOIT, 1.0, 1.0, 6));
+                            points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 0.75, 1.0, 4));
+                            points.add(new CurvePoint(FOUR_FIVE_DEPSOIT, 0.75, 1.0, 4));
                         }else{
                             points.add(new CurvePoint(BACK_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
                             points.add(new CurvePoint(FOUR_FIVE_DEPSOIT, 1.0, 1.0, 15));
@@ -379,7 +379,7 @@ public class RedAutoLeft extends LinearOpMode {
 
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) >= Math.toRadians(1)) {
-                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 25){
+                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 22){
                             robot.slides.setPosition(640);
                         }
                         time.reset();

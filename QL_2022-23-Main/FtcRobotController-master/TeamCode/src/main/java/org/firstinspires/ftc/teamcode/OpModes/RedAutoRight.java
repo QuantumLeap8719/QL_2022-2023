@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous(name="RightHigh")
+@Autonomous(name="RedRightHigh")
 public class RedAutoRight extends LinearOpMode {
 
     private enum State {
@@ -53,9 +53,9 @@ public class RedAutoRight extends LinearOpMode {
     double topGoalPos;
 
     double armCycleOne = 0;
-    double armCycleTwo = 0.15;
+    double armCycleTwo = 0.165;
     double armCycleThree = 0.09;
-    double armCycleFour = 0.04;
+    double armCycleFour = 0.055;
     double armCycleFive = 0;
 
     double grabberCycleOne = 0.6;
@@ -73,23 +73,23 @@ public class RedAutoRight extends LinearOpMode {
     public static Pose2d START = new Pose2d(0 , 0, 0);
 
     //DEPOSIT
-    public static Pose2d STRAFE = new Pose2d(4, -52.5, Math.toRadians(-35));
+    public static Pose2d STRAFE = new Pose2d(3.5, -50, Math.toRadians(-35));
 
 
-    public static Pose2d ONE_TWO_DEPOSIT = new Pose2d(4, -52.5, Math.toRadians(-35));
-    public static Pose2d THREE_DEPOSIT = new Pose2d(3.5, -52.5, Math.toRadians(-35));
-    public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(3.5, -52.5, Math.toRadians(-35));
+    public static Pose2d ONE_TWO_DEPOSIT = new Pose2d(3.25, -50.5, Math.toRadians(-35));
+    public static Pose2d THREE_DEPOSIT = new Pose2d(3.5, -50.75, Math.toRadians(-35));
+    public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(3.75, -50.75, Math.toRadians(-35));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(-5, -44, Math.toRadians(-90));
     public static Pose2d BACK_AT_DEPOSIT_ONE = new Pose2d(-5, -48, Math.toRadians(-90));
     public static Pose2d DEPOSIT_ONE = new Pose2d(-5.5, -42.25, Math.toRadians(-90));
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(1.5, -54.2, Math.toRadians(-45));
 
 
-    public static Pose2d GRAB_STONE = new Pose2d(-27.5, -49.5, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE2 = new Pose2d(-28.5, -49.5, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(-28.7, -49.5, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(-28.9, -47, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(-28.9, -47, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE = new Pose2d(-26, -48.25, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE2 = new Pose2d(-26, -49, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(-26.4, -49, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(-26.7, -48, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(-26.7, -47.75, Math.toRadians(-90));
 
 
 
@@ -159,7 +159,7 @@ public class RedAutoRight extends LinearOpMode {
 
         robot.initializeWebcam();
         while (!isStarted() && !isStopRequested()) {
-            coneCase = 0;//robot.getConeCase();
+            coneCase = robot.getConeCase();
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }
@@ -183,7 +183,7 @@ public class RedAutoRight extends LinearOpMode {
                         robot.slides.setPosition(625);
                     }
 
-                    if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 10)) {
+                    if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 5)) {
                         time.reset();
                         robot.arm.GrabberClose();
                         robot.arm.V4BOutPose();
@@ -273,7 +273,7 @@ public class RedAutoRight extends LinearOpMode {
                     //ARM TUNING AREA
 
                     if(cycle == 0){
-                        robot.slides.setPosition(125, -0.2501, 1);
+                        robot.slides.setPosition(130, -0.2501, 1);
                     }
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5) {
@@ -300,8 +300,10 @@ public class RedAutoRight extends LinearOpMode {
                             //robot.slides.setPosition(0, -0.2501, 1);
                         }
                     } else {
-                        robot.arm.GrabberClose();
-                        if (time.time() > 0.4) {
+                        if(time.time() > 0.2) {
+                            robot.arm.GrabberClose();
+                        }
+                        if (time.time() > 0.5) {
                             newState(State.LIFT_SLIDES);
                         }
                     }

@@ -8,10 +8,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.PurePusuit.CurvePoint;
 import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
+import org.firstinspires.ftc.teamcode.Vision.BlueSleeveDetector;
 
 import java.util.ArrayList;
 
-@Autonomous
+
+@Autonomous (name = "BlueRightHigh")
 public class BlueAutoRight extends LinearOpMode {
 
     private enum State {
@@ -73,11 +75,11 @@ public class BlueAutoRight extends LinearOpMode {
     public static Pose2d START = new Pose2d(0 , 0, 0);
 
     //DEPOSIT
-    public static Pose2d STRAFE = new Pose2d(4, -52.5, Math.toRadians(-35));
+    public static Pose2d STRAFE = new Pose2d(3, -52, Math.toRadians(-35));
 
 
-    public static Pose2d ONE_TWO_DEPOSIT = new Pose2d(4, -52.5, Math.toRadians(-35));
-    public static Pose2d THREE_DEPOSIT = new Pose2d(3.5, -52.5, Math.toRadians(-35));
+    public static Pose2d ONE_TWO_DEPOSIT = new Pose2d(3, -52, Math.toRadians(-35));
+    public static Pose2d THREE_DEPOSIT = new Pose2d(3.5, -52, Math.toRadians(-35));
     public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(3.5, -52.5, Math.toRadians(-35));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(-5, -44, Math.toRadians(-90));
     public static Pose2d BACK_AT_DEPOSIT_ONE = new Pose2d(-5, -48, Math.toRadians(-90));
@@ -85,11 +87,11 @@ public class BlueAutoRight extends LinearOpMode {
     public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -54.2, Math.toRadians(45));
 
 
-    public static Pose2d GRAB_STONE = new Pose2d(-27.5, -49.5, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE2 = new Pose2d(-28.5, -49.5, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(-28.7, -49.5, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(-28.1, -47, Math.toRadians(-90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(-28.1, -47, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE = new Pose2d(-26, -49.5, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE2 = new Pose2d(-27.75, -49.5, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(-27.5, -49.5, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(-27, -49, Math.toRadians(-90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(-27, -49, Math.toRadians(-90));
 
 
 
@@ -102,10 +104,10 @@ public class BlueAutoRight extends LinearOpMode {
 
 
 
-    public static Pose2d CASE_3_MID = new Pose2d(27, -53, Math.toRadians(0));
-    public static Pose2d CASE_1 = new Pose2d(-28.5, -47, Math.toRadians(0));
-    public static Pose2d CASE_3 = new Pose2d(18.7, -31, Math.toRadians(0));
-    public static Pose2d CASE_2_TURN = new Pose2d(-3.2, -28.4, Math.toRadians(0));
+    public static Pose2d CASE_3_MID = new Pose2d(21, -49.5, Math.toRadians(0));
+    public static Pose2d CASE_1 = new Pose2d(-28.5, -49.5, Math.toRadians(0));
+    public static Pose2d CASE_3 = new Pose2d(18.7, -49.5, Math.toRadians(0));
+    public static Pose2d CASE_2_TURN = new Pose2d(-3.2, -49.5, Math.toRadians(0));
 
 
 
@@ -152,15 +154,15 @@ public class BlueAutoRight extends LinearOpMode {
         time = new ElapsedTime();
 
         robot.localizer.reset();
-        robot.setStartPose(new Pose2d(-0.687, 2, 0));
+        robot.setStartPose(new Pose2d(0, 2, 0));
 
         robot.arm.GrabberClose();
         robot.arm.V4BAutoHold();
         robot.arm.write();
 
-        robot.initializeWebcam();
+        robot.blueInitializeWebcam();
         while (!isStarted() && !isStopRequested()) {
-            coneCase = 0;//robot.getConeCase();
+            coneCase = robot.blueConeCase();
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }
@@ -184,7 +186,7 @@ public class BlueAutoRight extends LinearOpMode {
                         robot.slides.setPosition(625);
                     }
 
-                    if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 10)) {
+                    if((robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 5)) {
                         time.reset();
                         robot.arm.GrabberClose();
                         robot.arm.V4BOutPose();
@@ -276,7 +278,7 @@ public class BlueAutoRight extends LinearOpMode {
                     if(cycle == 0) {
                         robot.arm.manualSetPosition(armCycleOne);
                         robot.arm.grabberPos(grabberCycleOne);
-                        robot.slides.setPosition(125, -0.2501, 1);
+                        robot.slides.setPosition(130, -0.2501, 1);
                     } else if(cycle == 1){
                         robot.arm.manualSetPosition(armCycleTwo);
                         robot.arm.grabberPos(grabberCycleTwo);
@@ -299,8 +301,10 @@ public class BlueAutoRight extends LinearOpMode {
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 1.5) {
                         time.reset();
                     } else {
-                        robot.arm.GrabberClose();
-                        if (time.time() > 0.4) {
+                        if(time.time() > 0.2) {
+                            robot.arm.GrabberClose();
+                        }
+                        if (time.time() > 0.5) {
                             newState(State.LIFT_SLIDES);
                         }
                     }
@@ -446,43 +450,28 @@ public class BlueAutoRight extends LinearOpMode {
                     break;
 
                 case CASE_1:
-                    points.add(new CurvePoint(STRAFE,0.1,0.1,15));
-                    points.add(new CurvePoint(CASE_2_TURN,0.1,0.1,15));
-
-                    if(Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) > Math.toRadians(3)) {
-                        time.reset();
-                        robot.arm.V4BFrontHoldPos();
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.2501);
-                        }
-                    }  else {
-                        if(time.time() > 0.2){
-                            newState(State.PARK);
-                        }
+                    points.add(new CurvePoint(STRAFE,0.15,0.15,15));
+                    points.add(new CurvePoint(CASE_2_TURN,0.15,0.15,15));
+                    time.reset();
+                    robot.arm.V4BFrontHoldPos();
+                    if(robot.slides.isDown()){
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
+                    } else {
+                        robot.slides.setPower(-0.2501);
                     }
                     break;
 
                 case CASE_2:
                     points.add(new CurvePoint(STRAFE,1.0,1.0,10));
                     points.add(new CurvePoint(CASE_3_MID,1.0,1.0,10));
-                    points.add(new CurvePoint(CASE_3,1.0,1.0,10));
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) > 2) {
-                        time.reset();
-                        robot.arm.V4BFrontHoldPos();
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.2501);
-                        }
+                    time.reset();
+                    robot.arm.V4BFrontHoldPos();
+                    if(robot.slides.isDown()){
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
                     } else {
-                        if(time.time() > 0.2){
-                            newState(State.PARK);
-                        }
-
+                        robot.slides.setPower(-0.2501);
                     }
                     break;
                     /*

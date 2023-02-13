@@ -15,6 +15,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Config
 public class SleeveDetector extends OpenCvPipeline {
     public final Scalar BLUE = new Scalar(0, 0, 255);
+    public static boolean blue = false;
 
     private double upperRingMatrix;
     private Telemetry telemetry;
@@ -22,10 +23,10 @@ public class SleeveDetector extends OpenCvPipeline {
     static double PERCENT_COLOR_THRESHOLD = 0.4;
 
 
-    public static Rect BOUNDING_BOX = new Rect(
-            new Point(445, 130),
-            new Point(405, 60)
-    );
+    public static Rect BOUNDING_BOX  = new Rect(
+            new Point(255, 130),
+            new Point(220, 70)
+    );;
 
     private double avg = 0.0;
     public SleeveDetector(Telemetry telemetry){
@@ -65,12 +66,12 @@ public class SleeveDetector extends OpenCvPipeline {
     }
 
     public int getCase(){
-        if(avg < 180000){
-            return 2; //yellow
-        }else if(avg >= 180000 && avg <= 270000){
-            return 0; //green = 250000
-        }else if(avg > 270000){
-            return 1; //blue = 330000
+        if(avg < 150000 ){
+            return 2; //yellow = 70000
+        }else if(avg >= 150000 && avg < 230100){
+            return 0; //green = 210000
+        }else if(avg > 230100){
+            return 1; //blue = 230000
         }
         return 0;
     }
