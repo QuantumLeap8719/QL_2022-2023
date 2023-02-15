@@ -1017,6 +1017,7 @@ public class RedRightBackup extends LinearOpMode {
             }
             robot.arm.write();
             robot.slides.write();
+            robot.update();
 
             for(int i = 0; i < points.size(); i++){
                 telemetry.addData("Point" + i, points.get(i) );
@@ -1035,25 +1036,3 @@ public class RedRightBackup extends LinearOpMode {
         mRobotState = state;
     }
 }
-
-
-
-
-
-    /*
-    if(cycle == 0) {
-                            //robot.slides.setPosition(secondStackPos);
-                            robot.arm.GrabberOpen();
-                            robot.arm.V4BFrontPose();
-                        } else if (cycle == 1){
-                            //robot.slides.setPosition(secondStackPos);
-                            robot.arm.GrabberOpen();
-                            robot.arm.V4BFrontPose();
-                        } else if (cycle == 2){
-                            //robot.slides.setPosition(secondStackPos);
-                            robot.arm.GrabberOpen();
-                            robot.arm.V4BFrontPose();
-                        } else {
-                            newState(State.PARK);
-                        }
-     */

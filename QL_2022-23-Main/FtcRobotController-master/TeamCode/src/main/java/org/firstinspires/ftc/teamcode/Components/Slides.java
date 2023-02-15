@@ -96,7 +96,7 @@ public class Slides {
     }
 
     public double getPosition(){
-        double slidePos = (rSlide.motor.getCurrentPosition() - lSlide.motor.getCurrentPosition())/2;
+        double slidePos = (rSlide.motor.getCurrentPosition() - lSlide.motor.getCurrentPosition())/2.0;
         telemetry.addData("Slide Position", slidePos);
         return Math.abs(slidePos);
     }

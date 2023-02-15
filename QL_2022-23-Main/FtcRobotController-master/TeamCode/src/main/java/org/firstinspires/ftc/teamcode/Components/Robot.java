@@ -47,15 +47,13 @@ public class Robot {
 
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule module : allHubs) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 
         encoderLY = new S4T_Encoder(map, "bleft");
         encoderLX = new S4T_Encoder(map, "fleft");
         encoderRY = new S4T_Encoder(map, "bright");
         encoderRX = new S4T_Encoder(map, "fright");
-
-
 
 
         drive = new Mecanum_Drive(map, telemetry);
@@ -95,6 +93,7 @@ public class Robot {
         gamepad1ex.loop();
         gamepad2ex.loop();
         updatePos();
+        update();
     }
 
     public void setStartPose(Pose2d startPos){
@@ -164,7 +163,11 @@ public class Robot {
         webcam.stopStreaming();
     }
 
-
+    public void update(){
+        for (LynxModule module : allHubs) {
+            module.clearBulkCache();
+        }
+    }
 
     public void updatePos(){
         encoderLX.update();
