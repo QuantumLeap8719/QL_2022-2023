@@ -115,7 +115,7 @@ public class S4T_Localizer {
         double dthetastrafe = -((dErxRaw - dElxRaw) / TRACK_WIDTH2);
         double dthetavert = (dEryRaw - dElyRaw) / TRACK_WIDTH1;
 
-        //dtheta = weightedTheta(dx, dy, dthetavert, dthetastrafe);
+        dtheta = weightedTheta(dx, dy, dthetavert, dthetastrafe);
         dtheta = dthetastrafe;
 
         heading += dtheta;

@@ -60,6 +60,8 @@ public class Track_Width_Tuner extends LinearOpMode {
 
             robot.localizer.setPacket(packet);
 
+            robot.update();
+
             telemetry.addData("Pos: ", robot.getPos());
 
             telemetry.addData("Refresh Rate", (System.currentTimeMillis() - prevTime)/1000.0);
