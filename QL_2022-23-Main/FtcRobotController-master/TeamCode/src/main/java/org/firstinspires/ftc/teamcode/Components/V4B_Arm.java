@@ -153,11 +153,10 @@ public class V4B_Arm {
                     }
                 } else if(grabberToggle == 2){
                     manualSetPosition(out);
-
                 } else if(grabberToggle == 3){
                     if(time.time() > 0.2){
                         GrabberOpen();
-                        if(time.time() > 0.39){
+                        if(time.time() > 0.39){ //
                             GrabberClose();
                         }
                         if(time.time() > 0.45){

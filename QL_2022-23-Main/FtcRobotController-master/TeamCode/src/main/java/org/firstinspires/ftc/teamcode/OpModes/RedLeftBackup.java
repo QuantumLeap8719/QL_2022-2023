@@ -194,13 +194,11 @@ public class RedLeftBackup extends LinearOpMode {
                         if(time.time() > 1.7){
                             newState(State.TURN_AT_DEPOSIT_ONE);
                         }
-
                     }
                     break;
 
                 case TURN_AT_DEPOSIT_ONE:
                     if(cycle == 0) {
-
                         points.add(new CurvePoint(STRAFE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(TURN_AT_DEPOSIT_ONE, 1.0, 1.0, 15));
                         points.add(new CurvePoint(GRAB_STONE, 0.5, 1, 15));

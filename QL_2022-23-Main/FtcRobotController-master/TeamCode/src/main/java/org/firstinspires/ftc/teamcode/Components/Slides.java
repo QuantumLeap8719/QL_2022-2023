@@ -21,14 +21,14 @@ public class Slides {
     Caching_Motor lSlide;
     Caching_Motor rSlide;
 
-    public static double kp = 0.02;//0.02;
+    public static double kp = 0.025;//0.02;
     public static double ki = 0.0;
     public static double kd = 0.0008;//0.0008;
     public static double gff = 0.25;//0.25;
 
-    public static double high_goal_position = 630;//326;
-    public static double mid_goal_position = 445;
-    public static double low_goal_position = 230;
+    public static double high_goal_position = 560;//326;
+    public static double mid_goal_position = 370;
+    public static double low_goal_position = 160;
     public static double downPower = -0.0001;//0.245;
 
     public static int goalToggle = 0;
@@ -200,7 +200,6 @@ public class Slides {
         if(gamepad1.isPress(GamepadEx.Control.right_bumper)){
             time.reset();
         }
-
 
         if(V4B_Arm.grabberToggle == 3){
              mRobotState = STATE.DEPOSIT;
