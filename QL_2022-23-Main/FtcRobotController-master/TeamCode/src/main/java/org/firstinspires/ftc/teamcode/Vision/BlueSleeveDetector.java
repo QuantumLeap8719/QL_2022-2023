@@ -29,6 +29,9 @@ public class BlueSleeveDetector extends OpenCvPipeline {
          );;
 
    private double avg = 0.0;
+
+   private double S = 0.0;
+   private double V = 0.0;
    public BlueSleeveDetector(Telemetry telemetry){
       this.telemetry = telemetry;
    }
@@ -44,6 +47,9 @@ public class BlueSleeveDetector extends OpenCvPipeline {
       Mat sleeveMatrix = matrix.submat(BOUNDING_BOX);
 
       avg = (int)Core.sumElems(sleeveMatrix).val[0];
+      S = (int)Core.sumElems(sleeveMatrix).val[1];
+      V = (int)Core.sumElems(sleeveMatrix).val[2];
+
 
 
       Imgproc.rectangle(
@@ -55,8 +61,10 @@ public class BlueSleeveDetector extends OpenCvPipeline {
       telemetry.addData("Sleeve raw value: ", (int)Core.sumElems(sleeveMatrix).val[0]);
       telemetry.addData("Case: ", getCase());
       telemetry.addData("avg: ", avg);
+      telemetry.addData("S", S);
+      telemetry.addData("V",V);
 
-      Imgproc.putText(matrix, String.valueOf(avg) , BOUNDING_BOX.tl(), 0, 0.5, new Scalar(255, 255, 255));
+      Imgproc.putText(matrix, String.valueOf(S) , BOUNDING_BOX.tl(), 0, 0.5, new Scalar(255, 255, 255));
 
 
       sleeveMatrix.release();
@@ -66,13 +74,14 @@ public class BlueSleeveDetector extends OpenCvPipeline {
    }
 
    public int getCase(){
-      if(avg < 150000 ){
-         return 2; //yellow = 70000
-      }else if(avg >= 150000 && avg < 230100){
-         return 0; //green = 210000
-      }else if(avg > 230100){
-         return 1; //blue = 230000
+      if(S < 100000 ){
+         return 0; //white = 70000
+      }else if(S >= 100000 && avg < 250000){
+         return 1; //black = 110000
+      }else if(S > 250000){
+         return 2; //blue = 400000
       }
       return 0;
+
    }
 }
