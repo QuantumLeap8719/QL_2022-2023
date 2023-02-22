@@ -130,7 +130,7 @@ public class Slides {
                 if(gamepad2.gamepad.left_stick_y > 0.1){
                     setPower(gamepad2.gamepad.left_stick_y * 0.5);
                 } else if(gamepad2.gamepad.left_stick_y < -0.1){
-                    setPower(gamepad2.gamepad.left_stick_y * 0.1);
+                    setPower(gamepad2.gamepad.left_stick_y * 0.5);
                 }else{
                     if(getPosition() > 500){
                         setPower(0.05);
@@ -244,6 +244,12 @@ public class Slides {
         if(gamepad2.isPress(GamepadEx.Control.dpad_up) /*&& mRobotState == STATE.DOWN*/){
             goalToggle = 3;
         }
+
+        //Top Cone: 116
+        //Cone 2:89
+        //Cone 3:68
+        //Cone 4:41
+        //Cone 5:0
 
         telemetry.addData("Goal Toggle: ", goalToggle);
         telemetry.addData("State: ", mRobotState);

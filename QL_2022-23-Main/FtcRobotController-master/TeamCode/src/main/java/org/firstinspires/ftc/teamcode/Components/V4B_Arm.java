@@ -234,16 +234,16 @@ public class V4B_Arm {
                     manualSetPosition(stack_five);
                     } else if (stackToggle == 4) {
                     grabberPos(0.66);
-                    manualSetPosition(stack_four);
+                    manualSetPosition(stack_five);
                     } else if (stackToggle == 3) {
-                    grabberPos(0.64);
-                    manualSetPosition(stack_three);
+                    grabberPos(0.66);
+                    manualSetPosition(stack_five);
                     } else if (stackToggle == 2) {
-                    manualSetPosition(stack_two);
-                    grabberPos(0.6);
+                    manualSetPosition(stack_five);
+                    grabberPos(0.66);
                     } else if (stackToggle == 1) {
-                    manualSetPosition(stack_one);
-                    grabberPos(0.6);
+                    manualSetPosition(stack_five);
+                    grabberPos(0.66);
                     }
                     stackCase = 0;
                     if(time.time() > 0.2){

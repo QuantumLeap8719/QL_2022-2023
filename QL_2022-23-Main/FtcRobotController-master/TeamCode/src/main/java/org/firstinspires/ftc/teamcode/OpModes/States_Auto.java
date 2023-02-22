@@ -30,7 +30,7 @@ public class States_Auto extends LinearOpMode {
 
     public Pose2d PRE_LOAD_CLEAR = new Pose2d(2.3, -27.4, Math.toRadians(0));
     public Pose2d PRE_LOAD_CLEAR2 = new Pose2d(3.3, -46.5, Math.toRadians(0));
-    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(-3.4, -53.2, Math.toRadians(24.190));
+    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(-6, -53.2, Math.toRadians(24.190));
 
     public Pose2d INTAKE_CLEAR = new Pose2d(10, -52, Math.toRadians(90));
     public Pose2d INTAKE_FAR_CLEAR = new Pose2d(-13, -52, Math.toRadians(90));
@@ -38,7 +38,8 @@ public class States_Auto extends LinearOpMode {
 
     public Pose2d DEPOSIT_HIGH = new Pose2d(-11, -60, Math.toRadians(65));
     public Pose2d DEPOSIT_MID = new Pose2d(4, -45, Math.toRadians(117));
-    public Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-19.5, -43.5, Math.toRadians(113));
+    public static Pose2d DEPOSIT_HIGH_FAR = new Pose2d(25, -42, Math.toRadians(132)); //SECOND HIGH
+    //public Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-19.5, -43.5, Math.toRadians(113));
 
     public Pose2d GRAB = new Pose2d(28, -51.25, Math.toRadians(90));
     public Pose2d GRAB2 = new Pose2d(28, -51.25, Math.toRadians(90));
@@ -135,18 +136,22 @@ public class States_Auto extends LinearOpMode {
                     }
                     break;
                 case DRIVE_TO_INTAKE:
-                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,0.7,0.7,10));
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
                     if(cycle >= 2){
-                        points.add(new CurvePoint(INTAKE_FAR_CLEAR, 0.7, 0.7, 10));
+                        points.add(new CurvePoint(INTAKE_FAR_CLEAR, 1.0, 1.0, 10));
                     }else {
-                        points.add(new CurvePoint(INTAKE_CLEAR, 0.7, 0.7, 10));
+                        points.add(new CurvePoint(INTAKE_CLEAR, 1.0, 1.0, 10));
                     }
-                    points.add(new CurvePoint(GRAB,0.7,0.7,10));
+                    points.add(new CurvePoint(GRAB,0.7,1.0,10));
 
                     if(cycle==0){
                         robot.slides.setPosition(130, -0.2501, 1);
                     }else if(cycle==1){
                         robot.slides.setPosition(110, -0.2501, 1);
+                    }else if(cycle==2){
+                        robot.slides.setPosition(70, -0.2501, 1);
+                    }else if(cycle==3){
+                        robot.slides.setPosition(40, -0.2501, 1);
                     }else{
                         if(robot.slides.isDown()){
                             robot.slides.reset();
@@ -160,17 +165,17 @@ public class States_Auto extends LinearOpMode {
                         newState(State.GRAB);
                     }else{
                         if(cycle == 0 || cycle == 1) {
-                            robot.arm.manualSetPosition(armCycleOne);
+                            robot.arm.manualSetPosition(armCycleFive);
                             robot.arm.grabberPos(grabberCycleOne);
                         }/* else if(cycle == 1){
                             robot.arm.manualSetPosition(armCycleTwo);
                             robot.arm.grabberPos(grabberCycleTwo);
                             //robot.slides.setPosition(85, -0.2501, 1);
                         } */else if(cycle == 2){
-                            robot.arm.manualSetPosition(armCycleThree);
+                            robot.arm.manualSetPosition(armCycleFive);
                             robot.arm.grabberPos(grabberCycleThree);
                         } else if (cycle == 3){
-                            robot.arm.manualSetPosition(armCycleFour);
+                            robot.arm.manualSetPosition(armCycleFive);
                             robot.arm.grabberPos(grabberCycleFour);
                         } else if (cycle == 4){
                             robot.arm.manualSetPosition(armCycleFive);
@@ -181,17 +186,17 @@ public class States_Auto extends LinearOpMode {
                     break;
                 case GRAB:
                     if(cycle == 0) {
-                        points.add(new CurvePoint(GRAB, 0.7, 0.7, 15));
+                        points.add(new CurvePoint(GRAB, 1.0, 1.0, 15));
                     } else if(cycle == 1){
-                        points.add(new CurvePoint(GRAB2, 0.7, 0.7, 15));
+                        points.add(new CurvePoint(GRAB2, 1.0, 1.0, 15));
                     } else if (cycle == 2){
-                        points.add(new CurvePoint(GRAB, 0.7, 0.7, 15));
+                        points.add(new CurvePoint(GRAB, 1.0, 1.0, 15));
                     } else if (cycle == 3){
-                        points.add(new CurvePoint(GRAB, 0.7, 0.7, 15));
+                        points.add(new CurvePoint(GRAB, 1.0, 1.0, 15));
                     } else if(cycle == 4){
-                        points.add(new CurvePoint(GRAB, 0.7, 0.7, 15));
+                        points.add(new CurvePoint(GRAB, 1.0, 1.0, 15));
                     }else {
-                        points.add(new CurvePoint(GRAB, 0.7, 0.7, 15));
+                        points.add(new CurvePoint(GRAB, 1.0, 1.0, 15));
                     }
 
                     robot.arm.GrabberClose();
