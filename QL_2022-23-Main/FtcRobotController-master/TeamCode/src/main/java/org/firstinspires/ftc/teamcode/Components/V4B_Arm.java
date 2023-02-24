@@ -27,24 +27,23 @@ public class V4B_Arm {
     ElapsedTime secondTime = new ElapsedTime();
 
 
-    private double front_hold = 0.37;
-    private double auto_hold = 0.83;
+    private double front_hold = 0.33;
+    private double auto_hold = .38;
     private double hold = 0.7;
 
     private double out = 1;
     private double front = 0.0;
     private double hover = 0.08;
     private double terminal = 0.04;
-    private double grabberOpen = 0.6;
-    private double grabberPartialOpen = 0.6;
-    private double grabberClose = 0.77;
+    public static double grabberOpen = 0.53;
+    private double grabberPartialOpen = 0.53;
+    public static double grabberClose = 0.66;
 
     private double stack_five = 0;
     private double stack_four = 0.15;
     private double stack_three = 0.09;
     private double stack_two = 0.04;
     private double stack_one = 0;
-
 
 
     public static boolean slideToggle;
@@ -144,22 +143,24 @@ public class V4B_Arm {
                 }
 
                 if(grabberToggle == 1){
-                    manualSetPosition(front);
                     if(time.time() > 0.1) {
                         GrabberClose();
                     }
-                    if(time.time() > 0.4){
+                    if(time.time() > 0.3){
                         manualSetPosition(hold);
+                    }else{
+                        manualSetPosition(front);
                     }
                 } else if(grabberToggle == 2){
                     manualSetPosition(out);
                 } else if(grabberToggle == 3){
-                    if(time.time() > 0.2){
-                        GrabberOpen();
-                        if(time.time() > 0.39){ //
+                    if(time.time() > 0.1){
+                        if(time.time() > 0.3){ //
                             GrabberClose();
+                        }else{
+                            GrabberOpen();
                         }
-                        if(time.time() > 0.45){
+                        if(time.time() > 0.4){
                             manualSetPosition(front_hold);
                         }
                     }
@@ -173,7 +174,7 @@ public class V4B_Arm {
                 else{
                     grabberToggle = 0;
                     manualSetPosition(hover);
-                    if(time.time() > 0.2){
+                    if(time.time() > 0.1){
                         GrabberOpen();
                     }
                 }
@@ -184,12 +185,8 @@ public class V4B_Arm {
                 }
                 break;
 
-
-
-
-
             case STACK:
-            slideToggle = true;
+                slideToggle = true;
                 if(gamepad.isPress(GamepadEx.Control.right_bumper)){
                     gamepad.gamepad.rumble(500);
                     gamepad2.gamepad.rumble(500);
@@ -207,19 +204,19 @@ public class V4B_Arm {
                     stackCase = 0;
                 }
 
-            if(stackCase == 1){
+                if(stackCase == 1){
                     GrabberClose();
                     if(time.time() > 0.2){
                         manualSetPosition(hold);
                     }
                 } else if(stackCase == 2){
                     manualSetPosition(out);
-
                 } else if(stackCase == 3){
                     if(time.time() > 0.2){
-                        GrabberOpen();
                         if(time.time() > 0.39){
                             GrabberClose();
+                        }else{
+                            GrabberOpen();
                         }
                         if(time.time() > 0.45){
                             manualSetPosition(front_hold);
@@ -230,22 +227,24 @@ public class V4B_Arm {
                 }
                 else{
                     if (stackToggle == 5) {
-                    grabberPos(0.66);
-                    manualSetPosition(stack_five);
+                        grabberPos(0.66);
+                        manualSetPosition(stack_five);
                     } else if (stackToggle == 4) {
-                    grabberPos(0.66);
-                    manualSetPosition(stack_five);
+                        grabberPos(0.66);
+                        manualSetPosition(stack_five);
                     } else if (stackToggle == 3) {
-                    grabberPos(0.66);
-                    manualSetPosition(stack_five);
+                        grabberPos(0.66);
+                        manualSetPosition(stack_five);
                     } else if (stackToggle == 2) {
-                    manualSetPosition(stack_five);
-                    grabberPos(0.66);
+                        manualSetPosition(stack_five);
+                        grabberPos(0.66);
                     } else if (stackToggle == 1) {
-                    manualSetPosition(stack_five);
-                    grabberPos(0.66);
+                        manualSetPosition(stack_five);
+                        grabberPos(0.66);
                     }
+
                     stackCase = 0;
+
                     if(time.time() > 0.2){
                         if(stackToggle == 5){
                             grabberPos(0.6);
@@ -260,12 +259,14 @@ public class V4B_Arm {
                         }
                     }
                 }
+
                 if(gamepad2.isPress(GamepadEx.Control.left_bumper)){
                     stackCase = 0;
                     mRobotState = ARM_STATE.NORMAL;
                 }
-                break;
+            break;
         }
+
         if(gamepad2.isPress(GamepadEx.Control.dpad_down)){
             if(stackToggle > 1){
                 stackToggle -= 1;
@@ -281,6 +282,7 @@ public class V4B_Arm {
 
         telemetry.addData("Case", mRobotState);
         telemetry.addData("GrabberToggle", grabberToggle);
+        telemetry.addData("Left servo pos", leftArm.servo.getPosition());
         telemetry.addData("StackToggle", stackToggle);
         telemetry.addData("StackCase", stackCase);
     }
