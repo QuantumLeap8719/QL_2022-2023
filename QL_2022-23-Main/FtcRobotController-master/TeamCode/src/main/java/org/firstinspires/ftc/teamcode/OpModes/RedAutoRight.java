@@ -175,7 +175,7 @@ public class RedAutoRight extends LinearOpMode {
                             robot.slides.setPosition(625);
                         }
                         if(time.time() > 1.4) {
-                            robot.arm.GrabberPartial();
+                            robot.arm.GrabberOpen();
                         }
 
                         if(time.time() > 1.6){
@@ -360,8 +360,9 @@ public class RedAutoRight extends LinearOpMode {
                         } else {
                             robot.slides.setPosition(640);
                         }
+
                         if (time.time() > 0.9) {
-                            robot.arm.GrabberPartial();
+                            robot.arm.GrabberOpen();
                         }
 
                         if (time.time() > 1.1) {

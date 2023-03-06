@@ -204,7 +204,7 @@ public class RedRightBackup extends LinearOpMode {
                             robot.slides.setPosition(625);
                         }
                         if(time.time() > 0.9) {
-                            robot.arm.GrabberPartial();
+                            robot.arm.GrabberOpen();
                         }
 
                         if(time.time() > 1.1){
@@ -394,7 +394,7 @@ public class RedRightBackup extends LinearOpMode {
                                 robot.slides.setPosition(450);
                             }
                             if (time.time() > 0.9) {
-                                robot.arm.GrabberPartial();
+                                robot.arm.GrabberOpen();
                             }
 
                             if (time.time() > 1.1) {
@@ -440,7 +440,7 @@ public class RedRightBackup extends LinearOpMode {
                                 robot.slides.setPosition(640);
                             }
                             if (time.time() > 0.7) {
-                                robot.arm.GrabberPartial();
+                                robot.arm.GrabberOpen();
                             }
 
                             if (time.time() > 0.9) {

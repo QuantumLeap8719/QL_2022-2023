@@ -154,9 +154,9 @@ public class Mecanum_Drive{
 
     public void driveCentric(Gamepad gamepad, double maxMove, double maxTurn, double heading){
         if(blue) {
-            setPowerCentic(Range.clip(gamepad.left_stick_x, -maxMove, maxMove), Range.clip(gamepad.left_stick_y, -maxMove, maxMove), Range.clip(gamepad.right_stick_x, -maxTurn, maxTurn), heading);
+            setPowerCentic(gamepad.left_stick_x * maxMove, gamepad.left_stick_y * maxMove, gamepad.right_stick_x * maxTurn, heading);
         }else{
-            setPowerCentic(Range.clip(-gamepad.left_stick_x, -maxMove, maxMove), Range.clip(-gamepad.left_stick_y, -maxMove, maxMove), Range.clip(-gamepad.right_stick_x, -maxTurn, maxTurn), heading);
+            setPowerCentic(-gamepad.left_stick_x * maxMove, -gamepad.left_stick_y * maxMove, -gamepad.right_stick_x * maxTurn, heading);
         }
     }
 

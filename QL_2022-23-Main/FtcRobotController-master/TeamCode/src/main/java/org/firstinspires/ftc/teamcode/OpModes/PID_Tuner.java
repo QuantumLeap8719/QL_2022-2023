@@ -29,6 +29,7 @@ public class PID_Tuner extends OpMode {
         robot.arm.V4BHoldPos();
         robot.GoTo(new Pose2d(PID_Tuner_Constants.x, PID_Tuner_Constants.y, Math.toRadians(PID_Tuner_Constants.theta)), new Pose2d(1, 1, 1));
         robot.localizer.setPacket(packet);
+        robot.update();
 
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }

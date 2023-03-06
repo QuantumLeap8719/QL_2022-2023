@@ -24,8 +24,8 @@ public class BlueSleeveDetector extends OpenCvPipeline {
 
 
    public static Rect BOUNDING_BOX = new Rect(
-                 new Point(270, 130),
-                 new Point(235, 70)
+                 new Point(465, 135),
+                 new Point(435, 80)
          );;
 
    private double avg = 0.0;
@@ -38,7 +38,7 @@ public class BlueSleeveDetector extends OpenCvPipeline {
 
    @Override
    public Mat processFrame(Mat input){
-      Imgproc.cvtColor(input, matrix, Imgproc.COLOR_RGB2HSV);
+      Imgproc.cvtColor(input, matrix, Imgproc.COLOR_RGB2YCrCb);
         /*Scalar lowHSV = new Scalar(23, 50, 70);
         Scalar highHSV = new Scalar(32, 255, 255);
 
@@ -73,15 +73,14 @@ public class BlueSleeveDetector extends OpenCvPipeline {
       return matrix;
    }
 
-   public int getCase(){
-      if(S < 100000 ){
-         return 0; //white = 70000
-      }else if(S >= 100000 && avg < 250000){
-         return 1; //black = 110000
-      }else if(S > 250000){
-         return 2; //blue = 400000
+   public int getCase() {
+      if(avg < 110000 ){
+         return 1; //black = 72000
+      }else if(avg >= 110000 && avg < 200000){
+         return 2; //blue = 160000
+      }else if(avg > 250000){
+         return 0; //white = 400000
       }
       return 0;
-
    }
 }
