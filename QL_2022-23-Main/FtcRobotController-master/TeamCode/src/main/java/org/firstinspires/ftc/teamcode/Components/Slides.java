@@ -18,17 +18,17 @@ import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 
 @Config
 public class Slides {
-    Caching_Motor lSlide;
-    Caching_Motor rSlide;
+    public Caching_Motor lSlide;
+    public Caching_Motor rSlide;
 
     public static double kp = 0.03;//0.02;
     public static double ki = 0.0;
-    public static double kd = 0.0008;//0.0008;
+    public static double kd = 0.0004;//0.0008;
     public static double gff = 0.25;//0.25;
 
     public static double high_goal_position = 570;//326;
-    public static double mid_goal_position = 375;
-    public static double low_goal_position = 180;
+    public static double mid_goal_position = 370;
+    public static double low_goal_position = 170;
     public static double downPower = -0.3;//0.245;
 
     public static int goalToggle = 0;

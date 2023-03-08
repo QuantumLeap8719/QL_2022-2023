@@ -74,7 +74,7 @@ public class Robot {
         telemetry.addLine("MAKE SURE TO HIT RIGHT TRIGGER");
         //drive.setPower(0.5,0.5,0.5,0.5);
 
-        drive.driveCentric(gamepad1ex.gamepad, 1, 1.0, getPos().getHeading());
+        drive.driveCentric(gamepad1ex.gamepad, 1, 0.8, getPos().getHeading());
         arm.operate(gamepad1ex, gamepad2ex, telemetry);
 
 

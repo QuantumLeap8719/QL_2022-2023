@@ -33,10 +33,10 @@ public class V4B_Arm {
 
     private double out = 1;
     private double front = 0.0;
-    private double hover = 0.14;
-    private double terminal = 0.04;
-    public static double grabberOpen = 0.295;
-    public static double grabberClose = 0.5;
+    private double hover = 0.11;
+    private double terminal = 0.02;
+    public static double grabberOpen = 0.285;
+    public static double grabberClose = 0.46;
 
     private double stack_five = 0.08;
     private double stack_four = 0.15;
@@ -147,11 +147,11 @@ public class V4B_Arm {
                 telemetry.addData("tipped", tipped);
 
                 if(grabberToggle == 1){
-                    if(time.time() > 0.1) {
+                    if(time.time() > 0.15) {
                         GrabberClose();
                     }
 
-                    if(time.time() > 0.3){
+                    if(time.time() > 0.35){
                         manualSetPosition(hold);
                     }else{
                         manualSetPosition(front);
@@ -175,6 +175,8 @@ public class V4B_Arm {
                 }
                 else if (grabberToggle == 7){
                     manualSetPosition(terminal);
+                } else if(grabberToggle == 8){
+                    grabber.setPosition(grabberOpen);
                 }
                 else{
                     grabberToggle = 0;
