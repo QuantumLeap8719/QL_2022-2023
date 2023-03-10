@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous(name="OhioAuto")
+@Autonomous(name="MidAuto")
 public class States_Auto extends LinearOpMode {
 
     private enum State {
@@ -29,24 +29,25 @@ public class States_Auto extends LinearOpMode {
 
     State mRobotState = State.DRIVE_TO_DEPOSIT_PRELOAD;
 
-    public Pose2d PRE_LOAD_CLEAR = new Pose2d(6, -27.4, Math.toRadians(0));
+    public Pose2d PRE_LOAD_CLEAR = new Pose2d(6, -22.4, Math.toRadians(0));
     public Pose2d PRE_LOAD_CLEAR2 = new Pose2d(3.3, -44.5, Math.toRadians(0));
-    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(-2, -51.2, Math.toRadians(24.190));
+    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(3.95, -32, Math.toRadians(55.583));
 
-    public Pose2d INTAKE_CLEAR = new Pose2d(12, -52, Math.toRadians(90));
+    public Pose2d INTAKE_CLEAR = new Pose2d(2.75, -52, Math.toRadians(90));
     public Pose2d INTAKE_FAR_CLEAR = new Pose2d(-13, -52, Math.toRadians(90));
-    public Pose2d DEPOSIT_HIGH_FAR_CLEAR = new Pose2d(-4.3, -52.8, Math.toRadians(90));
+    public Pose2d BACk_FAR_CLEAR = new Pose2d(-15.5, -53, Math.toRadians(117));
+    public Pose2d DEPOSIT_HIGH_FAR_CLEAR = new Pose2d(-7.5, -54, Math.toRadians(90));
 
     public Pose2d DEPOSIT_HIGH = new Pose2d(1, -49, Math.toRadians(65));
-    public Pose2d DEPOSIT_MID = new Pose2d(4, -45, Math.toRadians(117));
-    public static Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-23, -50, Math.toRadians(132)); //SECOND HIGH
+    public Pose2d DEPOSIT_MID = new Pose2d(4.5, -46, Math.toRadians(117));
+    public static Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-21.25, -45.25, Math.toRadians(117)); //SECOND HIGH
     //public Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-19.5, -43.5, Math.toRadians(113));
 
-    public Pose2d GRAB = new Pose2d(28.05, -51.25, Math.toRadians(90));
-    public Pose2d GRAB2 = new Pose2d(28.05, -51.25, Math.toRadians(90));
-    public Pose2d GRAB3 = new Pose2d(28.05, -51.75, Math.toRadians(90));
-    public Pose2d GRAB4 = new Pose2d(28.5, -52.75, Math.toRadians(90));
-    public Pose2d GRAB5 = new Pose2d(28.5, -53, Math.toRadians(90));
+    public Pose2d GRAB = new Pose2d(28.75, -51.25, Math.toRadians(90));
+    public Pose2d GRAB2 = new Pose2d(28.75, -51.25, Math.toRadians(90));
+    public Pose2d GRAB3 = new Pose2d(28.75, -51.75, Math.toRadians(90));
+    public Pose2d GRAB4 = new Pose2d(28.4, -52.75, Math.toRadians(90));
+    public Pose2d GRAB5 = new Pose2d(28.4, -53, Math.toRadians(90));
 
     public static Pose2d PARK_CASE_1 = new Pose2d(24, -52.5, Math.toRadians(90));
     public static Pose2d PARK_CASE_3 = new Pose2d(-18.7, -52.5, Math.toRadians(90));
@@ -58,18 +59,18 @@ public class States_Auto extends LinearOpMode {
 
     //double armCycleOne = 0;
     //double armCycleTwo = 0.17;
-   // double armCycleThree = 0.10;
+    // double armCycleThree = 0.10;
     double armCycleFour = 0.055;
     double armCycleFive = 0.0;
 
-    double slideHeightOne = 90;
-    double slideHeightTwo = 42;
-    double slideHeightThree = 18;
-    double slideHeightFour = 7;
+    double slideHeightOne = 65;
+    double slideHeightTwo = 32;
+    double slideHeightThree = 7;
+    double slideHeightFour = 1;
 
-    double depositHeightPreload = 575;
-    double depositHeightMid = 390;
-    double depositHeightFarHigh = 575;
+    int depositHeightPreload = 370;
+    int depositHeightMid = 385;
+    int depositHeightFarHigh = 580;
 
     double grabberCycleOne = 0.6;
     double grabberCycleTwo = 0.66;
@@ -93,16 +94,18 @@ public class States_Auto extends LinearOpMode {
         robot.arm.V4BAutoHold();
         robot.arm.write();
 
-        //robot.initializeWebcam();
+        boolean slidesKickout = false;
+
+        robot.initializeWebcam();
         while (!isStarted() && !isStopRequested()) {
-            //coneCase = robot.getConeCase();
-            coneCase = 0;
+            coneCase = robot.getConeCase();
+            //coneCase = 0;
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }
 
 
-        //robot.stopWebcam();
+        robot.stopWebcam();
 
         waitForStart();
 
@@ -115,43 +118,49 @@ public class States_Auto extends LinearOpMode {
                 case DRIVE_TO_DEPOSIT_PRELOAD:
                     points.add(new CurvePoint(new Pose2d(0, 0, 0),1.0,1.0,10));
                     points.add(new CurvePoint(PRE_LOAD_CLEAR,1.0,1.0,10));
-                    points.add(new CurvePoint(PRE_LOAD_CLEAR2,1.0,1.0,10));
-                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,0.4,0.4,10));
+                    //points.add(new CurvePoint(PRE_LOAD_CLEAR2,0.8,0.8,10));
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,0.7,0.7,10));
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.0 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1)) {
-                        if(time.time() > 0.3 && time.time() < 0.5){
+
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.0 && slidesKickout && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1)) {
+                        if(time.time() > 0.3){
                             robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
                         }
 
-                        if(time.time() > 0.5 && time.time() < 0.7) {
+                        if(time.time() > 0.5 && time.time() < 0.75) {
                             robot.arm.GrabberOpen();
                         }
 
-                        if(time.time() > 0.7 && time.time() < 0.8){
+                        if(time.time() > 0.75 && time.time() < 0.85){
                             robot.arm.GrabberClose();
                         }
 
-                        if(time.time() > 0.8 && time.time() < 1.1){
+                        if(time.time() > 0.85 && time.time() < 1.15){
                             robot.arm.V4BFrontPose();
                         }
 
-                        if(time.time() > 1.1) {
+                        if(time.time() > 1.15) {
+                            slidesKickout = false;
                             newState(State.DRIVE_TO_INTAKE);
                         }
                     }else{
                         time.reset();
                         robot.arm.V4BOutPose();
                         robot.arm.GrabberClose();
-                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 25){
+                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 30){
                             robot.slides.setPosition(depositHeightPreload);
+                        }
+
+                        if(Math.abs(robot.slides.getPosition() - depositHeightPreload) < 10){
+                            slidesKickout = true;
                         }
                     }
                     break;
                 case DRIVE_TO_INTAKE:
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
 
-                    if(cycle >= 2){
-                        points.add(new CurvePoint(INTAKE_FAR_CLEAR, 1.0, 1.0, 10));
+                    if(cycle >= 1){
+                        points.add(new CurvePoint(BACk_FAR_CLEAR, 1.0, 1.0, 10));
                     }else {
                         points.add(new CurvePoint(INTAKE_CLEAR, 1.0, 1.0, 10));
                     }
@@ -177,37 +186,30 @@ public class States_Auto extends LinearOpMode {
                     }
 
                     if(cycle==0){
-                        robot.slides.setPosition(slideHeightOne, -0.3, 1);
+                        robot.slides.setPosition(slideHeightOne, -0.2485, 1);
                     }else if(cycle==1){
-                        robot.slides.setPosition(slideHeightTwo, -0.3, 1);
+                        robot.slides.setPosition(slideHeightTwo, -0.25, 1);
                     }else if(cycle==2){
-                        robot.slides.setPosition(slideHeightThree, -0.3, 1);
-                    }else if(cycle ==3) {
-                        robot.slides.setPosition(slideHeightFour, -0.3, 1);
-                    } else{
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.26);
-                        }
+                        robot.slides.setPosition(slideHeightThree, -0.25, 1);
+                    } else {
+                        robot.slides.setPosition(slideHeightFour, -0.25, 1);
                     }
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.0 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.0)) {
                         newState(State.GRAB);
                     }else{
                         if(cycle == 0 || cycle == 1) {
-                            robot.arm.manualSetPosition(armCycleFour + 0.08);
+                            robot.arm.manualSetPosition(armCycleFour);
                         }/* else if(cycle == 1){
                             robot.arm.manualSetPosition(armCycleTwo);
                             robot.arm.grabberPos(grabberCycleTwo);
                             //robot.slides.setPosition(85, -0.2501, 1);
                         } */else if(cycle == 2){
-                            robot.arm.manualSetPosition(armCycleFour+ 0.08);
+                            robot.arm.manualSetPosition(armCycleFour);
                         } else if (cycle == 3){
-                            robot.arm.manualSetPosition(armCycleFour+ 0.06);
+                            robot.arm.manualSetPosition(armCycleFour);
                         } else if (cycle == 4){
-                            robot.arm.manualSetPosition(armCycleFive+ 0.08);
+                            robot.arm.manualSetPosition(armCycleFive);
                         }
 
                         if(time.time() > 0.15) {
@@ -223,12 +225,7 @@ public class States_Auto extends LinearOpMode {
                     }else if(cycle==2){
                         robot.slides.setPosition(slideHeightThree);
                     }else{
-                        if(robot.slides.isDown()){
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                        } else {
-                            robot.slides.setPower(-0.2501);
-                        }
+                        robot.slides.setPosition(slideHeightFour);
                     }
 
                     if(cycle == 0) {
@@ -257,13 +254,13 @@ public class States_Auto extends LinearOpMode {
                         }
                     }
 
-                   if(time.time() > 0.01 && time.time() < 0.15){
+                    if(time.time() > 0.01 && time.time() < 0.15){
                         if(cycle == 0 || cycle == 1) {
                             robot.arm.manualSetPosition(armCycleFour);
                         }else if(cycle == 2){
                             robot.arm.manualSetPosition(armCycleFour);
                         } else if (cycle == 3){
-                            robot.arm.manualSetPosition(armCycleFour - 0.02);
+                            robot.arm.manualSetPosition(armCycleFour);
                         } else if (cycle == 4) {
                             robot.arm.manualSetPosition(armCycleFive);
                         }
@@ -274,14 +271,11 @@ public class States_Auto extends LinearOpMode {
                     }
 
                     if(time.time() > 0.8) {
-                        if(cycle == 0) {
-                            newState(State.DRIVE_TO_DEPOSIT_MID);
-                        } else {
-                            newState(State.DRIVE_TO_DEPOSIT_HIGH_FAR);
-                        }
+                        newState(State.DRIVE_TO_DEPOSIT_HIGH_FAR);
                     }
 
                     break;
+                    /*
                 case DRIVE_TO_DEPOSIT_MID:
                     points.add(new CurvePoint(GRAB,1.0,1.0,10));
                     points.add(new CurvePoint(INTAKE_CLEAR,1.0,1.0,10));
@@ -295,59 +289,68 @@ public class States_Auto extends LinearOpMode {
                         newState(State.DEPOSIT);
                     }
                     break;
+
+                     */
                 case DRIVE_TO_DEPOSIT_HIGH_FAR:
+                    double slideHeight = 0;
+
                     points.add(new CurvePoint(GRAB,1.0,1.0,10));
-                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR_CLEAR,1.0,1.0,10));
-                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR,0.5,0.5,10));
+                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR_CLEAR,0.8,0.8,10));
+                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR,0.4,0.4,10));
 
                     robot.arm.GrabberClose();
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 25) {
-                        robot.slides.setPosition(depositHeightFarHigh);
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 30) {
+                        if(cycle == 2){
+                            slideHeight = depositHeightFarHigh - 10;
+                        } else {
+                            slideHeight = depositHeightFarHigh;
+                        }
+                        robot.slides.setPosition(slideHeight);
+                    }else{
+                        robot.slides.setPower(0);
                     }
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.2 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.2)) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.2 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.2) && Math.abs(robot.slides.getPosition() - slideHeight) <= 10) {
                         newState(State.DEPOSIT);
                     }
                     break;
+
+
                 case DEPOSIT:
-                   if(cycle == 0) {
-                       points.add(new CurvePoint(DEPOSIT_MID, 1.0, 1.0, 10));
-                   } else {
-                       points.add(new CurvePoint(DEPOSIT_HIGH_FAR,1.0,1.0,10));
-                   }
+                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR,1.0,1.0,10));
 
-                   if (time.time() > 0.01) {
-                       robot.slides.setPosition((cycle == 0 ? depositHeightMid : depositHeightFarHigh) - 50, -0.3, 1);
-                   }
-                   if (time.time() > 0.05 && time.time() < 0.4) {
-                       robot.arm.GrabberOpen();
-                   }
+                    if (time.time() > 0.3) {
+                        robot.slides.setPosition(depositHeightFarHigh - 50, -0.3, 1);
+                    }
+                    if (time.time() > 0.5 && time.time() < 0.7) {
+                        robot.arm.GrabberOpen();
+                    }
 
-                   if (time.time() > 0.4 && time.time() < 0.45) {
-                       robot.arm.GrabberClose();
-                   }
+                    if (time.time() > 0.7 && time.time() < 0.75) {
+                        robot.arm.GrabberClose();
+                    }
 
-                   if (time.time() > 0.45 && time.time() < 0.7) {
-                       robot.arm.V4BFrontPose();
-                   }
+                    if (time.time() > 0.75 && time.time() < 1.0) {
+                        robot.arm.V4BFrontPose();
+                    }
 
-                   if (time.time() > 1.0) {
-                       if (robot.slides.isDown()) {
-                           robot.slides.reset();
-                           robot.slides.setPower(0.0);
-                       } else {
-                           robot.slides.setPower(-0.26);
-                       }
+                    if (time.time() > 1.25) {
+                        if (robot.slides.isDown()) {
+                            robot.slides.reset();
+                            robot.slides.setPower(0.0);
+                        } else {
+                            robot.slides.setPower(-0.26);
+                        }
 
-                       if((cycle+1) == numCycles){
-                           newState(State.PARK);
-                       }else {
-                           cycle++;
-                           newState(State.DRIVE_TO_INTAKE);
-                       }
-                   }
-                   break;
+                        if((cycle+1) == numCycles){
+                            newState(State.PARK);
+                        }else {
+                            cycle++;
+                            newState(State.DRIVE_TO_INTAKE);
+                        }
+                    }
+                    break;
                 case PARK:
                     gtp = true;
                     if(coneCase == 0){

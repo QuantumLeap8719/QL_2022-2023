@@ -40,7 +40,7 @@ public class States_Auto2 extends LinearOpMode {
 
     public Pose2d DEPOSIT_HIGH = new Pose2d(1, -49, Math.toRadians(65));
     public Pose2d DEPOSIT_MID = new Pose2d(4.5, -46, Math.toRadians(117));
-    public static Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-21.5, -47, Math.toRadians(117)); //SECOND HIGH
+    public static Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-21.25, -45.25, Math.toRadians(117)); //SECOND HIGH
     //public Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-19.5, -43.5, Math.toRadians(113));
 
     public Pose2d GRAB = new Pose2d(28.75, -51.25, Math.toRadians(90));
@@ -96,16 +96,16 @@ public class States_Auto2 extends LinearOpMode {
 
         boolean slidesKickout = false;
 
-        //robot.initializeWebcam();
+        robot.initializeWebcam();
         while (!isStarted() && !isStopRequested()) {
-            //coneCase = robot.getConeCase();
-            coneCase = 0;
+            coneCase = robot.getConeCase();
+            //coneCase = 0;
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }
 
 
-        //robot.stopWebcam();
+        robot.stopWebcam();
 
         waitForStart();
 

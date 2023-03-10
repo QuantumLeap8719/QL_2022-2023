@@ -36,7 +36,7 @@ public class V4B_Arm {
     private double hover = 0.11;
     private double terminal = 0.02;
     public static double grabberOpen = 0.285;
-    public static double grabberClose = 0.46;
+    public static double grabberClose = 0.466;
 
     private double stack_five = 0.08;
     private double stack_four = 0.15;
