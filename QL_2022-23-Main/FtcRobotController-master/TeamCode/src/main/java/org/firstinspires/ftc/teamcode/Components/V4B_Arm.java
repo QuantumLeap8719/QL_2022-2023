@@ -35,8 +35,8 @@ public class V4B_Arm {
     private double front = 0.0;
     private double hover = 0.11;
     private double terminal = 0.02;
-    public static double grabberOpen = 0.285;
-    public static double grabberClose = 0.466;
+    public static double grabberOpen = 0.67;
+    public static double grabberClose = 0.5;
 
     private double stack_five = 0.08;
     private double stack_four = 0.15;
@@ -176,7 +176,13 @@ public class V4B_Arm {
                 else if (grabberToggle == 7){
                     manualSetPosition(terminal);
                 } else if(grabberToggle == 8){
-                    grabber.setPosition(grabberOpen);
+                        grabber.setPosition(grabberOpen);
+                }else if(grabberToggle == 9){
+                    if(time.time() > 0 && time.time() < 0.2){
+                        grabber.setPosition(grabberClose);
+                    } else {
+                        manualSetPosition(front_hold);
+                    }
                 }
                 else{
                     grabberToggle = 0;
@@ -186,7 +192,7 @@ public class V4B_Arm {
                         manualSetPosition(hover);
                     }
                     if(time.time() > 0.1){
-                        grabber.setPosition(grabberOpen + 0.025);
+                        grabber.setPosition(grabberOpen);
                     }
                 }
 
