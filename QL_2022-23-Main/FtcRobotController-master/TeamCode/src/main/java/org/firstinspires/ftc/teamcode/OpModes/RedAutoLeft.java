@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-//@Autonomous(name="LeftHigh")
+@Autonomous(name="LeftHigh")
 public class RedAutoLeft extends LinearOpMode {
 
     private enum State {
@@ -73,21 +73,21 @@ public class RedAutoLeft extends LinearOpMode {
     public static Pose2d START = new Pose2d(0 , 0, 0);
 
     //DEPOSIT
-    public static Pose2d STRAFE = new Pose2d(-4, -52.5, Math.toRadians(35));
+    public static Pose2d STRAFE = new Pose2d(1, -49, Math.toRadians(35));
 
-    public static Pose2d ONE_TWO_DEPOSIT = new Pose2d(-4, -52.5, Math.toRadians(35));
-    public static Pose2d THREE_DEPOSIT = new Pose2d(-3.5, -52.5, Math.toRadians(35));
-    public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(-3.5, -52.5, Math.toRadians(35));
+    public static Pose2d ONE_TWO_DEPOSIT = new Pose2d(1, -49, Math.toRadians(35));
+    public static Pose2d THREE_DEPOSIT = new Pose2d(1, -49, Math.toRadians(35));
+    public static Pose2d FOUR_FIVE_DEPSOIT = new Pose2d(1, -49, Math.toRadians(35));
     public static Pose2d TURN_AT_DEPOSIT_ONE = new Pose2d(5, -44, Math.toRadians(90));
     public static Pose2d BACK_AT_DEPOSIT_ONE = new Pose2d(5, -48, Math.toRadians(90));
-    public static Pose2d DEPOSIT_ONE = new Pose2d(5.5, -42.25, Math.toRadians(93));
-    public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(-1.5, -54.2, Math.toRadians(45));
+    public static Pose2d DEPOSIT_ONE = new Pose2d(1, -49, Math.toRadians(93));
+    public static Pose2d TRAVEL_TO_STONEPICKUP = new Pose2d(1, -49, Math.toRadians(45));
 
-    public static Pose2d GRAB_STONE = new Pose2d(26, -50, Math.toRadians(90));
-    public static Pose2d GRAB_STONE2 = new Pose2d(27, -49.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE3 = new Pose2d(27.5, -48.5, Math.toRadians(90));
-    public static Pose2d GRAB_STONE4 = new Pose2d(27.1, -47, Math.toRadians(90));
-    public static Pose2d GRAB_STONE5 = new Pose2d(27.1, -46.75, Math.toRadians(90));
+    public static Pose2d GRAB_STONE = new Pose2d(28.25, -50.25, Math.toRadians(90));
+    public static Pose2d GRAB_STONE2 = new Pose2d(28.25, -50.25, Math.toRadians(90));
+    public static Pose2d GRAB_STONE3 = new Pose2d(28.25, -50.75, Math.toRadians(90));
+    public static Pose2d GRAB_STONE4 = new Pose2d(28.15, -51.75, Math.toRadians(90));
+    public static Pose2d GRAB_STONE5 = new Pose2d(28.15, -52, Math.toRadians(90));
 
     public static Pose2d GRAB_STONE6 = new Pose2d(34.5, -47, Math.toRadians(90));
 
@@ -100,10 +100,9 @@ public class RedAutoLeft extends LinearOpMode {
     public static Pose2d CASE_3 = new Pose2d(-18.7, -31, Math.toRadians(0));
     public static Pose2d CASE_2_TURN = new Pose2d(3.2, -28.4, Math.toRadians(0));
 
-    public static Pose2d PARK_1 = new Pose2d(0,0,0);
-    public static Pose2d PARK_2 = new Pose2d(0,0,0);
-    public static Pose2d PARK_3 = new Pose2d(0,0,0);
-
+    public static Pose2d PARK_1 = new Pose2d(24, -52.5, Math.toRadians(90));
+    public static Pose2d PARK_2 = new Pose2d(-18.7, -52.5, Math.toRadians(90));
+    public static Pose2d PARK_3 = new Pose2d(3.2, -52.5, Math.toRadians(90));
 
 
     @Override
@@ -112,8 +111,6 @@ public class RedAutoLeft extends LinearOpMode {
         time = new ElapsedTime();
 
         robot.localizer.reset();
-        robot.setStartPose(new Pose2d(-0.687, 2, 0));
-
         robot.arm.GrabberClose();
         robot.arm.V4BAutoHold();
         robot.arm.write();

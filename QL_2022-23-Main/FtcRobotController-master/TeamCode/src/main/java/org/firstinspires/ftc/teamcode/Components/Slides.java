@@ -218,6 +218,14 @@ public class Slides {
             mRobotState = STATE.DEPOSIT;
         }
 
+        if(V4B_Arm.groundCase == 3){
+            setPosition(30);
+        }
+
+        if(V4B_Arm.groundCase == 4){
+            mRobotState = STATE.DOWN;
+        }
+
         if(V4B_Arm.slideToggle && V4B_Arm.stackToggle == 5 && V4B_Arm.stackCase == 1){
             setPosition(90);
         }
@@ -277,6 +285,10 @@ public class Slides {
 
         if(gamepad1.isPress(GamepadEx.Control.a) || gamepad2.isPress(GamepadEx.Control.a)/*&& mRobotState == STATE.DOWN*/){
             goalToggle = 0;
+        }
+
+        if(gamepad1.isPress(GamepadEx.Control.x)){
+            mRobotState = STATE.DOWN;
         }
 
         //Top Cone: 116

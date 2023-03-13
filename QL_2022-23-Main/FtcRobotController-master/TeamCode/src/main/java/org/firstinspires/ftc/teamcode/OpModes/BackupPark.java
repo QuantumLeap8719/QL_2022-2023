@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -13,8 +14,9 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous(name="MidAuto")
-public class States_Auto extends LinearOpMode {
+@Autonomous(name="BackupPark")
+@Disabled
+public class BackupPark extends LinearOpMode {
 
     private enum State {
         DRIVE_TO_DEPOSIT_PRELOAD,
@@ -70,8 +72,8 @@ public class States_Auto extends LinearOpMode {
     double slideHeightThree = 7;
     double slideHeightFour = 1;
 
-    int depositHeightPreload = 370;
-    int depositHeightMid = 395;
+    int depositHeightPreload = 380;
+    int depositHeightMid = 405;
     int depositHeightFarHigh = 580;
 
     double grabberCycleOne = 0.6;
@@ -118,10 +120,10 @@ public class States_Auto extends LinearOpMode {
 
             switch (mRobotState) {
                 case DRIVE_TO_DEPOSIT_PRELOAD:
-                    points.add(new CurvePoint(new Pose2d(0, 0, 0),1.0,1.0,10));
-                    points.add(new CurvePoint(PRE_LOAD_CLEAR,1.0,1.0,10));
+                    points.add(new CurvePoint(new Pose2d(0, 0, 0),0.4,0.4,10));
+                    points.add(new CurvePoint(PRE_LOAD_CLEAR,0.4,0.4,10));
                     //points.add(new CurvePoint(PRE_LOAD_CLEAR2,0.8,0.8,10));
-                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,0.7,0.7,10));
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,0.4,0.4,10));
 
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.0 && slidesKickout && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1)) {
@@ -145,7 +147,7 @@ public class States_Auto extends LinearOpMode {
 
                         if(time.time() > 1.15) {
                             slidesKickout = false;
-                            newState(State.DRIVE_TO_INTAKE);
+                            newState(State.PARK);
                         }
                     }else{
                         time.reset();

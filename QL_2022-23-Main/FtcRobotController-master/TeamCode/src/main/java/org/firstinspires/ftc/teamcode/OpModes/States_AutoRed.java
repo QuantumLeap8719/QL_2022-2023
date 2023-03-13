@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 
 import java.util.ArrayList;
 
-@Autonomous(name="MidAuto")
-public class States_Auto extends LinearOpMode {
+@Autonomous(name="MidAutoRed")
+public class States_AutoRed extends LinearOpMode {
 
     private enum State {
         DRIVE_TO_DEPOSIT_PRELOAD,
@@ -40,18 +40,18 @@ public class States_Auto extends LinearOpMode {
 
     public Pose2d DEPOSIT_HIGH = new Pose2d(1, -49, Math.toRadians(65));
     public Pose2d DEPOSIT_MID = new Pose2d(4.5, -46, Math.toRadians(117));
-    public static Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-21.25, -47.45, Math.toRadians(119)); //SECOND HIGH
+    public static Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-21.25, -45.45, Math.toRadians(119)); //SECOND HIGH
     public static Pose2d LAST_DEPOSIT_HIGH_FAR = new Pose2d(-21.25, -45.45, Math.toRadians(123)); //SECOND HIGH
 
     //public Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-19.5, -43.5, Math.toRadians(113));
 
-    public Pose2d GRAB = new Pose2d(26.8, -51.25, Math.toRadians(90));
-    public Pose2d GRAB2 = new Pose2d(26.8, -51.25, Math.toRadians(90));
-    public Pose2d GRAB3 = new Pose2d(26.8, -51.25, Math.toRadians(90));
-    public Pose2d GRAB4 = new Pose2d(26.5, -51.25, Math.toRadians(90));
-    public Pose2d GRAB5 = new Pose2d(26.5, -51.25, Math.toRadians(90));
+    public Pose2d GRAB = new Pose2d(26.7, -51, Math.toRadians(90));
+    public Pose2d GRAB2 = new Pose2d(26.7, -51.25, Math.toRadians(90));
+    public Pose2d GRAB3 = new Pose2d(26.7, -51.25, Math.toRadians(90));
+    public Pose2d GRAB4 = new Pose2d(26.7, -51.25, Math.toRadians(90));
+    public Pose2d GRAB5 = new Pose2d(26.7, -51.25, Math.toRadians(90));
 
-    public static Pose2d PARK_CASE_1 = new Pose2d(25, -52.5, Math.toRadians(90));
+    public static Pose2d PARK_CASE_1 = new Pose2d(24, -52.5, Math.toRadians(90));
     public static Pose2d PARK_CASE_3 = new Pose2d(-18.7, -52.5, Math.toRadians(90));
     public static Pose2d PARK_CASE_2 = new Pose2d(3.2, -52.5, Math.toRadians(90));
 
@@ -71,7 +71,7 @@ public class States_Auto extends LinearOpMode {
     double slideHeightFour = 1;
 
     int depositHeightPreload = 370;
-    int depositHeightMid = 395;
+    int depositHeightMid = 385;
     int depositHeightFarHigh = 580;
 
     double grabberCycleOne = 0.6;
@@ -119,7 +119,7 @@ public class States_Auto extends LinearOpMode {
             switch (mRobotState) {
                 case DRIVE_TO_DEPOSIT_PRELOAD:
                     points.add(new CurvePoint(new Pose2d(0, 0, 0),1.0,1.0,10));
-                    points.add(new CurvePoint(PRE_LOAD_CLEAR,1.0,1.0,10));
+                    points.add(new CurvePoint(PRE_LOAD_CLEAR,0.7,0.7,10));
                     //points.add(new CurvePoint(PRE_LOAD_CLEAR2,0.8,0.8,10));
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT,0.7,0.7,10));
 
@@ -312,7 +312,7 @@ public class States_Auto extends LinearOpMode {
                         } else if (cycle == 2) {
                             slideHeight = depositHeightFarHigh + 10;
                         } else if(cycle == 3){
-                            slideHeight = depositHeightFarHigh + 30;
+                            slideHeight = depositHeightFarHigh + 20;
                         }
                         robot.slides.setPosition(slideHeight);
                     }else{

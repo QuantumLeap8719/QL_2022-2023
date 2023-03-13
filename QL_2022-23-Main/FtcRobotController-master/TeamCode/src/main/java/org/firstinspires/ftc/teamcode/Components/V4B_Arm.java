@@ -12,7 +12,8 @@ import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 public class V4B_Arm {
     public enum ARM_STATE{
         STACK,
-        NORMAL
+        NORMAL,
+        GROUND
     }
 
     public ARM_STATE mRobotState;
@@ -50,8 +51,10 @@ public class V4B_Arm {
     public static int grabberToggle = 5;
     public static int stackToggle = 5;
     public static int stackCase = 0;
+    public static int groundCase = 0;
     private int dropToggle = 0;
     private boolean tipped = false;
+    private boolean grabbing = false;
 
     public V4B_Arm(HardwareMap map){
         mRobotState = ARM_STATE.NORMAL;
@@ -135,14 +138,15 @@ public class V4B_Arm {
                 }
 
                 if(gamepad.isPress(GamepadEx.Control.x)){
-                    grabberToggle = 7;
+                    grabberToggle = 10;
                     time.reset();
                 }
 
-                if(gamepad.isPress(GamepadEx.Control.left_bumper)){
+                if(gamepad2.isPress(GamepadEx.Control.right_bumper)){
                     time.reset();
-                    grabberToggle = 0;
+                    grabbing = true;
                 }
+
 
                 telemetry.addData("tipped", tipped);
 
@@ -172,17 +176,8 @@ public class V4B_Arm {
                 } else if (grabberToggle == 5){
                     manualSetPosition(front_hold);
                     grabber.setPosition(grabberClose);
-                }
-                else if (grabberToggle == 7){
-                    manualSetPosition(terminal);
-                } else if(grabberToggle == 8){
-                        grabber.setPosition(grabberOpen);
-                }else if(grabberToggle == 9){
-                    if(time.time() > 0 && time.time() < 0.2){
-                        grabber.setPosition(grabberClose);
-                    } else {
-                        manualSetPosition(front_hold);
-                    }
+                } else if (grabberToggle == 10){
+                    manualSetPosition(front_hold);
                 }
                 else{
                     grabberToggle = 0;
@@ -199,6 +194,20 @@ public class V4B_Arm {
                 if(gamepad2.isPress(GamepadEx.Control.left_bumper)){
                     grabberToggle = 0;
                     mRobotState = ARM_STATE.STACK;
+                }
+
+                if(grabbing){
+                    if(grabberToggle == 1){
+                        groundCase = 2;
+                    } else {
+                        groundCase = 0;
+                    }
+                    manualSetPosition(front_hold);
+                    grabber.setPosition(grabberClose);
+                    if(time.time() > 0.5) {
+                        grabberToggle = 0;
+                        mRobotState = ARM_STATE.GROUND;
+                    }
                 }
                 break;
             case STACK:
@@ -281,7 +290,85 @@ public class V4B_Arm {
                     stackCase = 0;
                     mRobotState = ARM_STATE.NORMAL;
                 }
+
+                if(gamepad2.isPress(GamepadEx.Control.right_bumper)){
+                    time.reset();
+                    grabbing = true;
+                }
+
+                if(grabbing){
+                    if(stackCase == 1){
+                        groundCase = 2;
+                    } else {
+                        groundCase = 0;
+                    }
+                    manualSetPosition(front_hold);
+                    grabber.setPosition(grabberClose);
+                    if(time.time() > 0.5) {
+                        stackCase = 0;
+                        mRobotState = ARM_STATE.GROUND;
+                    }
+                }
             break;
+            case GROUND:
+                slideToggle = false;
+                if(gamepad.isPress(GamepadEx.Control.right_bumper)){
+                    groundCase += 1;
+                    tipped = false;
+                    time.reset();
+                }
+
+                if(gamepad.isPress(GamepadEx.Control.dpad_down)){
+                    tipped = true;
+                }
+                telemetry.addData("tipped", tipped);
+
+                if(groundCase == 1){
+                    if(tipped) {
+                        manualSetPosition(front);
+                    }else{
+                        manualSetPosition(hover);
+                    }
+                    if(time.time() > 0.25){
+                        grabber.setPosition(grabberOpen);
+                    }
+                } else if(groundCase == 2){
+                    if(time.time() > 0.15) {
+                        GrabberClose();
+                    }
+
+                    if(time.time() > 0.35){
+                        manualSetPosition(front_hold);
+                    }else{
+                        manualSetPosition(front);
+                    }
+                } else if(groundCase == 3){
+                    manualSetPosition(front);
+                } else if(groundCase == 4){
+                    if(time.time() > 0.15) {
+                        grabber.setPosition(grabberOpen);
+                    }
+                } else{
+                    groundCase = 0;
+                    grabber.setPosition(grabberClose);
+                    if(time.time() > 0.25){
+                        manualSetPosition(front_hold);
+                    }
+                }
+
+                if(gamepad2.isPress(GamepadEx.Control.left_bumper)){
+                    groundCase = 0;
+                    grabbing = false;
+                    mRobotState = ARM_STATE.STACK;
+                }
+
+                if(gamepad2.isPress(GamepadEx.Control.right_bumper)){
+                    groundCase = 0;
+                    grabberToggle = 5;
+                    grabbing = false;
+                    mRobotState = ARM_STATE.NORMAL;
+                }
+                break;
         }
 
         if(gamepad2.isPress(GamepadEx.Control.dpad_down) && (stackCase == 2 || stackCase == 3 || stackCase == 0)){
@@ -304,6 +391,7 @@ public class V4B_Arm {
         telemetry.addData("Left servo pos", leftArm.servo.getPosition());
         telemetry.addData("StackToggle", stackToggle);
         telemetry.addData("StackCase", stackCase);
+        telemetry.addData("Ground Case", groundCase);
     }
     public void write(){
         rightArm.write();
@@ -311,3 +399,15 @@ public class V4B_Arm {
         grabber.write();
     }
 }
+/*
+     else if (grabberToggle == 7){
+                    manualSetPosition(terminal);
+                } else if(grabberToggle == 8){
+                        grabber.setPosition(grabberOpen);
+                }else if(grabberToggle == 9){
+                    if(time.time() > 0 && time.time() < 0.2){
+                        grabber.setPosition(grabberClose);
+                    } else {
+                        manualSetPosition(front_hold);
+                    }
+ */
