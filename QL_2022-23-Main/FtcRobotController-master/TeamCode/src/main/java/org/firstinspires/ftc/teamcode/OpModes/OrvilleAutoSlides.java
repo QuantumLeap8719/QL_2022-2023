@@ -194,7 +194,7 @@ public class OrvilleAutoSlides extends LinearOpMode {
                             robot.arm.V4BOutPose();
                         }
                         if(time.time() > 0.9) {
-                            robot.arm.GrabberPartial();
+                            robot.arm.GrabberOpen();
                         }
 
                         if(time.time() > 1.1){
@@ -369,7 +369,7 @@ public class OrvilleAutoSlides extends LinearOpMode {
                         robot.arm.GrabberClose();
                     } else {
                         if (time.time() > 0.45) {
-                            robot.arm.GrabberPartial();
+                            robot.arm.GrabberOpen();
                         }
 
                         if (time.time() > 0.65) {

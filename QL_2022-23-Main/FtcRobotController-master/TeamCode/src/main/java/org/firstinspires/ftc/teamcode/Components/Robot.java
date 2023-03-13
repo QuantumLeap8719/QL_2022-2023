@@ -10,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Odometry.S4T_Encoder;
 import org.firstinspires.ftc.teamcode.Odometry.S4T_Localizer;
 import org.firstinspires.ftc.teamcode.OpModes.LinearTeleOp;
+import org.firstinspires.ftc.teamcode.Vision.BlueSleeveDetector;
 import org.firstinspires.ftc.teamcode.Vision.SleeveDetector;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -31,6 +32,7 @@ public class Robot {
     private HardwareMap hardwareMap;
     OpenCvCamera webcam;
     OpenCvPipeline detector;
+    OpenCvPipeline blueDetector;
 
     private Telemetry telemetry;
 
@@ -45,15 +47,13 @@ public class Robot {
 
         allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule module : allHubs) {
-            module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+            module.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         }
 
         encoderLY = new S4T_Encoder(map, "bleft");
         encoderLX = new S4T_Encoder(map, "fleft");
         encoderRY = new S4T_Encoder(map, "bright");
         encoderRX = new S4T_Encoder(map, "fright");
-
-
 
 
         drive = new Mecanum_Drive(map, telemetry);
@@ -74,7 +74,7 @@ public class Robot {
         telemetry.addLine("MAKE SURE TO HIT RIGHT TRIGGER");
         //drive.setPower(0.5,0.5,0.5,0.5);
 
-        drive.driveCentric(gamepad1ex.gamepad, 1, 1, getPos().getHeading());
+        drive.driveCentric(gamepad1ex.gamepad, 1, 0.8, getPos().getHeading());
         arm.operate(gamepad1ex, gamepad2ex, telemetry);
 
 
@@ -93,6 +93,7 @@ public class Robot {
         gamepad1ex.loop();
         gamepad2ex.loop();
         updatePos();
+        update();
     }
 
     public void setStartPose(Pose2d startPos){
@@ -123,15 +124,50 @@ public class Robot {
             }
         });
     }
+
+    public void blueInitializeWebcam(){
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        blueDetector = new BlueSleeveDetector(telemetry);
+        webcam.setPipeline(blueDetector);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                FtcDashboard.getInstance().startCameraStream(webcam, 30);
+                webcam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+    }
+
+
     public int getConeCase(){
        return ((SleeveDetector)detector).getCase();
+    }
+
+    public int blueConeCase(){
+        {
+            return ((BlueSleeveDetector) blueDetector).getCase();
+        }
     }
 
     public void stopWebcam(){
         webcam.stopStreaming();
     }
 
-
+    public void update(){
+        for (LynxModule module : allHubs) {
+            module.clearBulkCache();
+        }
+    }
 
     public void updatePos(){
         encoderLX.update();

@@ -15,6 +15,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Config
 public class SleeveDetector extends OpenCvPipeline {
     public final Scalar BLUE = new Scalar(0, 0, 255);
+    public static boolean blue = false;
 
     private double upperRingMatrix;
     private Telemetry telemetry;
@@ -22,19 +23,22 @@ public class SleeveDetector extends OpenCvPipeline {
     static double PERCENT_COLOR_THRESHOLD = 0.4;
 
 
-    public static Rect BOUNDING_BOX = new Rect(
-            new Point(445, 130),
-            new Point(405, 60)
-    );
+    public static Rect BOUNDING_BOX  = new Rect(
+            new Point(365, 109),
+            new Point(350, 49)
+    );;
 
     private double avg = 0.0;
+    private double S = 0.0;
+    private double V = 0.0;
+
     public SleeveDetector(Telemetry telemetry){
         this.telemetry = telemetry;
     }
 
     @Override
     public Mat processFrame(Mat input){
-        Imgproc.cvtColor(input, matrix, Imgproc.COLOR_RGB2HSV);
+        Imgproc.cvtColor(input, matrix, Imgproc.COLOR_RGB2YCrCb);
         /*Scalar lowHSV = new Scalar(23, 50, 70);
         Scalar highHSV = new Scalar(32, 255, 255);
 
@@ -43,6 +47,8 @@ public class SleeveDetector extends OpenCvPipeline {
         Mat sleeveMatrix = matrix.submat(BOUNDING_BOX);
 
         avg = (int)Core.sumElems(sleeveMatrix).val[0];
+        S = (int)Core.sumElems(sleeveMatrix).val[1];
+        V = (int)Core.sumElems(sleeveMatrix).val[2];
 
 
         Imgproc.rectangle(
@@ -65,12 +71,12 @@ public class SleeveDetector extends OpenCvPipeline {
     }
 
     public int getCase(){
-        if(avg < 180000){
-            return 2; //yellow
-        }else if(avg >= 180000 && avg <= 270000){
-            return 0; //green = 250000
-        }else if(avg > 270000){
-            return 1; //blue = 330000
+        if(avg < 100000 ){
+            return 1; //black = 80302
+        }else if(avg >= 100000 && avg < 190000){
+            return 2; //blue = 111056
+        }else if(avg > 190000){
+            return 0; //white = 228600
         }
         return 0;
     }
