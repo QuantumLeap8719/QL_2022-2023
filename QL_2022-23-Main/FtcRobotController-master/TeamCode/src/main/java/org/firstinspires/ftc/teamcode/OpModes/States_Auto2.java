@@ -63,10 +63,10 @@ public class States_Auto2 extends LinearOpMode {
     double armCycleFour = 0.055;
     double armCycleFive = 0.0;
 
-    double slideHeightOne = 62;
+    double slideHeightOne = 69;
     double slideHeightTwo = 32;
-    double slideHeightThree = 0;
-    double slideHeightFour = 0;
+    double slideHeightThree = 7;
+    double slideHeightFour = 1;
 
     int depositHeightPreload = 575;
     int depositHeightMid = 385;
@@ -186,13 +186,13 @@ public class States_Auto2 extends LinearOpMode {
                     }
 
                     if(cycle==0){
-                        robot.slides.setPosition(slideHeightOne, -0.247, 1);
+                        robot.slides.setPosition(slideHeightOne, -0.2501, 1);
                     }else if(cycle==1){
-                        robot.slides.setPosition(slideHeightTwo, -0.247, 1);
+                        robot.slides.setPosition(slideHeightTwo, -0.2501, 1);
                     }else if(cycle==2){
-                        robot.slides.setPosition(slideHeightThree, -0.25, 1);
+                        robot.slides.setPosition(slideHeightThree, -0.2501, 1);
                     } else {
-                        robot.slides.setPosition(slideHeightFour, -0.25, 1);
+                        robot.slides.setPosition(slideHeightFour, -0.2501, 1);
                     }
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.0 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.0)) {
@@ -219,17 +219,17 @@ public class States_Auto2 extends LinearOpMode {
                     break;
                 case GRAB:
                     if(cycle==0){
-                        robot.slides.setPosition(slideHeightOne, -0.35, 1.0);
+                        robot.slides.setPosition(slideHeightOne, -0.5, 1.0);
                     }else if(cycle==1){
-                        robot.slides.setPosition(slideHeightTwo,-0.35, 1.0);
+                        robot.slides.setPosition(slideHeightTwo,-0.5, 1.0);
                     }else if(cycle==2){
-                        robot.slides.setPosition(slideHeightThree,-0.35, 1.0);
+                        robot.slides.setPosition(slideHeightThree,-0.5, 1.0);
                     }else{
                         if (robot.slides.isDown()) {
                             robot.slides.reset();
                             robot.slides.setPower(0.0);
                         } else {
-                            robot.slides.setPower(-0.4);
+                            robot.slides.setPower(-0.75);
                         }
                     }
 
@@ -331,7 +331,11 @@ public class States_Auto2 extends LinearOpMode {
                    if (time.time() > 0.3) {
                        robot.slides.setPosition((cycle == 0 ? depositHeightMid : depositHeightFarHigh) - 50, -0.3, 1);
                    }else{
-                       robot.slides.setPosition(depositHeightFarHigh);
+                       if(cycle == 0){
+                           robot.slides.setPosition(depositHeightMid);
+                       } else {
+                           robot.slides.setPosition(depositHeightFarHigh);
+                       }
                    }
 
                    if (time.time() > 0.5 && time.time() < 0.7) {
