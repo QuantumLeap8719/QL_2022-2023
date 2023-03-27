@@ -88,6 +88,7 @@ public class Robot {
         drive.write();
         arm.write();
         slides.write();
+        arm.getDist();
 
         telemetry.addData("Robot Position:", getPos());
         gamepad1ex.loop();

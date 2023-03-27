@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.checkerframework.checker.units.qual.C;
+import org.firstinspires.ftc.robotcontroller.external.samples.SensorColor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Wrapper.Caching_Servo;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 
@@ -21,6 +25,8 @@ public class V4B_Arm {
     Caching_Servo leftArm;
     public Caching_Servo grabber;
     Robot robot;
+    NormalizedColorSensor sensorColor;
+
 
     private double rightArmPosition;
     private double leftArmPosition;
@@ -36,6 +42,7 @@ public class V4B_Arm {
     private double front = 0.0;
     private double hover = 0.11;
     private double terminal = 0.02;
+    private double value = 0;
     public static double grabberOpen = 0.67;
     public static double grabberClose = 0.5;
 
@@ -58,6 +65,7 @@ public class V4B_Arm {
 
     public V4B_Arm(HardwareMap map){
         mRobotState = ARM_STATE.NORMAL;
+        sensorColor = map.get(NormalizedColorSensor.class, "sensor_color");
         rightArm = new Caching_Servo(map, "rightarm");
         leftArm = new Caching_Servo(map, "leftarm");
         grabber = new Caching_Servo(map,"grabber");
@@ -122,6 +130,14 @@ public class V4B_Arm {
         grabber.setPosition(grabberClose);
     }
 
+    public void getDist(){
+       value = ((DistanceSensor) sensorColor).getDistance(DistanceUnit.CM);
+    }
+
+    public double read(){
+        return value;
+    }
+
     public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry) {
 
         switch(mRobotState){
@@ -151,11 +167,11 @@ public class V4B_Arm {
                 telemetry.addData("tipped", tipped);
 
                 if(grabberToggle == 1){
-                    if(time.time() > 0.15) {
+                    if(time.time() > 0.17) {
                         GrabberClose();
                     }
 
-                    if(time.time() > 0.35){
+                    if(time.time() > 0.45){
                         manualSetPosition(hold);
                     }else{
                         manualSetPosition(front);
@@ -180,11 +196,16 @@ public class V4B_Arm {
                     manualSetPosition(front_hold);
                 }
                 else{
+                    getDist();
                     grabberToggle = 0;
                     if(tipped) {
                         manualSetPosition(front);
                     }else{
                         manualSetPosition(hover);
+                        if(read() <= 20){
+                            time.reset();
+                            grabberToggle = 1;
+                        }
                     }
                     if(time.time() > 0.1){
                         grabber.setPosition(grabberOpen);
