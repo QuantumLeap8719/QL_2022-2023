@@ -179,13 +179,17 @@ public class V4B_Arm {
                 } else if(grabberToggle == 2){
                     manualSetPosition(out);
                 } else if(grabberToggle == 3){
-                    if(time.time() > 0.1){
-                        if(time.time() > 0.25){ //
+                    if(time.time() > 0.1) {
+                        double timeDelay = 0.25;
+                        if (Slides.goalToggle == 0) {
+                            timeDelay = 0.3;
+                        }
+                        if (time.time() > timeDelay) { //
                             GrabberClose();
-                        }else{
+                        } else {
                             GrabberOpen();
                         }
-                        if(time.time() > 0.35){
+                        if (time.time() > timeDelay + 0.1) {
                             manualSetPosition(front_hold);
                         }
                     }
@@ -259,13 +263,17 @@ public class V4B_Arm {
                 } else if(stackCase == 2){
                     manualSetPosition(out);
                 } else if(stackCase == 3){
-                    if(time.time() > 0.2){
-                        if(time.time() > 0.39){
+                    if(time.time() > 0.1) {
+                        double timeDelay = 0.25;
+                        if (Slides.goalToggle == 0) {
+                            timeDelay = 0.3;
+                        }
+                        if (time.time() > timeDelay) { //
                             GrabberClose();
-                        }else{
+                        } else {
                             GrabberOpen();
                         }
-                        if(time.time() > 0.45){
+                        if (time.time() > timeDelay + 0.1) {
                             manualSetPosition(front_hold);
                         }
                     }

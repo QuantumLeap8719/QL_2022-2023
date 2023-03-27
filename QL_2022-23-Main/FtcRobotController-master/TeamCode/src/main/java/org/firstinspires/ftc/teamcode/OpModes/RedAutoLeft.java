@@ -319,7 +319,7 @@ public class RedAutoLeft extends LinearOpMode {
                         } else if (cycle == 2) {
                             slideHeight = depositHeightFarHigh + 1;
                         } else if(cycle == 3 || cycle == 4){
-                            slideHeight = depositHeightFarHigh + 2;
+                            slideHeight = depositHeightFarHigh + 7;
                         }
                         robot.slides.setPosition(slideHeight);
                     }else{
@@ -341,9 +341,9 @@ public class RedAutoLeft extends LinearOpMode {
 
                     if(cycle == 0 || cycle == 1) {
                         if (time.time() > 0.3) {
-                            robot.slides.setPosition((depositHeightFarHigh + 2)- 50, -0.3, 1);
+                            robot.slides.setPosition((depositHeightFarHigh + 7)- 50, -0.3, 1);
                         } else {
-                            robot.slides.setPosition(depositHeightFarHigh + 2);
+                            robot.slides.setPosition(depositHeightFarHigh + 7);
                         }
                     }
                     else if(cycle == 2){
@@ -354,9 +354,9 @@ public class RedAutoLeft extends LinearOpMode {
                         }
                     }else if (cycle == 3 || cycle == 4){
                         if (time.time() > 0.3) {
-                            robot.slides.setPosition((depositHeightFarHigh + 2) - 50, -0.3, 1);
+                            robot.slides.setPosition((depositHeightFarHigh + 7) - 50, -0.3, 1);
                         } else {
-                            robot.slides.setPosition(depositHeightFarHigh + 2);
+                            robot.slides.setPosition(depositHeightFarHigh + 7);
                         }
                     }
 
