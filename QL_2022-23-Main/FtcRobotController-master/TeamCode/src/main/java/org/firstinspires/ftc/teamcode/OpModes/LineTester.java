@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -12,6 +13,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+@TeleOp
 public class LineTester extends OpMode {
     OpenCvCamera webcam;
     OpenCvPipeline detector;
@@ -38,10 +40,14 @@ public class LineTester extends OpMode {
 
             }
         });
+
     }
+
 
     @Override
     public void loop() {
-
+        if(gamepad1.a){
+            webcam.stopStreaming();
+        }
     }
 }
