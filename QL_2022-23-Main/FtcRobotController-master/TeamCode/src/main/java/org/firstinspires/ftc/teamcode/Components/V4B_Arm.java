@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import android.app.admin.DevicePolicyManager;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -36,8 +38,9 @@ public class V4B_Arm {
     private double front = 0.05;
     private double hover = 0.14;
     private double terminal = 0.02;
-    public static double grabberOpen = 0.74;
+    public static double grabberOpen = 0.71;
     public static double grabberClose = 0.5;
+    public static double grabberDeposit = 0.6;
 
     private double stack_five = 0.08;
     private double stack_four = 0.15;
@@ -61,8 +64,8 @@ public class V4B_Arm {
         rightArm = new Caching_Servo(map, "rightarm");
         leftArm = new Caching_Servo(map, "leftarm");
         grabber = new Caching_Servo(map,"grabber");
-        leftArm.setZeros(.045, 1);
-        rightArm.setZeros(.03, 1);
+        leftArm.setZeros(.01, 1);
+        rightArm.setZeros(.01, 0.96);
         grabberToggle = 5;
         stackToggle = 5;
         stackCase = 0;
@@ -122,6 +125,10 @@ public class V4B_Arm {
         grabber.setPosition(grabberClose);
     }
 
+    public void GrabberDeposit(){
+        grabber.setPosition(grabberDeposit);
+    }
+
     public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry) {
 
         switch(mRobotState){
@@ -167,14 +174,12 @@ public class V4B_Arm {
                         if(time.time() > 0.25){ //
                             GrabberClose();
                         }else{
-                            GrabberOpen();
+                            GrabberDeposit();
                         }
                         if(time.time() > 0.35){
                             manualSetPosition(front_hold);
                         }
                     }
-                } else if(grabberToggle == 4) {
-                    manualSetPosition(front_hold);
                 }
                 else if (grabberToggle == 7){
                     manualSetPosition(front_hold);
@@ -245,7 +250,7 @@ public class V4B_Arm {
                         if(time.time() > 0.39){
                             GrabberClose();
                         }else{
-                            GrabberOpen();
+                            GrabberDeposit();
                         }
                         if(time.time() > 0.45){
                             manualSetPosition(front_hold);

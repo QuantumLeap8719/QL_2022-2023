@@ -35,8 +35,6 @@ public class LineDetector extends OpenCvPipeline {
         Imgproc.cvtColor(input, HSVMat, Imgproc.COLOR_RGB2HSV_FULL);
         Core.inRange(HSVMat, lowerHSV, upperHSV, output);
 
-        Mat kernal = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2 * VisionConstants.dilation))
-
         return output;
     }
 

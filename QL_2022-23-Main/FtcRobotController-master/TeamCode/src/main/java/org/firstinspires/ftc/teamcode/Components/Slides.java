@@ -263,8 +263,10 @@ public class Slides {
         }
 
 
-        if(V4B_Arm.grabberToggle == 4){
+        if(V4B_Arm.grabberToggle == 3){
+            if(time.time() > 0.55){
                 mRobotState = STATE.DOWN;
+            }
         }
 
         if(V4B_Arm.stackCase == 3){
