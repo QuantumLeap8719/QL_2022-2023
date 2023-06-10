@@ -73,12 +73,6 @@ public class Robot {
         drive.driveCentric(gamepad1ex.gamepad, 1, 0.8, getPos().getHeading());
         arm.operate(gamepad1ex, gamepad2ex, telemetry);
 
-
-        if(gamepad1ex.isPress(GamepadEx.Control.start)){
-            localizer.reset();
-        }
-
-
         slides.operate(gamepad1ex, gamepad2ex);
 
         drive.write();
@@ -88,8 +82,16 @@ public class Robot {
         telemetry.addData("Robot Position:", getPos());
         gamepad1ex.loop();
         gamepad2ex.loop();
-        updatePos();
-        update();
+
+        if(gamepad1ex.isPress(GamepadEx.Control.start)){
+            encoderLY.reset();
+            encoderRY.reset();
+            encoderRX.reset();
+            localizer.reset();
+        }else{
+            updatePos();
+            update();
+        }
     }
 
     public void setStartPose(Pose2d startPos){

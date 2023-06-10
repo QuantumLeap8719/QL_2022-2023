@@ -206,7 +206,7 @@ public class LineDetector extends OpenCvPipeline {
             telemetry.addData("AdjustedPointMax", adjustedPointMax);
         }
 
-        return input;
+        return output;
     }
 }
 
