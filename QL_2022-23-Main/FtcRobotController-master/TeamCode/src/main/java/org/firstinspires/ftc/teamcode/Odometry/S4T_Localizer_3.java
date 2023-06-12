@@ -7,8 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Components.Math.Vector2;
-import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.Math.Vector2;
 
 @Config
 public class S4T_Localizer_3 {
@@ -32,7 +31,7 @@ public class S4T_Localizer_3 {
 
     private static double heading = 0;
     Telemetry telemetry;
-    public double TICKS_TO_INCHES_VERT = 333.791666;//303.547368;
+    public double TICKS_TO_INCHES_VERT = 197.958333;//303.547368;
     public double TICKS_TO_INCHES_STRAFE = 197.958333;//335.381388888888888;
 
     public final Vector2d DASHBOARD_OFFSET_FROM_CENTER = new Vector2d(-48, -55);

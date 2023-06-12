@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Vision;
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Math.Vector3;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -11,12 +12,9 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Point3;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.imgproc.Moments;
-import org.opencv.utils.Converters;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
@@ -35,13 +33,16 @@ public class LineDetector extends OpenCvPipeline {
     private Scalar upperHSV = new Scalar(VisionConstants.upperH, VisionConstants.upperS, VisionConstants.upperV);
     public CalibrationParameters CALIB_PARAMS;
 
-    public double STACK_HEIGHT = 12.0;
+    public Vector3 adjustedPointMin;
+    public Vector3 adjustedPointMax;
+    public double angle = 0;
 
-    public Point3 relPoint = new Point3(-36, 0, 0);
+
+    public Point3 relPoint = new Point3(-3.375, -3.95625, 0);
 
     private Mat rotation;
-    private Mat uvPointMax; //Pizel point on camera view
-    private Mat uvPointMin; //Pizel point on camera view
+    private Mat uvPointMax; //Pixel point on camera view
+    private Mat uvPointMin; //Pixel point on camera view
     private Mat lhsMax;
     private Mat lhsMin;
     private Mat rhsMin;
@@ -59,12 +60,15 @@ public class LineDetector extends OpenCvPipeline {
         HSVMat = new Mat();
         this.telemetry = telemetry;
 
+        adjustedPointMin = new Vector3();
+        adjustedPointMax = new Vector3();
+
         EMPTY_MAT = new Mat();
 
-        RVEC = new MatOfDouble(1.573170512100423, 1.55992815372063, -0.8995313429429516);
-        TVEC = new MatOfDouble(-0.4223866364049191, 0.5307423920270103, 36.44426518615748);
-        CALIB_PARAMS = new CalibrationParameters(496.222, 499.292,
-                322.836, 176.195, 0.0597197, -0.0908114, 0.0153578, -0.00202418, 0.0395567);
+        RVEC = new MatOfDouble(1.314441617728361, 1.295123922707693, -1.107900677635943);
+        TVEC = new MatOfDouble(-5.107222576924736, 3.770677893266901, 16.66868459603753);
+        CALIB_PARAMS = new CalibrationParameters(470.079, 467.252,
+                353.972, 187.813, 0.0623386, -0.286305, -0.000192390, 0.00587140, 0.315253);
 
         rotation = new Mat(3, 3, CvType.CV_64FC1);
         uvPointMin = new Mat(3, 1, CvType.CV_64FC1);
@@ -75,11 +79,11 @@ public class LineDetector extends OpenCvPipeline {
         rhsMax = new Mat();
         pointMatMin = new Mat();
         pointMatMax = new Mat();
-
     }
 
     @Override
     public Mat processFrame(Mat input){
+        relPoint = new Point3(-VisionConstants.relX, -VisionConstants.relY, 0);
         contoursList.clear();
         Scalar lowerHSV = new Scalar(VisionConstants.lowerH, VisionConstants.lowerS, VisionConstants.lowerV);
         Scalar upperHSV = new Scalar(VisionConstants.upperH, VisionConstants.upperS, VisionConstants.upperV);
@@ -178,8 +182,8 @@ public class LineDetector extends OpenCvPipeline {
             // this based on the projection math in https://stackoverflow.com/questions/12299870 (the question)
             //Essentially reverse engineering the formula to calculate the world -> camera to go from camera -> world
             // by producing a line(similar triangles) to account for the reproduction of the loss of z axis
-            uvPointMax.put(0, 0, new double[] { corrMaxPoint.x, corrMaxPoint.y, 1 });
-            uvPointMin.put(0, 0, new double[] { corrMinPoint.x, corrMinPoint.y, 1 });
+            uvPointMax.put(0, 0, corrMaxPoint.x, corrMaxPoint.y, 1);
+            uvPointMin.put(0, 0, corrMinPoint.x, corrMinPoint.y, 1);
 
             // camera matrix not involved as undistortPoints reprojects with identity camera matrix
             Core.gemm(rotation.inv(), uvPointMax, 1, EMPTY_MAT, 0, lhsMax);
@@ -187,9 +191,10 @@ public class LineDetector extends OpenCvPipeline {
             Core.gemm(rotation.inv(), TVEC, 1, EMPTY_MAT, 0, rhsMin);
             Core.gemm(rotation.inv(), TVEC, 1, EMPTY_MAT, 0, rhsMax);
 
-            double s = (STACK_HEIGHT / 2 + rhsMin.get(2, 0)[0]) / lhsMin.get(2, 0)[0];
-            Core.scaleAdd(uvPointMin, -s, TVEC, pointMatMin);
-            Core.scaleAdd(uvPointMax, -s, TVEC, pointMatMax);
+            double s1 = (VisionConstants.STACK_HEIGHT + rhsMin.get(2, 0)[0]) / lhsMin.get(2, 0)[0];
+            double s2 = (rhsMax.get(2, 0)[0]) / lhsMax.get(2, 0)[0];
+            Core.scaleAdd(uvPointMin, -s1, TVEC, pointMatMin);
+            Core.scaleAdd(uvPointMax, -s2, TVEC, pointMatMax);
             Core.gemm(rotation.inv(), pointMatMin, -1, EMPTY_MAT, 0, pointMatMin);
             Core.gemm(rotation.inv(), pointMatMax, -1, EMPTY_MAT, 0, pointMatMax);
 
@@ -199,14 +204,17 @@ public class LineDetector extends OpenCvPipeline {
             pointMatMax.get(0, 0, buffMax);
             Point3 pointMin = new Point3(buffMin);
             Point3 pointMax = new Point3(buffMax);
-            Point3 adjustedPointMin = new Point3(pointMin.x + relPoint.x, pointMin.y + relPoint.y, pointMin.z + relPoint.z);
-            Point3 adjustedPointMax = new Point3(pointMax.x + relPoint.x, pointMax.y + relPoint.y, pointMax.z + relPoint.z);
+            adjustedPointMin = new Vector3(pointMin.y + relPoint.y, pointMin.x + relPoint.x, pointMin.z + relPoint.z);
+            adjustedPointMax = new Vector3(pointMax.y + relPoint.y, pointMax.x + relPoint.x, pointMax.z + relPoint.z);
 
+            angle = Math.atan2(adjustedPointMin.x - adjustedPointMax.x, adjustedPointMin.y - adjustedPointMax.y);
+            adjustedPointMin.rotateZ(angle);
+            adjustedPointMax.rotateZ(angle);
             telemetry.addData("AdjustedPointMin", adjustedPointMin);
             telemetry.addData("AdjustedPointMax", adjustedPointMax);
         }
 
-        return output;
+        return input;
     }
 }
 
@@ -214,11 +222,18 @@ public class LineDetector extends OpenCvPipeline {
 class VisionConstants{
     public static double lowerH = 160;
     public static double lowerS = 110;
-    public static double lowerV = 100;
+    public static double lowerV = 80;
     public static double upperH = 180;
     public static double upperS = 255;
     public static double upperV = 255;
 
-    public static double dilationConstant = 1.5;
-    public static double erosionConstant = 1;
+    public static double STACK_HEIGHT = 9.6;
+
+    public static double relX = 3.375;
+    public static double relY = 3.95625;
+
+    public static double dilationConstant = 3.5;
+    public static double erosionConstant = 2.5;
+    public static double blurConstant = 3;
+    public static double LineFollowerTarget = 310;
 }

@@ -27,9 +27,9 @@ import java.util.List;
 public class CalibrationPipeline extends OpenCvPipeline {
     public static double FRAME_INTERVAL = 1.0;
     public static int CALIB_FRAMES = 60;
-    public static int HORIZONTAL_CORNERS = 8;
+    public static int HORIZONTAL_CORNERS = 9;
     public static int VERTICAL_CORNERS = 6;
-    public static double SQUARE_SIZE = 0.98425197;
+    public static double SQUARE_SIZE = 0.82677165;
     public static boolean IS_CAPTURING = true;
     public static boolean USE_RO_METHOD = false;
     // https://docs.opencv.org/4.5.2/d9/d0c/group__calib3d.html#ga3207604e4b1a1758aa66acb6ed5aa65d for details on flags

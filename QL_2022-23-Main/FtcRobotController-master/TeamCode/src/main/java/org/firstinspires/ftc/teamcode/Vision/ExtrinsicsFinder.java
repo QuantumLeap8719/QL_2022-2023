@@ -18,12 +18,12 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class ExtrinsicsFinder extends OpenCvPipeline {
-    public static int HORIZONTAL_CORNERS = 8;
+    public static int HORIZONTAL_CORNERS = 9;
     public static int VERTICAL_CORNERS = 6;
-    public static double SQUARE_SIZE = 0.98425197;
+    public static double SQUARE_SIZE = 0.82677165;
     //public static CalibrationParameters CALIB_PARAMS = new CalibrationParameters(496.222, 499.292,322.836, 176.195, 0.0597197, -0.0908114, 0.0153578, -0.00202418, 0.0395567);
-    public static CalibrationParameters CALIB_PARAMS = new CalibrationParameters(480.522, 486.658,
-            336.847, 162.577, 0.0484182, -0.112888, -0.0290298, -5.66903e-5, 0.0559762);
+    public static CalibrationParameters CALIB_PARAMS = new CalibrationParameters(470.079, 467.252,
+            353.972, 187.813, 0.0623386, -0.286305, -0.000192390, 0.00587140, 0.315253);
 
     private MatOfPoint2f imageCorners = new MatOfPoint2f();
 

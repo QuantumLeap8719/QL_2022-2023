@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Components.Math;
+package org.firstinspires.ftc.teamcode.Math;
 
 //2D Vector. Components are doubles.
 public class Vector2 {

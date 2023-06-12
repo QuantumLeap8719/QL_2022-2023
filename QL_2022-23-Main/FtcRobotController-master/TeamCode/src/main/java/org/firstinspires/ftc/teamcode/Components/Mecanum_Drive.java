@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Components.Math.Vector2;
+import org.firstinspires.ftc.teamcode.Math.Vector2;
 import org.firstinspires.ftc.teamcode.Wrapper.Caching_Motor;
 
 import java.util.Arrays;
@@ -29,6 +29,8 @@ public class Mecanum_Drive{
     PIDFController PID_Y;
     PIDFController PID_Z;
 
+    PIDFController PID_CAM;
+
     public static double kp = 0.127;
     public static double ki = 0;
     public static double kd = 0.01385;
@@ -36,6 +38,10 @@ public class Mecanum_Drive{
     public static double kpr = 2.7;
     public static double kir = 0;
     public static double kdr = 0.115;
+
+    public static double kpc = 0.002;
+    public static double kic = 0.0;
+    public static double kdc = 0.0005;
 
     TelemetryPacket packet = new TelemetryPacket();
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -64,6 +70,7 @@ public class Mecanum_Drive{
         PID_X = new PIDFController(new PIDCoefficients(kp, ki, kd));
         PID_Y = new PIDFController(new PIDCoefficients(kp, ki, kd));
         PID_Z = new PIDFController(new PIDCoefficients(kpr, kir, kdr));
+        PID_CAM = new PIDFController(new PIDCoefficients(kpc, kic, kdc));
         counter = 0;
 
         motors[1].motor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -196,5 +203,24 @@ public class Mecanum_Drive{
         }else {
             setPowerCentic(PID_X.update(currentPos.getX()), PID_Y.update(currentPos.getY()), PID_Z.update(heading), currentPos.getHeading());
         }
+    }
+
+    public void followLine(double current_heading, double target_y, double targetPixel, double current_y, double currentPixel, double yspeed, double zspeed){
+        PID_Y.setOutputBounds(-yspeed, yspeed);
+        PID_CAM.setOutputBounds(-zspeed, zspeed);
+
+        telemetry.addData("Translational Error", target_y - current_y);
+        telemetry.addData("Rotational Error", targetPixel - currentPixel);
+
+        PID_Y.setTargetPosition(target_y);
+        PID_CAM.setTargetPosition(targetPixel);
+
+        double rot_power = PID_CAM.update(currentPixel);
+
+        if(Math.abs(PID_CAM.getLastError()) < 20 && Math.abs(PID_Y.getLastError()) < 1){
+            rot_power = 0;
+        }
+
+        setPowerCentic(0, -PID_Y.update(current_y), rot_power, current_heading);
     }
 }

@@ -67,7 +67,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this Op Mode to the Driver Station OpMode list
  */
 @TeleOp(name = "Sensor: Color", group = "Sensor")
-@Disabled
+//@Disabled
 public class SensorColor extends LinearOpMode {
 
   /** The colorSensor field will contain a reference to our color sensor hardware object */
@@ -207,7 +207,7 @@ public class SensorColor extends LinearOpMode {
        * Note that the reported distance is only useful at very close range, and is impacted by
        * ambient light and surface reflectivity. */
       if (colorSensor instanceof DistanceSensor) {
-        telemetry.addData("Distance (cm)", "%.3f", ((DistanceSensor) colorSensor).getDistance(DistanceUnit.CM));
+        telemetry.addData("Distance (cm)", "%.3f", ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH));
       }
 
       telemetry.update();
