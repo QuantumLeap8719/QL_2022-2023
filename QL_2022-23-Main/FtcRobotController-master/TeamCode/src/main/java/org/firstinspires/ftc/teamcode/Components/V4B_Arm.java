@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Components;
 
 import android.app.admin.DevicePolicyManager;
+import android.hardware.Sensor;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;

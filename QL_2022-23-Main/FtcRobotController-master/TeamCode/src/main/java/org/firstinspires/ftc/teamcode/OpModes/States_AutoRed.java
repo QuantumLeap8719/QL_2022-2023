@@ -30,7 +30,7 @@ public class States_AutoRed extends LinearOpMode {
     State mRobotState = State.DRIVE_TO_DEPOSIT_PRELOAD;
 
     public Pose2d PRE_LOAD_CLEAR = new Pose2d(6, -22.4, Math.toRadians(0));
-    public Pose2d PRE_LOAD_CLEAR2 = new Pose2d(3.3, -44.5, Math.toRadians(0));
+    public Pose2d PRE_LOAD_CLEAR2 = new Pose2d(2.5, -44.5, Math.toRadians(0));
     public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(3.6, -30.8, Math.toRadians(55.583));
 
     public Pose2d INTAKE_CLEAR = new Pose2d(2.75, -52, Math.toRadians(90));
@@ -149,15 +149,15 @@ public class States_AutoRed extends LinearOpMode {
                         }
                     }else{
                         time.reset();
-                        robot.arm.V4BOutPose();
+                        robot.arm.manualSetPosition(0.42);
                         robot.arm.GrabberClose();
-                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 30){
+                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 10){
                             robot.slides.setPosition(depositHeightPreload);
                         }else{
                             robot.slides.setPower(0.0);
                         }
 
-                        if(Math.abs(robot.slides.getPosition() - depositHeightPreload) < 10){
+                        if(Math.abs(robot.slides.getPosition() - depositHeightPreload) < 20){
                             slidesKickout = true;
                         }
                     }
