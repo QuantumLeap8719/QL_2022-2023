@@ -31,7 +31,7 @@ public class Mecanum_Drive{
 
     PIDFController PID_CAM;
 
-    public static double kp = 0.127;
+    public static double kp = 0.1365;
     public static double ki = 0;
     public static double kd = 0.01385;
 
