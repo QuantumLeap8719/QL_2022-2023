@@ -235,5 +235,5 @@ class VisionConstants{
     public static double dilationConstant = 3.5;
     public static double erosionConstant = 2.5;
     public static double blurConstant = 3;
-    public static double LineFollowerTarget = 310;
+    public static double LineFollowerTarget = 320;
 }

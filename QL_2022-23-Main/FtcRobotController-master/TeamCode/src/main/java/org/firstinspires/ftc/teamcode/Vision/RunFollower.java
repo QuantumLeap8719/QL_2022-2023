@@ -68,13 +68,21 @@ public class RunFollower extends OpMode {
 
     @Override
     public void loop() {
-        robot.arm.V4BFrontHoldPos();
+        robot.arm.manualSetPosition(0.11);
+
+        robot.slides.setPosition(90);
         double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH);
         if(Math.abs(robot.getPos().getY()) > 39){
-            robot.drive.followLine(robot.getPos().getHeading(), 1, VisionConstants.LineFollowerTarget, distance, detector.midMaxPoint.x, 0.3, 0.3);
+            if(robot.drive.followLine(robot.getPos().getHeading(), 1.2, VisionConstants.LineFollowerTarget, distance, detector.midMaxPoint.x, 0.3, 0.3)){
+                robot.arm.GrabberClose();
+            }else{
+                robot.arm.GrabberOpen();
+            }
         }else if(Math.abs(robot.getPos().getY()) > 25){
+            robot.arm.GrabberOpen();
             robot.drive.followLine(robot.getPos().getHeading(), -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), detector.midMaxPoint.x, 0.3, 0.3);
         }else{
+            robot.arm.GrabberOpen();
             robot.drive.followLine(robot.getPos().getHeading(), -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), detector.midMaxPoint.x, 0.75, 0.75);
         }
 
@@ -85,5 +93,6 @@ public class RunFollower extends OpMode {
         robot.updatePos();
         robot.drive.write();
         robot.arm.write();
+        robot.slides.write();
     }
 }
