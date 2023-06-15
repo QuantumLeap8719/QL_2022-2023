@@ -205,7 +205,7 @@ public class Mecanum_Drive{
         }
     }
 
-    public boolean followLine(double current_heading, double target_y, double targetPixel, double current_y, double currentPixel, double yspeed, double zspeed){
+    public boolean followLine(boolean negative, double target_y, double targetPixel, double current_y, double currentPixel, double yspeed, double zspeed){
         PID_Y.setOutputBounds(-yspeed, yspeed);
         PID_CAM.setOutputBounds(-zspeed, zspeed);
 
@@ -217,11 +217,16 @@ public class Mecanum_Drive{
 
         double rot_power = PID_CAM.update(currentPixel);
 
+
         if(Math.abs(PID_CAM.getLastError()) < 20 && Math.abs(PID_Y.getLastError()) < 0.5) {
             rot_power = 0;
         }
 
-        setPower(0, PID_Y.update(current_y), rot_power);
+        if(negative) {
+            setPower(0, -PID_Y.update(current_y), rot_power);
+        } else {
+            setPower(0, PID_Y.update(current_y), rot_power);
+        }
 
         if(Math.abs(PID_CAM.getLastError()) < 20 && Math.abs(PID_Y.getLastError()) < 0.5){
             return true;

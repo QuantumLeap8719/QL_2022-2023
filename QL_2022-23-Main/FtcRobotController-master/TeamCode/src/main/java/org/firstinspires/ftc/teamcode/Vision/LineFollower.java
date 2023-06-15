@@ -31,7 +31,7 @@ public class LineFollower extends OpenCvPipeline {
     int numContoursFound = 0;
     private Scalar lowerHSV = new Scalar(VisionConstants.lowerH, VisionConstants.lowerS, VisionConstants.lowerV);
     private Scalar upperHSV = new Scalar(VisionConstants.upperH, VisionConstants.upperS, VisionConstants.upperV);
-    public Point midMaxPoint;
+    public static Point midMaxPoint;
 
     public LineFollower(Telemetry telemetry){
         midMaxPoint = new Point();
@@ -60,6 +60,10 @@ public class LineFollower extends OpenCvPipeline {
 
         //Fingding the contours based on the HSV ranges
         Imgproc.findContours(output, contoursList, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        if(contoursList.size() == 0){
+            return input;
+        }
 
         // Find the contour with the largest area
         double maxArea = 0;
@@ -108,4 +112,5 @@ public class LineFollower extends OpenCvPipeline {
 
         return input;
     }
+
 }

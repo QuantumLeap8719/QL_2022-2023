@@ -4,16 +4,20 @@ package org.firstinspires.ftc.teamcode.OpModes;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.V4B_Arm;
 import org.firstinspires.ftc.teamcode.PurePusuit.CurvePoint;
 import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
+import org.firstinspires.ftc.teamcode.Vision.*;
 
 import java.util.ArrayList;
 
-@Autonomous(name="OhioAuto2")
+@Autonomous(name="MTI_TEST")
 public class States_Auto2 extends LinearOpMode {
 
     private enum State {
@@ -34,7 +38,7 @@ public class States_Auto2 extends LinearOpMode {
 
     public Pose2d PRE_LOAD_CLEAR = new Pose2d(-8, -23, Math.toRadians(0));
     public Pose2d PRE_LOAD_CLEAR2 = new Pose2d(-2.5, -47.1, Math.toRadians(0));
-    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(-10.8, -58.3, Math.toRadians(49.6));
+    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(-9.8, -58.3, Math.toRadians(49.6));
     public Pose2d PRE_LOAD_DEPOSIT_FORWARD = new Pose2d(-2, -53, Math.toRadians(270));
 
     public Pose2d INTAKE_CLEAR = new Pose2d(0, -52, Math.toRadians(270));
@@ -62,6 +66,7 @@ public class States_Auto2 extends LinearOpMode {
 
     double coneCase;
     boolean gtp = false;
+    boolean isDown = true;
     int cycle = 0;
 
     //double armCycleOne = 0;
@@ -71,7 +76,7 @@ public class States_Auto2 extends LinearOpMode {
     double armCycleFive = 0.0;
 
     double slideHeightOne = 95;
-    double slideHeightTwo = 75;
+    double slideHeightTwo = 85;
     double slideHeightThree = 50;
     double slideHeightFour = 30;
 
@@ -87,23 +92,24 @@ public class States_Auto2 extends LinearOpMode {
 
     int numCycles = 5;
     ElapsedTime time;
+    NormalizedColorSensor colorSensor;
     Robot robot;
 
     @Override
     public void runOpMode() {
         robot = new Robot(hardwareMap, telemetry);
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
         time = new ElapsedTime();
-
         robot.localizer.reset();
         robot.setStartPose(new Pose2d(0, 0, 0));
-
         robot.arm.GrabberClose();
         robot.arm.V4BAutoHold();
         robot.arm.write();
 
         boolean slidesKickout = false;
 
-        robot.initializeWebcam();
+        //robot.initializeWebcam();
+        robot.coneWebcam();
         while (!isStarted() && !isStopRequested()) {
             //coneCase = robot.getConeCase();
             coneCase = 0;
@@ -112,11 +118,12 @@ public class States_Auto2 extends LinearOpMode {
         }
 
 
-        robot.stopWebcam();
+        //robot.stopWebcam();
 
         waitForStart();
 
         time.startTime();
+
 
         while (opModeIsActive()) {
             ArrayList<CurvePoint> points = new ArrayList<>();
@@ -129,10 +136,9 @@ public class States_Auto2 extends LinearOpMode {
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT,0.4,0.4,10));
 
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.0 && slidesKickout && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.5)) {
-                        if(time.time() > 0.3){
-                            robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
-                        }
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.5 && slidesKickout && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.5)) {
+
+                        robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
 
                         if(time.time() > 0.5 && time.time() < 0.75) {
                             robot.arm.GrabberDeposit();
@@ -165,143 +171,55 @@ public class States_Auto2 extends LinearOpMode {
                     break;
 
                 case PRELOAD_FORWARD:
-                   points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
+                    robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARD,1.0,1.0,10));
-                   if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 3.0) {
+                   if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 3.0 && Math.abs(robot.getPos().getHeading() - Math.toRadians(270)) < Math.toRadians(5)) {
                        newState(State.DRIVE_TO_INTAKE);
                    } else {
                        time.reset();
                        robot.arm.manualSetPosition(0.37);
                        robot.arm.GrabberOpen();
-                       robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
                    }
                    break;
 
                 case DRIVE_TO_INTAKE:
-                    if(robot.slides.isDown()){
-                        robot.slides.reset();
-                        robot.slides.setPower(0.0);
-                    } else {
-                        robot.slides.setPower(-0.26);
-                    }
-                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARD,1.0,1.0,10));
-
-                    if(cycle >= 2){
-                        points.add(new CurvePoint(BACk_FAR_CLEAR, 1.0, 1.0, 10));
-                    }else {
-                        points.add(new CurvePoint(INTAKE_CLEAR, 1.0, 1.0, 10));
-                    }
-
-                    double speed = 1.0;
-
-                    if (robot.getPos().vec().distTo(GRAB.vec()) < 10) {
-                        speed = 0.5;
-                    }
-
-                    if(cycle == 0) {
-                        points.add(new CurvePoint(GRAB, speed, speed, 10));
-                    } else if(cycle == 1){
-                        points.add(new CurvePoint(GRAB2, speed, speed, 10));
-                    } else if (cycle == 2){
-                        points.add(new CurvePoint(GRAB3, speed, speed, 10));
-                    } else if (cycle == 3){
-                        points.add(new CurvePoint(GRAB4, speed, speed, 10));
-                    } else if(cycle == 4){
-                        points.add(new CurvePoint(GRAB5, speed, speed, 10));
-                    }else {
-                        points.add(new CurvePoint(GRAB2, speed, speed, 10));
-                    }
-
-                    if(cycle==0){
-                        robot.slides.setPosition(slideHeightOne, -0.2501, 1);
-                    }else if(cycle==1){
-                        robot.slides.setPosition(slideHeightTwo, -0.2501, 1);
-                    }else if(cycle==2){
-                        robot.slides.setPosition(slideHeightThree, -0.2501, 1);
-                    } else {
-                        robot.slides.setPosition(slideHeightFour, -0.2501, 1);
-                    }
-
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.0 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.0)) {
-                        newState(State.GRAB);
-                    }else{
-                        if(cycle == 0 || cycle == 1) {
-                            robot.arm.manualSetPosition(armCycleFour);
-                        }/* else if(cycle == 1){
-                            robot.arm.manualSetPosition(armCycleTwo);
-                            robot.arm.grabberPos(grabberCycleTwo);
-                            //robot.slides.setPosition(85, -0.2501, 1);
-                        } */else if(cycle == 2){
-                            robot.arm.manualSetPosition(armCycleFour);
-                        } else if (cycle == 3){
-                            robot.arm.manualSetPosition(armCycleFour);
-                        } else if (cycle == 4){
-                            robot.arm.manualSetPosition(armCycleFive);
-                        }
-
-                        if(time.time() > 0.15) {
-                            robot.arm.grabberPos(grabberCycleFour);
-                        }
-                    }
-                    break;
-                case GRAB:
-                    if(cycle==0){
-                        robot.slides.setPosition(slideHeightOne, -0.5, 1.0);
-                    }else if(cycle==1){
-                        robot.slides.setPosition(slideHeightTwo,-0.5, 1.0);
-                    }else if(cycle==2){
-                        robot.slides.setPosition(slideHeightThree,-0.5, 1.0);
-                    }else{
+                    if(isDown) {
                         if (robot.slides.isDown()) {
                             robot.slides.reset();
                             robot.slides.setPower(0.0);
+                            isDown = false;
                         } else {
-                            robot.slides.setPower(-0.75);
+                            robot.slides.setPower(-0.26);
+                        }
+                    } else {
+                        if(cycle == 0) {
+                            robot.slides.setPosition(slideHeightOne, -0.3, 1);
+                            robot.arm.manualSetPosition(0.11);
+                        } else if (cycle >= 1){
+                            robot.slides.setPosition(slideHeightTwo, -0.3, 1);
+                            robot.arm.manualSetPosition(0.11);
                         }
                     }
-
-                    if(cycle == 0) {
-                        points.add(new CurvePoint(GRAB, 1.0, 1.0, 10));
-                    } else if(cycle == 1){
-                        points.add(new CurvePoint(GRAB2, 1.0, 1.0, 10));
-                    } else if (cycle == 2){
-                        points.add(new CurvePoint(GRAB3, 1.0, 1.0, 10));
-                    } else if (cycle == 3){
-                        points.add(new CurvePoint(GRAB4, 1.0, 1.0, 10));
-                    } else if(cycle == 4){
-                        points.add(new CurvePoint(GRAB5, 1.0, 1.0, 10));
-                    }else {
-                        points.add(new CurvePoint(GRAB2, 1.0, 1.0, 10));
-                    }
-
-                    if(time.time() > 0.15 && time.time() < 0.4){
-                        if(cycle == 0 || cycle == 1) {
-                            robot.arm.grabberPos(grabberCycleFive);
-                        }else if(cycle == 2){
-                            robot.arm.grabberPos(grabberCycleFive);
-                        } else if (cycle == 3){
-                            robot.arm.grabberPos(grabberCycleFive);
-                        } else if (cycle == 4) {
-                            robot.arm.grabberPos(grabberCycleFive);
+                    double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH);
+                    if(Math.abs(robot.getPos().getX()) > 10){
+                        if(robot.drive.followLine(false,1.2, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3)){
+                            newState(State.GRAB);
                         }
+                    }else if(Math.abs(robot.getPos().getX()) > 5){
+                        robot.arm.GrabberOpen();
+                        robot.drive.followLine(true, 20, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.3, 0.3);
+                    }else{
+                        robot.arm.GrabberOpen();
+                        robot.drive.followLine(true, 20, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.3, 0.3);
                     }
 
-                   if(time.time() > 0.01 && time.time() < 0.15){
-                        if(cycle == 0 || cycle == 1) {
-                            robot.arm.manualSetPosition(armCycleFive);
-                        }else if(cycle == 2){
-                            robot.arm.manualSetPosition(armCycleFive);
-                        } else if (cycle == 3){
-                            robot.arm.manualSetPosition(armCycleFive);
-                        } else if (cycle == 4) {
-                            robot.arm.manualSetPosition(armCycleFive);
-                        }
-                    }
-
-                    if(time.time() > 0.4){
+                   break;
+                case GRAB:
+                    robot.arm.GrabberClose();
+                    if(time.time() > 0.2){
                         robot.arm.V4BOutPose();
                     }
-
                     if(time.time() > 0.8) {
                         if(cycle == 0) {
                             newState(State.DRIVE_TO_DEPOSIT_MID);
@@ -329,6 +247,7 @@ public class States_Auto2 extends LinearOpMode {
                     points.add(new CurvePoint(DEPOSIT_MID,1.0,1.0,10));
                     points.add(new CurvePoint(DEPOSIT_MID_FORWARD,1.0,1.0,10));
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 2.0) {
+                        isDown = true;
                         newState(State.DRIVE_TO_INTAKE);
                     } else {
                         time.reset();
@@ -366,6 +285,7 @@ public class States_Auto2 extends LinearOpMode {
                     points.add(new CurvePoint(DEPOSIT_HIGH_FAR,1.0,1.0,10));
                     points.add(new CurvePoint(DEPOSIT_HIGH_FAR_FORWARD,1.0,1.0,10));
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 2.0) {
+                        isDown = true;
                         newState(State.DRIVE_TO_INTAKE);
                     } else {
                         time.reset();
@@ -433,6 +353,7 @@ public class States_Auto2 extends LinearOpMode {
                     break;
                 case IDLE:
                     robot.drive.setPower(0, 0, 0);
+                    robot.stopWebcam();
                     break;
             }
 
@@ -442,7 +363,10 @@ public class States_Auto2 extends LinearOpMode {
                 } else {
                     robot.GoTo(points.get(points.size() - 1).toPose(), new Pose2d(points.get(points.size() - 1).moveSpeed, points.get(points.size() - 1).moveSpeed, points.get(points.size() - 1).turnSpeed));
                 }
-            } else {
+            } else if(mRobotState == State.DRIVE_TO_INTAKE){
+                robot.drive.write();
+                robot.updatePos();
+            }else {
                 robot.drive.setPower(0, 0, 0,0);
                 robot.drive.write();
                 robot.updatePos();
@@ -461,6 +385,7 @@ public class States_Auto2 extends LinearOpMode {
             telemetry.addData("Position", robot.getPos());
             telemetry.addData("Cycle", cycle);
             telemetry.addData("Grabber position", robot.arm.grabber.getPosition());
+            telemetry.addData("Heading Error", Math.abs(robot.getPos().getHeading() - Math.toRadians(270)));
             telemetry.update();
         }
     }

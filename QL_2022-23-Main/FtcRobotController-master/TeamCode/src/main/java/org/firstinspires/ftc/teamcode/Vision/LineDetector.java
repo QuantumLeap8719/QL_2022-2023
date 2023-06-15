@@ -217,23 +217,3 @@ public class LineDetector extends OpenCvPipeline {
         return input;
     }
 }
-
-@Config
-class VisionConstants{
-    public static double lowerH = 160;
-    public static double lowerS = 110;
-    public static double lowerV = 80;
-    public static double upperH = 180;
-    public static double upperS = 255;
-    public static double upperV = 255;
-
-    public static double STACK_HEIGHT = 9.6;
-
-    public static double relX = 3.375;
-    public static double relY = 3.95625;
-
-    public static double dilationConstant = 3.5;
-    public static double erosionConstant = 2.5;
-    public static double blurConstant = 3;
-    public static double LineFollowerTarget = 320;
-}
