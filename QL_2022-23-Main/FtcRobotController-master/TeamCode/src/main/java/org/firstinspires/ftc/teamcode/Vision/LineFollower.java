@@ -34,7 +34,7 @@ public class LineFollower extends OpenCvPipeline {
     public static Point midMaxPoint;
 
     public LineFollower(Telemetry telemetry){
-        midMaxPoint = new Point();
+        midMaxPoint = new Point(320, 160);
         output = new Mat();
         HSVMat = new Mat();
         this.telemetry = telemetry;

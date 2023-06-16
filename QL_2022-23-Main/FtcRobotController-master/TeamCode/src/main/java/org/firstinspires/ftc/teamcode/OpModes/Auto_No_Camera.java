@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.Vision.*;
 
 import java.util.ArrayList;
 
-@Autonomous(name="Auto")
-public class States_Auto extends LinearOpMode {
+@Autonomous(name="Auto_NoCamera")
+public class Auto_No_Camera extends LinearOpMode {
 
     private enum State {
         DRIVE_TO_DEPOSIT_PRELOAD,
@@ -57,7 +57,7 @@ public class States_Auto extends LinearOpMode {
 
     //public Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-19.5, -43.5, Math.toRadians(113));
 
-    public Pose2d GRAB = new Pose2d(-19, 51.25, Math.toRadians(270));
+    public Pose2d GRAB = new Pose2d(-19, 51.25, Math.toRadians(90));
     public Pose2d GRAB2 = new Pose2d(-19, 51.25, Math.toRadians(270));
     public Pose2d GRAB3 = new Pose2d(-19, 51.75, Math.toRadians(270));
     public Pose2d GRAB4 = new Pose2d(-19, 52.75, Math.toRadians(270));
@@ -75,7 +75,7 @@ public class States_Auto extends LinearOpMode {
     //double armCycleOne = 0;
     //double armCycleTwo = 0.17;
     // double armCycleThree = 0.10;
-    double armCycleFour = 0.055;
+    double armCycleFour = 0.11;
     double armCycleFive = 0.0;
 
     double slideHeightOne = 120;
@@ -93,7 +93,7 @@ public class States_Auto extends LinearOpMode {
     double grabberCycleFour = V4B_Arm.grabberOpen;
     double grabberCycleFive = V4B_Arm.grabberClose;
 
-    int numCycles = 6;
+    int numCycles = 5;
     ElapsedTime time;
     NormalizedColorSensor colorSensor;
     Robot robot;
@@ -112,7 +112,7 @@ public class States_Auto extends LinearOpMode {
         boolean slidesKickout = false;
 
         //robot.initializeWebcam();
-        robot.coneWebcam();
+        //robot.coneWebcam();
         while (!isStarted() && !isStopRequested()) {
             //coneCase = robot.getConeCase();
             coneCase = 0;
@@ -152,9 +152,8 @@ public class States_Auto extends LinearOpMode {
                     break;
 
                 case PRELOAD_DEPOSIT:
-                    gtp = true;
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
-                        robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
+                    robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
 
                     if(time.time() < 0.2) {
                         robot.arm.GrabberDeposit();
@@ -169,7 +168,6 @@ public class States_Auto extends LinearOpMode {
                     }
 
                     if(time.time() > 0.6) {
-                        gtp = false;
                         newState(State.PRELOAD_FORWARD);
                     }
                     break;
@@ -194,45 +192,72 @@ public class States_Auto extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_INTAKE:
-                    if(isDown && robot.localizer.getPose().getX() > 25) {
-                        if (robot.slides.isDown()) {
-                            robot.slides.reset();
-                            robot.slides.setPower(0.0);
-                            isDown = false;
-                        } else {
-                            robot.slides.setPower(-0.26);
-                        }
+
+                    if(robot.slides.isDown()){
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
                     } else {
-                        if (cycle == 0) {
-                            robot.slides.setPosition(slideHeightOne, -0.3, 1);
-                            robot.arm.manualSetPosition(0.11);
-                        } else if (cycle == 1) {
-                            robot.slides.setPosition(slideHeightTwo, -0.3, 1);
-                            robot.arm.manualSetPosition(0.11);
-                        } else if (cycle == 2) {
-                            robot.slides.setPosition(slideHeightThree, -0.3, 1);
-                            robot.arm.manualSetPosition(0.11);
-                        } else if (cycle == 3){
-                            robot.slides.setPosition(slideHeightFour, -0.3, 1);
-                            robot.arm.manualSetPosition(0.11);
-                        }  else if (cycle == 4){
-                            robot.arm.manualSetPosition(0.11);
-                        }
+                        robot.slides.setPower(-0.26);
                     }
-                    double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH);
-                    if(robot.getPos().getX() < -17){
-                        if(robot.drive.followLine(false,0.8, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3)){
-                            GRAB = robot.getPos();
-                            newState(State.GRAB);
-                        }
-                    }else if(robot.getPos().getX() < -3){
-                        robot.arm.GrabberOpen();
-                        robot.drive.followLine(false, -20, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.3, 0.3);
-                    }else{
-                        robot.arm.GrabberOpen();
-                        robot.drive.followLine(false, -20, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.75, 0.75);
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARD,1.0,1.0,10));
+
+                    if(cycle >= 2){
+                        points.add(new CurvePoint(DEPOSIT_HIGH_FAR_FORWARD_CLEAR, 1.0, 1.0, 10));
+                    }else {
+                        points.add(new CurvePoint(INTAKE_CLEAR, 1.0, 1.0, 10));
                     }
 
+                    double speed = 1.0;
+
+                    if (robot.getPos().vec().distTo(GRAB.vec()) < 15) {
+                        speed = 0.5;
+                    }
+
+                    if(cycle == 0) {
+                        points.add(new CurvePoint(GRAB, speed, speed, 10));
+                    } else if(cycle == 1){
+                        points.add(new CurvePoint(GRAB, speed, speed, 10));
+                    } else if (cycle == 2){
+                        points.add(new CurvePoint(GRAB, speed, speed, 10));
+                    } else if (cycle == 3){
+                        points.add(new CurvePoint(GRAB, speed, speed, 10));
+                    } else if(cycle == 4){
+                        points.add(new CurvePoint(GRAB, speed, speed, 10));
+                    }else {
+                        points.add(new CurvePoint(GRAB, speed, speed, 10));
+                    }
+
+                    if(cycle==0){
+                        robot.slides.setPosition(slideHeightOne, -0.2501, 1);
+                    }else if(cycle==1){
+                        robot.slides.setPosition(slideHeightTwo, -0.2501, 1);
+                    }else if(cycle==2){
+                        robot.slides.setPosition(slideHeightThree, -0.2501, 1);
+                    } else {
+                        robot.slides.setPosition(slideHeightFour, -0.2501, 1);
+                    }
+
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.0 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.0)) {
+                        newState(State.GRAB);
+                    }else{
+                        if(cycle == 0 || cycle == 1) {
+                            robot.arm.manualSetPosition(armCycleFour);
+                        }/* else if(cycle == 1){
+                            robot.arm.manualSetPosition(armCycleTwo);
+                            robot.arm.grabberPos(grabberCycleTwo);
+                            //robot.slides.setPosition(85, -0.2501, 1);
+                        } */else if(cycle == 2){
+                            robot.arm.manualSetPosition(armCycleFour);
+                        } else if (cycle == 3){
+                            robot.arm.manualSetPosition(armCycleFour);
+                        } else if (cycle == 4){
+                            robot.arm.manualSetPosition(armCycleFive);
+                        }
+
+                        if(time.time() > 0.15) {
+                            robot.arm.grabberPos(grabberCycleFour);
+                        }
+                    }
                     break;
                 case GRAB:
                     points.add(new CurvePoint(GRAB,0.8,0.8,10));
@@ -390,7 +415,7 @@ public class States_Auto extends LinearOpMode {
                     break;
                 case IDLE:
                     robot.drive.setPower(0, 0, 0);
-                    robot.stopWebcam();
+                    //robot.stopWebcam();
                     break;
             }
 
@@ -415,7 +440,7 @@ public class States_Auto extends LinearOpMode {
             robot.update();
 
             for(int i = 0; i < points.size(); i++){
-                telemetry.addData("Point" + i, points.get(i).toString());
+                telemetry.addData("Point" + i, points.get(i));
             }
 
             telemetry.addData("State", mRobotState);

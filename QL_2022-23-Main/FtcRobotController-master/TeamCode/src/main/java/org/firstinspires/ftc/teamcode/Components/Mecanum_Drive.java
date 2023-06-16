@@ -39,7 +39,7 @@ public class Mecanum_Drive{
     public static double kir = 0;
     public static double kdr = 0.115;
 
-    public static double kpc = 0.002;
+    public static double kpc = 0.003;
     public static double kic = 0.0;
     public static double kdc = 0.0005;
 
@@ -218,7 +218,7 @@ public class Mecanum_Drive{
         double rot_power = PID_CAM.update(currentPixel);
 
 
-        if(Math.abs(PID_CAM.getLastError()) < 20 && Math.abs(PID_Y.getLastError()) < 0.5) {
+        if(Math.abs(PID_CAM.getLastError()) < 20 && Math.abs(PID_Y.getLastError()) < 1.5) {
             rot_power = 0;
         }
 

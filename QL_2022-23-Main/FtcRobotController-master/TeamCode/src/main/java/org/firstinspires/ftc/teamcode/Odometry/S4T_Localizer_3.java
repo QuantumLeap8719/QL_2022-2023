@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Math.Vector2;
 @Config
 public class S4T_Localizer_3 {
     public static double TRACK_WIDTH = 2180.3113118988017732986693395691;//3630.9785555810659563797329424431;3648.0700280808789388264691821431;//3640.7807316872701324482543057806;//3638.20242160918/']1428008798388814;//3641.9823515076139422333093781941;//<Manual//3638.8788301173219831858161448083;//3641.5844641498842038938871687857;//3637.4862243652678989978384118788;//3625.3506599545108796454610249217;//3657.221437308662920633179998537;//3654.5953807476466475929934164414;//3647.2742533654194621476247633262;//3666.2534803291279809380641521084;//3635.8150974628029979722651323634;//3637.8841117229976373372606212872; //3622.8970212485108265523574002363;//3625.4965519856784503699158350381//3624.8068805656135705815840053968;//3605.4165033322509888404083335593;//3602.3925594135049774607995420552;//3599.2094605516670707454218667877;//3625.7087585764676441509410133892;//3617.4327015356890866909590576939;//3605.5756582753428841761772173226;//2814.7745347874879345745360180654;//2798.0632657628389243188032229113;//2805.503759352385031265998538849;//2703.5252295662530948720862674681;
-    public static double AUX_WIDTH = -4;
+    public static double AUX_WIDTH = -4.51356273;
 
     private final double EPSILON = 1e-6;
     private static Pose2d myPose = new Pose2d(0, 0,0);
@@ -84,12 +84,19 @@ public class S4T_Localizer_3 {
         Vector2 myVec = ConstantVelo(dy, dx, prevHeading, dtheta);
         prevHeading = heading;
 
-        myPose = myPose.plus(new Pose2d(myVec.x, myVec.y, dtheta));
+        if(myVec.magnitude() < 5) {
+            myPose = myPose.plus(new Pose2d(myVec.x, myVec.y, dtheta));
+        }
         myPose = new Pose2d(myPose.getX(), myPose.getY(), (Math.toRadians(360) - heading) % Math.toRadians(360));
 
         addPacket("X Pos: ", myPose.getX());
         addPacket("Y Pos: ", myPose.getY());
-        addPacket("Theta Pos: ", Math.toRadians(myPose.getHeading()));
+        addPacket("Theta Pos: ", Math.toDegrees(myPose.getHeading()));
+        addPacket("D Theta: ", Math.toDegrees(dtheta));
+        addPacket("Raw Right Y: ", eryRaw);
+        addPacket("Raw Left Y: ", elyRaw);
+        addPacket("Raw Right X: ", erxRaw);
+
 
         dashboard.sendTelemetryPacket(packet);
 
