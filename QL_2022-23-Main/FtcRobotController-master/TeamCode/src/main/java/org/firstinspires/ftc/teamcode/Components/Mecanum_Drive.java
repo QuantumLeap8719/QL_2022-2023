@@ -39,7 +39,7 @@ public class Mecanum_Drive{
     public static double kir = 0;
     public static double kdr = 0.115;
 
-    public static double kpc = 0.003;
+    public static double kpc = 0.002;
     public static double kic = 0.0;
     public static double kdc = 0.0005;
 
@@ -160,11 +160,8 @@ public class Mecanum_Drive{
     }
 
     public void driveCentric(Gamepad gamepad, double maxMove, double maxTurn, double heading){
-        if(blue) {
-            setPowerCentic(gamepad.left_stick_x * maxMove, gamepad.left_stick_y * maxMove, gamepad.right_stick_x * maxTurn, heading);
-        }else{
-            setPowerCentic(-gamepad.left_stick_x * maxMove, -gamepad.left_stick_y * maxMove, -gamepad.right_stick_x * maxTurn, heading);
-        }
+            setPowerCentic(gamepad.left_stick_x * maxMove, gamepad.left_stick_y * maxMove, -gamepad.right_stick_x * maxTurn, heading);
+
     }
 
     public void driveCentric(Gamepad gamepad, double turnScale, double maxMove, double maxTurn, double heading){

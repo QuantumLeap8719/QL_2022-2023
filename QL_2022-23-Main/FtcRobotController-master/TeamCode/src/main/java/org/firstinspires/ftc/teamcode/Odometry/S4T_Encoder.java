@@ -11,11 +11,12 @@ public class S4T_Encoder {
 
     public S4T_Encoder(HardwareMap hardwareMap, String name){
         encoder = hardwareMap.get(DcMotorEx.class, name);
-        encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void reset(){
+        distance = 0;
         encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }

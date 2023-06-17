@@ -16,6 +16,8 @@ public class S4T_Localizer_3 {
 
     private final double EPSILON = 1e-6;
     private static Pose2d myPose = new Pose2d(0, 0,0);
+
+    private static double spikeBuffer = 0;
     double prevHeading = 0;
 
     double prevx = 0;
@@ -38,12 +40,14 @@ public class S4T_Localizer_3 {
 
     private TelemetryPacket packet;
     FtcDashboard dashboard;
+    public boolean start;
 
     public S4T_Localizer_3(Telemetry telemetry){
         this.telemetry = telemetry;
 
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
+        start = false;
     }
 
     public void setPacket(TelemetryPacket packet){
@@ -60,10 +64,14 @@ public class S4T_Localizer_3 {
     public Pose2d dashboardPos = new Pose2d(0, 0, 0);
 
     public void update(double elyRaw, double erxRaw, double eryRaw){
-        heading = (eryRaw - elyRaw) / TRACK_WIDTH;
-        heading %= 2 * Math.PI;
+        heading = (eryRaw - elyRaw) / TRACK_WIDTH + spikeBuffer;
 
         dtheta = heading - prevHeading;
+
+        if(dtheta > Math.toRadians(10) && !start){
+            spikeBuffer = dtheta;
+            return;
+        }
 
         double y = ((elyRaw + eryRaw)/2) / TICKS_TO_INCHES_VERT;
         double x = erxRaw / TICKS_TO_INCHES_STRAFE;
@@ -82,7 +90,10 @@ public class S4T_Localizer_3 {
         preveryRaw = eryRaw;
 
         Vector2 myVec = ConstantVelo(dy, dx, prevHeading, dtheta);
+
         prevHeading = heading;
+
+        heading %= 2 * Math.PI;
 
         if(myVec.magnitude() < 5) {
             myPose = myPose.plus(new Pose2d(myVec.x, myVec.y, dtheta));
@@ -93,6 +104,7 @@ public class S4T_Localizer_3 {
         addPacket("Y Pos: ", myPose.getY());
         addPacket("Theta Pos: ", Math.toDegrees(myPose.getHeading()));
         addPacket("D Theta: ", Math.toDegrees(dtheta));
+        addPacket("Buffer ", Math.toDegrees(spikeBuffer));
         addPacket("Raw Right Y: ", eryRaw);
         addPacket("Raw Left Y: ", elyRaw);
         addPacket("Raw Right X: ", erxRaw);
@@ -106,6 +118,7 @@ public class S4T_Localizer_3 {
     public void reset(){
         myPose = new Pose2d(0, 0, 0);
         heading = 0;
+        spikeBuffer = 0;
     }
 
     public double angleWrap(double angle){

@@ -34,12 +34,13 @@ public class V4B_Arm {
     private double front_hold = 0.33;
     private double auto_hold = .38;
     private double hold = 0.7;
+    private double mid_hold = 0.5;
 
-    private double out = .86;
+    private double out = .83;
     private double front = 0.05;
     private double hover = 0.14;
     private double terminal = 0.02;
-    public static double grabberOpen = 0.81;
+    public static double grabberOpen = 0.83;
     public static double grabberClose = 0.62;
     public static double grabberDeposit = 0.7;
 
@@ -67,7 +68,7 @@ public class V4B_Arm {
         grabber = new Caching_Servo(map,"grabber");
         leftArm.setZeros(.01, 1);
         rightArm.setZeros(.01, 0.96);
-        grabberToggle = 5;
+        grabberToggle = 7;
         stackToggle = 5;
         stackCase = 0;
         manualSetPosition(front_hold);
@@ -172,18 +173,18 @@ public class V4B_Arm {
                     manualSetPosition(out);
                 } else if(grabberToggle == 3){
                     if(time.time() > 0.1){
-                        if(time.time() > 0.25){ //
+                        if(time.time() > 0.35){ //
                             GrabberClose();
                         }else{
                             GrabberDeposit();
                         }
-                        if(time.time() > 0.35){
-                            manualSetPosition(front_hold);
+                        if(time.time() > 0.45){
+                            manualSetPosition(mid_hold);
                         }
                     }
                 }
                 else if (grabberToggle == 7){
-                    manualSetPosition(front_hold);
+                    manualSetPosition(mid_hold);
                     grabber.setPosition(grabberClose);
                 } else if (grabberToggle == 10){
                     manualSetPosition(front_hold);

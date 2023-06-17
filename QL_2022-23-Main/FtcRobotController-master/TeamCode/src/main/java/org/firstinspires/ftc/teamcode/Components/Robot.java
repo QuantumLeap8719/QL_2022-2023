@@ -86,11 +86,14 @@ public class Robot {
         gamepad2ex.loop();
 
         if(gamepad1ex.isPress(GamepadEx.Control.start)){
+            telemetry.addLine("Resetting...");
+            localizer.start = true;
             encoderLY.reset();
             encoderRY.reset();
             encoderRX.reset();
             localizer.reset();
         }else{
+            localizer.start = false;
             updatePos();
             update();
         }
