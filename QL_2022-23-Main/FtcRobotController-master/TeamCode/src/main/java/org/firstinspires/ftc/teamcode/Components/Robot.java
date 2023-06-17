@@ -9,8 +9,10 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Odometry.S4T_Encoder;
 import org.firstinspires.ftc.teamcode.Odometry.S4T_Localizer;
+import org.firstinspires.ftc.teamcode.Odometry.S4T_Localizer_3;
 import org.firstinspires.ftc.teamcode.OpModes.LinearTeleOp;
 import org.firstinspires.ftc.teamcode.Vision.BlueSleeveDetector;
+import org.firstinspires.ftc.teamcode.Vision.LineFollower;
 import org.firstinspires.ftc.teamcode.Vision.SleeveDetector;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -24,12 +26,13 @@ public class Robot {
     public Mecanum_Drive drive;
     public V4B_Arm arm;
     public Slides slides;
-    public S4T_Localizer localizer;
+    public S4T_Localizer_3 localizer;
     private S4T_Encoder encoderLY;
     private S4T_Encoder encoderLX;
     private S4T_Encoder encoderRY;
     private S4T_Encoder encoderRX;
     private HardwareMap hardwareMap;
+
     OpenCvCamera webcam;
     OpenCvPipeline detector;
     OpenCvPipeline blueDetector;
@@ -51,7 +54,7 @@ public class Robot {
         }
 
         encoderLY = new S4T_Encoder(map, "bleft");
-        encoderLX = new S4T_Encoder(map, "fleft");
+        //encoderLX = new S4T_Encoder(map, "fleft");
         encoderRY = new S4T_Encoder(map, "bright");
         encoderRX = new S4T_Encoder(map, "fright");
 
@@ -60,14 +63,9 @@ public class Robot {
         arm = new V4B_Arm(map);
         slides = new Slides(map, telemetry);
 
-        localizer = new S4T_Localizer(telemetry);
+        localizer = new S4T_Localizer_3(telemetry);
         telemetry.addData("Localizer Position", localizer.getPose());
         telemetry.update();
-    }
-
-    public void setBlue(){
-        drive.setBlue();
-        localizer.blue = true;
     }
 
     public void operate(GamepadEx gamepad1ex, GamepadEx gamepad2ex) {
@@ -76,12 +74,6 @@ public class Robot {
 
         drive.driveCentric(gamepad1ex.gamepad, 1, 0.8, getPos().getHeading());
         arm.operate(gamepad1ex, gamepad2ex, telemetry);
-
-
-        if(gamepad1ex.isPress(GamepadEx.Control.start)){
-            localizer.reset();
-        }
-
 
         slides.operate(gamepad1ex, gamepad2ex);
 
@@ -92,8 +84,19 @@ public class Robot {
         telemetry.addData("Robot Position:", getPos());
         gamepad1ex.loop();
         gamepad2ex.loop();
-        updatePos();
-        update();
+
+        if(gamepad1ex.isPress(GamepadEx.Control.start)){
+            telemetry.addLine("Resetting...");
+            localizer.start = true;
+            encoderLY.reset();
+            encoderRY.reset();
+            encoderRX.reset();
+            localizer.reset();
+        }else{
+            localizer.start = false;
+            updatePos();
+            update();
+        }
     }
 
     public void setStartPose(Pose2d startPos){
@@ -107,6 +110,29 @@ public class Robot {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         detector = new SleeveDetector(telemetry);
+        webcam.setPipeline(detector);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                FtcDashboard.getInstance().startCameraStream(webcam, 30);
+                webcam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+    }
+
+    public void coneWebcam(){
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        detector = new LineFollower(telemetry);
         webcam.setPipeline(detector);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -170,16 +196,18 @@ public class Robot {
     }
 
     public void updatePos(){
-        encoderLX.update();
+        //encoderLX.update();
         encoderLY.update();
         encoderRX.update();
         encoderRY.update();
-        localizer.update(getRawLeft_X_Dist(), getRawLeft_Y_Dist(), getRawRight_X_Dist(), getRawRight_Y_Dist());
+        localizer.update(getRawLeft_Y_Dist(),getRawRight_X_Dist(), getRawRight_Y_Dist());
     }
 
-    public double getRawLeft_X_Dist(){
+    /*public double getRawLeft_X_Dist(){
         return encoderLX.distance;
     }
+
+     */
 
     public double getRawRight_X_Dist(){
         return encoderRX.distance;

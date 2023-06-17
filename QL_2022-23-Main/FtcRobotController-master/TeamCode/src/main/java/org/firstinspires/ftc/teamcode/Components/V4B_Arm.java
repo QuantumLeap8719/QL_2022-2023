@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Components;
 
+import android.app.admin.DevicePolicyManager;
+import android.hardware.Sensor;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -31,13 +34,15 @@ public class V4B_Arm {
     private double front_hold = 0.33;
     private double auto_hold = .38;
     private double hold = 0.7;
+    private double mid_hold = 0.5;
 
-    private double out = 1;
-    private double front = 0.0;
-    private double hover = 0.11;
+    private double out = .83;
+    private double front = 0.05;
+    private double hover = 0.14;
     private double terminal = 0.02;
-    public static double grabberOpen = 0.67;
-    public static double grabberClose = 0.5;
+    public static double grabberOpen = 0.83;
+    public static double grabberClose = 0.62;
+    public static double grabberDeposit = 0.7;
 
     private double stack_five = 0.08;
     private double stack_four = 0.15;
@@ -48,7 +53,7 @@ public class V4B_Arm {
 
     public static boolean slideToggle;
     public static boolean armToggle = false;
-    public static int grabberToggle = 5;
+    public static int grabberToggle = 7;
     public static int stackToggle = 5;
     public static int stackCase = 0;
     public static int groundCase = 0;
@@ -61,9 +66,9 @@ public class V4B_Arm {
         rightArm = new Caching_Servo(map, "rightarm");
         leftArm = new Caching_Servo(map, "leftarm");
         grabber = new Caching_Servo(map,"grabber");
-        leftArm.setZeros(.01, .93);
-        rightArm.setZeros(.01, .92);
-        grabberToggle = 5;
+        leftArm.setZeros(.01, 1);
+        rightArm.setZeros(.01, 0.96);
+        grabberToggle = 7;
         stackToggle = 5;
         stackCase = 0;
         manualSetPosition(front_hold);
@@ -122,6 +127,10 @@ public class V4B_Arm {
         grabber.setPosition(grabberClose);
     }
 
+    public void GrabberDeposit(){
+        grabber.setPosition(grabberDeposit);
+    }
+
     public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry) {
 
         switch(mRobotState){
@@ -164,17 +173,18 @@ public class V4B_Arm {
                     manualSetPosition(out);
                 } else if(grabberToggle == 3){
                     if(time.time() > 0.1){
-                        if(time.time() > 0.25){ //
+                        if(time.time() > 0.35){ //
                             GrabberClose();
                         }else{
-                            GrabberOpen();
+                            GrabberDeposit();
                         }
-                        if(time.time() > 0.35){
-                            manualSetPosition(front_hold);
+                        if(time.time() > 0.45){
+                            manualSetPosition(mid_hold);
                         }
                     }
-                } else if (grabberToggle == 5){
-                    manualSetPosition(front_hold);
+                }
+                else if (grabberToggle == 7){
+                    manualSetPosition(mid_hold);
                     grabber.setPosition(grabberClose);
                 } else if (grabberToggle == 10){
                     manualSetPosition(front_hold);
@@ -242,7 +252,7 @@ public class V4B_Arm {
                         if(time.time() > 0.39){
                             GrabberClose();
                         }else{
-                            GrabberOpen();
+                            GrabberDeposit();
                         }
                         if(time.time() > 0.45){
                             manualSetPosition(front_hold);

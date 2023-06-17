@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.PurePusuit;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
-import org.firstinspires.ftc.teamcode.Components.Math.Vector2;
+import org.firstinspires.ftc.teamcode.Math.Vector2;
 
 public class RCOffset {
     public double left = 0.0;

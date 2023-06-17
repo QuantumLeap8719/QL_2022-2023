@@ -66,11 +66,11 @@ public class Track_Width_Tuner extends LinearOpMode {
 
             telemetry.addData("Refresh Rate", (System.currentTimeMillis() - prevTime)/1000.0);
             telemetry.addData("Right X RAW", robot.getRawRight_X_Dist());
-            telemetry.addData("Left X RAW", robot.getRawLeft_X_Dist());
+            //telemetry.addData("Left X RAW", robot.getRawLeft_X_Dist());
             telemetry.addData("Right Y RAW", robot.getRawRight_Y_Dist());
             telemetry.addData("Left Y RAW", robot.getRawLeft_Y_Dist());
-            telemetry.addData("Difference X", Math.abs(robot.getRawRight_X_Dist() + robot.getRawLeft_X_Dist()));
-            telemetry.addData("Sum X", robot.getRawRight_X_Dist() - robot.getRawLeft_X_Dist());
+            //telemetry.addData("Difference X", Math.abs(robot.getRawRight_X_Dist() + robot.getRawLeft_X_Dist()));
+            //telemetry.addData("Sum X", robot.getRawRight_X_Dist() - robot.getRawLeft_X_Dist());
             telemetry.addData("Difference Y", Math.abs(robot.getRawRight_Y_Dist() + robot.getRawLeft_Y_Dist()));
             telemetry.addData("Sum Y", robot.getRawRight_Y_Dist() - robot.getRawLeft_Y_Dist());
 

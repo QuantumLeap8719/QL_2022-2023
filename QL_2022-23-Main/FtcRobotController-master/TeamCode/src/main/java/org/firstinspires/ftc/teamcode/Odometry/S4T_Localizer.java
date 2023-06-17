@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Components.Math.Vector2;
+import org.firstinspires.ftc.teamcode.Math.Vector2;
 import org.firstinspires.ftc.teamcode.Components.Robot;
 
 @Config
@@ -50,29 +50,11 @@ public class S4T_Localizer {
     FtcDashboard dashboard;
 
     public S4T_Localizer(Telemetry telemetry){
-        //False for home field(blue)
-        //True for away field(red)
         blue = false;
         this.telemetry = telemetry;
 
         dashboard = FtcDashboard.getInstance();
         packet = new TelemetryPacket();
-
-        /*if(slamra == null){
-            try{
-                slamra = new T265Camera(OFFSET, odoCovariance, map.appContext);
-            }catch (Exception e){
-                slamra = null;
-                telemetry.addData("ERROR","Couldn't find the camera... Trying again...");
-            }
-        }
-        telemetry.addData("Is started?", slamra.isStarted());
-        if(slamra != null){
-            //slamra.setPose(new Pose2d(0, 0, new Rotation2d(0)));
-            if(!slamra.isStarted()){
-                slamra.start();
-            }
-        }*/
     }
 
     public void setPacket(TelemetryPacket packet){

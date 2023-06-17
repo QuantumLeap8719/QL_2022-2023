@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Components.Math;
+package org.firstinspires.ftc.teamcode.Math;
 
 public class Vector3 {
     public double x;
