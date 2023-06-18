@@ -20,4 +20,7 @@ public class VisionConstants {
     public static double erosionConstant = 2.5;
     public static double blurConstant = 3;
     public static double LineFollowerTarget = 320;
+
+    public static int minArea = 1000;
+    public static int horizon = 200;
 }

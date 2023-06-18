@@ -34,7 +34,7 @@ public class Robot {
     private HardwareMap hardwareMap;
 
     OpenCvCamera webcam;
-    OpenCvPipeline detector;
+    public OpenCvPipeline detector;
     OpenCvPipeline blueDetector;
 
     private Telemetry telemetry;

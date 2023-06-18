@@ -62,9 +62,8 @@ public class RunFollower extends OpMode {
 
     @Override
     public void init_loop(){
-        telemetry.addData("mid x pos", detector.midMaxPoint.x);
+        telemetry.addData("mid x pos", LineFollower.midMaxPoint);
     }
-
 
     @Override
     public void loop() {
@@ -72,27 +71,34 @@ public class RunFollower extends OpMode {
 
         robot.slides.setPosition(90);
         double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH);
-        if(Math.abs(robot.getPos().getY()) > 39){
-            if(robot.drive.followLine(false, 1.2, VisionConstants.LineFollowerTarget, distance, detector.midMaxPoint.x, 0.3, 0.3)){
-                robot.arm.GrabberClose();
-            }else{
-                robot.arm.GrabberOpen();
-            }
-        }else if(Math.abs(robot.getPos().getY()) > 25){
-            robot.arm.GrabberOpen();
-            robot.drive.followLine(false, -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), detector.midMaxPoint.x, 0.3, 0.3);
+        telemetry.addData("IS EMPTY?", LineFollower.isEmpty());
+        if((Math.abs(Math.toDegrees(robot.getPos().getHeading())) > 12 && Math.abs(robot.getPos().getY()) < 39) || LineFollower.isEmpty()) {
+            telemetry.addData("", "Camera failure... using odo.");
+            robot.GoTo(new Pose2d(0, -40, 0), new Pose2d(0.75, 0.75, 0.75));
         }else{
-            robot.arm.GrabberOpen();
-            robot.drive.followLine(false, -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), detector.midMaxPoint.x, 0.75, 0.75);
+            if (Math.abs(robot.getPos().getY()) > 39) {
+                if (robot.drive.followLine(false, 1.2, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3)) {
+                    robot.arm.GrabberClose();
+                } else {
+                    robot.arm.GrabberOpen();
+                }
+            } else if (Math.abs(robot.getPos().getY()) > 25) {
+                robot.arm.GrabberOpen();
+                robot.drive.followLine(false, -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), LineFollower.midMaxPoint.x, 0.3, 0.3);
+            } else {
+                robot.arm.GrabberOpen();
+                robot.drive.followLine(false, -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), LineFollower.midMaxPoint.x, 0.75, 0.75);
+            }
+
+            robot.updatePos();
+            robot.drive.write();
         }
 
         telemetry.addData("Distance", distance);
         telemetry.addData("position", robot.getPos());
         telemetry.addData("target", target);
-        robot.update();
-        robot.updatePos();
-        robot.drive.write();
         robot.arm.write();
         robot.slides.write();
+        robot.update();
     }
 }
