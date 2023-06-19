@@ -103,7 +103,7 @@ public class States_Auto extends LinearOpMode {
         robot = new Robot(hardwareMap, telemetry);
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
         time = new ElapsedTime();
-        robot.localizer.reset();
+        robot.resetOdo();
         robot.setStartPose(new Pose2d(0, 0, 0));
         robot.arm.GrabberClose();
         robot.arm.V4BOutPose();
@@ -116,6 +116,9 @@ public class States_Auto extends LinearOpMode {
         while (!isStarted() && !isStopRequested()) {
             //coneCase = robot.getConeCase();
             coneCase = 0;
+            telemetry.addData("Robot Pos", robot.getPos());
+            robot.update();
+            robot.updatePos();
             telemetry.addData("Case", coneCase);
             telemetry.update();
         }

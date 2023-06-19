@@ -42,13 +42,13 @@ public class V4B_Arm {
     private double terminal = 0.02;
     public static double grabberOpen = 0.83;
     public static double grabberClose = 0.62;
-    public static double grabberDeposit = 0.7;
+    public static double grabberDeposit = 0.71;
 
-    private double stack_five = 0.08;
+    private double stack_five = 0.11;
     private double stack_four = 0.15;
     private double stack_three = 0.09;
     private double stack_two = 0.04;
-    private double stack_one = 0;
+    private double stack_one = 0.05;
 
 
     public static boolean slideToggle;
@@ -272,7 +272,7 @@ public class V4B_Arm {
                         grabberPos(grabberClose);
                         manualSetPosition(stack_five);
                     } else if (stackToggle == 2) {
-                        manualSetPosition(stack_five + 0.05);
+                        manualSetPosition(stack_five);
                         grabberPos(grabberClose);
                     } else if (stackToggle == 1) {
                         manualSetPosition(stack_one);
@@ -357,6 +357,9 @@ public class V4B_Arm {
                 } else if(groundCase == 4){
                     if(time.time() > 0.15) {
                         grabber.setPosition(grabberOpen);
+                    }
+                    if(time.time() > 0.3){
+                        manualSetPosition(0.08);
                     }
                 } else{
                     groundCase = 0;
