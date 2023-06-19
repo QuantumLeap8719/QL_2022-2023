@@ -220,17 +220,23 @@ public class States_Auto extends LinearOpMode {
                         }
                     }
                     double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH);
-                    if(robot.getPos().getX() < -17){
-                        if(robot.drive.followLine(false,0.8, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3)){
-                            GRAB = robot.getPos();
-                            newState(State.GRAB);
+
+                    if((Math.abs(90 - Math.toDegrees(robot.getPos().getHeading())) > 12 && Math.abs(robot.getPos().getX()) < -17) || LineFollower.isEmpty()) {
+                        telemetry.addData("", "Camera failure... using odo.");
+                        robot.GoTo(new Pose2d(-20, 51.5, Math.toRadians(90)), new Pose2d(0.75, 0.75, 0.75));
+                    }else {
+                        if (robot.getPos().getX() < -17) {
+                            if (robot.drive.followLine(false, 0.8, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3)) {
+                                GRAB = robot.getPos();
+                                newState(State.GRAB);
+                            }
+                        } else if (robot.getPos().getX() < -3) {
+                            robot.arm.GrabberOpen();
+                            robot.drive.followLine(false, -20, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.3, 0.3);
+                        } else {
+                            robot.arm.GrabberOpen();
+                            robot.drive.followLine(false, -20, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.75, 0.75);
                         }
-                    }else if(robot.getPos().getX() < -3){
-                        robot.arm.GrabberOpen();
-                        robot.drive.followLine(false, -20, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.3, 0.3);
-                    }else{
-                        robot.arm.GrabberOpen();
-                        robot.drive.followLine(false, -20, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.75, 0.75);
                     }
 
                     break;

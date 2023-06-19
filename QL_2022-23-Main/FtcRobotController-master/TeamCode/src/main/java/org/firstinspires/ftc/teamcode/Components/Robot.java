@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Components;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -28,7 +29,7 @@ public class Robot {
     public Slides slides;
     public S4T_Localizer_3 localizer;
     private S4T_Encoder encoderLY;
-    private S4T_Encoder encoderLX;
+    //private S4T_Encoder encoderLX;
     private S4T_Encoder encoderRY;
     private S4T_Encoder encoderRX;
     private HardwareMap hardwareMap;
@@ -82,12 +83,13 @@ public class Robot {
         slides.write();
 
         telemetry.addData("Robot Position:", getPos());
+        telemetry.addData("Mode", encoderRX.encoder.getMode());
         gamepad1ex.loop();
         gamepad2ex.loop();
 
         if(gamepad1ex.isPress(GamepadEx.Control.start)){
             telemetry.addLine("Resetting...");
-            localizer.start = true;
+            localizer.start = false;
             encoderLY.reset();
             encoderRY.reset();
             encoderRX.reset();
@@ -97,7 +99,7 @@ public class Robot {
             updatePos();
             update();
         }
-    }
+    }g
 
     public void setStartPose(Pose2d startPos){
         this.startPos = startPos;

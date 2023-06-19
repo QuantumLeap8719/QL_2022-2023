@@ -64,14 +64,16 @@ public class S4T_Localizer_3 {
     public Pose2d dashboardPos = new Pose2d(0, 0, 0);
 
     public void update(double elyRaw, double erxRaw, double eryRaw){
-        heading = (eryRaw - elyRaw) / TRACK_WIDTH + spikeBuffer;
+        heading = (eryRaw - elyRaw) / TRACK_WIDTH;
 
         dtheta = heading - prevHeading;
-
+/*
         if(dtheta > Math.toRadians(10) && !start){
             spikeBuffer = dtheta;
             return;
         }
+
+ */
 
         double y = ((elyRaw + eryRaw)/2) / TICKS_TO_INCHES_VERT;
         double x = erxRaw / TICKS_TO_INCHES_STRAFE;
@@ -118,7 +120,6 @@ public class S4T_Localizer_3 {
     public void reset(){
         myPose = new Pose2d(0, 0, 0);
         heading = 0;
-        spikeBuffer = 0;
     }
 
     public double angleWrap(double angle){
