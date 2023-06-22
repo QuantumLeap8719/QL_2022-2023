@@ -12,11 +12,11 @@ public class VisionConstants {
     public static double upperV = 255;
 
     public static double lowerHBlue = 0;
-    public static double lowerSBlue = 50;
-    public static double lowerVBlue = 80;
-    public static double upperHBlue = 40;
+    public static double lowerSBlue = 140;
+    public static double lowerVBlue = 70;
+    public static double upperHBlue = 130;
     public static double upperSBlue = 255;
-    public static double upperVBlue = 125;
+    public static double upperVBlue = 255;
 
 
     public static double STACK_HEIGHT = 9.6;

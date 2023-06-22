@@ -14,13 +14,12 @@ import org.firstinspires.ftc.teamcode.Components.V4B_Arm;
 import org.firstinspires.ftc.teamcode.PurePusuit.CurvePoint;
 import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
 import org.firstinspires.ftc.teamcode.Vision.LineFollower;
-import org.firstinspires.ftc.teamcode.Vision.LineFollowerBlue;
 import org.firstinspires.ftc.teamcode.Vision.VisionConstants;
 
 import java.util.ArrayList;
 
-@Autonomous(name="BlueMainAutoMid")
-public class States_Auto_AngleCurveMid extends LinearOpMode {
+@Autonomous(name="RedMainAutoMid")
+public class States_Auto_AngleCurveMidRed extends LinearOpMode {
 
     private enum State {
         DRIVE_TO_DEPOSIT_PRELOAD,
@@ -46,14 +45,14 @@ public class States_Auto_AngleCurveMid extends LinearOpMode {
     public Pose2d PRE_LOAD_CLEAR3 = new Pose2d(-12, 54, Math.toRadians(90));
     public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(5.5, 36.4, Math.toRadians(30));
     public Pose2d PRE_LOAD_DEPOSIT_TURN = new Pose2d(2.9, 42.5, Math.toRadians(110));
-    public Pose2d PRE_LOAD_DEPOSIT_FORWARD = new Pose2d(-2, 50, Math.toRadians(110));
-    public Pose2d PRE_LOAD_DEPOSIT_FORWARDGRAB = new Pose2d(-3, 54, Math.toRadians(90));
+    public Pose2d PRE_LOAD_DEPOSIT_FORWARD = new Pose2d(-3, 54, Math.toRadians(110));
+    public Pose2d PRE_LOAD_DEPOSIT_FORWARDGRAB = new Pose2d(-6, 52, Math.toRadians(90));
     public Pose2d INTAKE_CLEAR = new Pose2d(-15.622, 52.665, Math.toRadians(90));
     public Pose2d INTAKE_FAR_CLEAR = new Pose2d(13, 52, Math.toRadians(0));
     public Pose2d BACk_FAR_CLEAR = new Pose2d(13, 55, Math.toRadians(0));
     public Pose2d DEPOSIT_HIGH_FAR_CLEAR = new Pose2d(11.606, 51.937, Math.toRadians(90));
     public static Pose2d DEPOSIT_HIGH_FAR1 = new Pose2d(29.348, 43.399, Math.toRadians(134)); //SECOND HIGH
-    public static Pose2d DEPOSIT_HIGH_FAR2 = new Pose2d(36.8, 43.4, Math.toRadians(129)); //SECOND HIGH
+    public static Pose2d DEPOSIT_HIGH_FAR2 = new Pose2d(30, 42, Math.toRadians(134)); //SECOND HIGH
     public static Pose2d DEPOSIT_HIGH_FAR3 = new Pose2d(36.8, 43.4, Math.toRadians(129)); //SECOND HIGH
     public static Pose2d DEPOSIT_HIGH_FAR4 = new Pose2d(36.8, 43.4, Math.toRadians(129)); //SECOND HIGH
 
@@ -74,9 +73,9 @@ public class States_Auto_AngleCurveMid extends LinearOpMode {
     public Pose2d GRAB4 = new Pose2d(-19, 52.75, Math.toRadians(270));
     public Pose2d GRAB5 = new Pose2d(-19, 53, Math.toRadians(270));
 
-    public static Pose2d PARK_CASE_1 = new Pose2d(-18, 52, Math.toRadians(90));
-    public static Pose2d PARK_CASE_3 = new Pose2d(-18.7, 52.5, Math.toRadians(90));
-    public static Pose2d PARK_CASE_2 = new Pose2d(3.2, 52.5, Math.toRadians(90));
+    public static Pose2d PARK_CASE_1 = new Pose2d(-28, 51, Math.toRadians(90));
+    public static Pose2d PARK_CASE_3 = new Pose2d(-3, 51, Math.toRadians(90));
+    public static Pose2d PARK_CASE_2 = new Pose2d(12, 51, Math.toRadians(90));
 
     double coneCase;
     boolean gtp = false;
@@ -143,7 +142,7 @@ public class States_Auto_AngleCurveMid extends LinearOpMode {
 
         robot.closeCamera();
 
-        robot.blueConeWebcam();
+        robot.coneWebcam();
 
         time.startTime();
 
@@ -184,19 +183,19 @@ public class States_Auto_AngleCurveMid extends LinearOpMode {
                     points.add(new CurvePoint(RobotMovement.getLastFollowMe(),1.0,1.0,10));
                     robot.slides.setPosition(depositHeightMid - 50, -0.3, 1);
 
-                    if(time.time() > 0.4 && time.time() < 0.6) {
+                    if(time.time() > 0.2 && time.time() < 0.4) {
                         robot.arm.GrabberDeposit();
                     }
 
-                    if(time.time() > 0.6 && time.time() < 0.7){
+                    if(time.time() > 0.4 && time.time() < 0.5){
                         robot.arm.GrabberClose();
                     }
 
-                    if(time.time() > 0.7){
+                    if(time.time() > 0.5){
                         robot.arm.V4BAutoHold();
                     }
 
-                    if(time.time() > 0.9) {
+                    if(time.time() > 0.7) {
                         newState(State.PRELOAD_TURN);
                     }
                     break;
@@ -217,11 +216,12 @@ public class States_Auto_AngleCurveMid extends LinearOpMode {
                     break;
 
                 case PRELOAD_FORWARD:
-                    PPIND = false;
-                    gtp = true;
+                    PPIND = true;
+                    gtp = false;
                     robot.slides.setPosition(depositHeightMid - 50, -0.3, 1);
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARD,1.0,turnSpeed,10));
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARDGRAB,1.0,turnSpeed,10));
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 3.0 && Math.abs(robot.getPos().getHeading() - Math.toRadians(90)) < Math.toRadians(5)) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 6.0 && Math.abs(robot.getPos().getHeading() - Math.toRadians(90)) < Math.toRadians(5)) {
                         newState(State.DRIVE_TO_INTAKE);
                     } else {
                         time.reset();
@@ -271,14 +271,14 @@ public class States_Auto_AngleCurveMid extends LinearOpMode {
                     }
 
                     robot.arm.GrabberOpen();
-                    telemetry.addData("IS EMPTY?", LineFollowerBlue.isEmpty());
+                    telemetry.addData("IS EMPTY?", LineFollower.isEmpty());
 
                     double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH);
-                    if((Math.abs(90 - Math.toDegrees(robot.getPos().getHeading())) > 25 && Math.abs(robot.getPos().getX()) < -17) || LineFollowerBlue.isEmpty()) {
+                    if((Math.abs(90 - Math.toDegrees(robot.getPos().getHeading())) > 25 && Math.abs(robot.getPos().getX()) < -17) || LineFollower.isEmpty()) {
                         telemetry.addData("", "Camera failure... using odo.");
                         robot.GoTo(new Pose2d(-28, 51.25, Math.toRadians(90)), new Pose2d(0.75, 0.75, 0.75));
                     } else {
-                        if (robot.getPos().getX() < -25) {
+                        if(robot.getPos().getX() < -13){
                             telemetry.addLine("Here 1");
                             robot.drive.followLine(true, 1.2, bufferHeading, distance, robot.getPos().getHeading(), 0.3, 0.3);
                             if(Math.abs(bufferHeading - robot.getPos().getHeading()) < Math.toRadians(1.5) && Math.abs(1.2 - distance) < 0.5){
@@ -287,14 +287,20 @@ public class States_Auto_AngleCurveMid extends LinearOpMode {
                                 //robot.setOffset(OFFSET);
                                 newState(State.GRAB);
                             }
-                        } else if (robot.getPos().getX() < -1) { //-11 //-3
+                        }/*else if (robot.getPos().getX() < -18) {
+                            telemetry.addLine("Here 1");
+                            robot.drive.followLine(false, 1.2, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3); //0.3
+                            //robot.drive.followLine(true, 1.2, bufferHeading, distance, robot.getPos().getHeading(), 0.3, 0.3);
+                            //if(Math.abs(bufferHeading - robot.getPos().getHeading()) < Math.toRadians(1.5) && Math.abs(1.2 - distance) < 0.5){
+                        } */else if (robot.getPos().getX() < 15) { //-11 //-3
                             telemetry.addLine("Here 2");
                             bufferHeading = robot.getPos().getHeading();
-                            robot.drive.followLine(false, -28, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollowerBlue.midMaxPoint.x, 0.3, 0.3);
+                            double speed = (((robot.getPos().vec().distTo(GRAB.vec())) / 43) * 0.55) + 0.4;
+                            robot.drive.followLine(false, -28, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, speed, speed); //0.3
                         } else {
                             telemetry.addLine("Here 3");
                             bufferHeading = robot.getPos().getHeading();
-                            robot.drive.followLine(false, -28, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollowerBlue.midMaxPoint.x, 0.75, 0.75);
+                            robot.drive.followLine(false, -28, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollower.midMaxPoint.x, 0.75, 0.75);
                         }
                     }
 
@@ -406,10 +412,10 @@ public class States_Auto_AngleCurveMid extends LinearOpMode {
                 case HIGH_FAR_FORWARD:
                     PPIND = true;
                     gtp = false;
-                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR1,1.0,1.0,10));
+                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR1,moveSpeed,turnSpeed,10));
                     points.add(new CurvePoint(DEPOSIT_HIGH_FAR_FORWARD,1.0,1.0,10));
                     points.add(new CurvePoint(DEPOSIT_HIGH_FAR_FORWARD_CLEAR,1.0,1.0,10));
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 5.0  && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(5.0)) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 5.0  && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < (cycle == 5 ? Math.toRadians(2.0) : Math.toRadians(5.0))) {
                         isDown = true;
                         if(cycle + 1 == numCycles){
                             newState(State.PARK);

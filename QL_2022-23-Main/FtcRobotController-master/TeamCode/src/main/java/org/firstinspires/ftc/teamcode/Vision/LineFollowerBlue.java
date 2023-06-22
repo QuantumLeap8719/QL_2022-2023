@@ -58,7 +58,7 @@ public class LineFollowerBlue extends OpenCvPipeline {
         Scalar upperHSV = new Scalar(VisionConstants.upperHBlue, VisionConstants.upperSBlue, VisionConstants.upperVBlue);
 
         input = new Mat(input, new Rect(0, VisionConstants.horizon, 640, 320 - VisionConstants.horizon));
-        Imgproc.cvtColor(input, HSVMat, Imgproc.COLOR_BGR2YCrCb);
+        Imgproc.cvtColor(input, HSVMat, Imgproc.COLOR_BGR2HSV_FULL);
         Core.inRange(HSVMat, lowerHSV, upperHSV, output);
 
         Imgproc.GaussianBlur(output, output, new Size(VisionConstants.blurConstant, VisionConstants.blurConstant), 0);
