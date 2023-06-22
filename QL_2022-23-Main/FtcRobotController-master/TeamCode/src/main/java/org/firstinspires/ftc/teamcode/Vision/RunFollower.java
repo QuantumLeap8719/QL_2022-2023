@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
+import org.firstinspires.ftc.robotcore.external.State;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -26,16 +27,23 @@ public class RunFollower extends OpMode {
     LineFollower detector;
     Robot robot;
     Pose2d target;
-    boolean first;
+    double bufferHeading;
     NormalizedColorSensor colorSensor;
+
+    private enum STATE{
+        DRIVING,
+        GRABBING
+    }
+
+    STATE mRobotState = STATE.DRIVING;
 
     @Override
     public void init() {
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
-        first = true;
+        bufferHeading = 0;
         target = new Pose2d();
         robot = new Robot(hardwareMap, telemetry);
-        robot.localizer.reset();
+        robot.resetOdo();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
@@ -71,34 +79,56 @@ public class RunFollower extends OpMode {
 
         robot.slides.setPosition(90);
         double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH);
-        telemetry.addData("IS EMPTY?", LineFollower.isEmpty());
-        if((Math.abs(Math.toDegrees(robot.getPos().getHeading())) > 12 && Math.abs(robot.getPos().getY()) < 39) || LineFollower.isEmpty()) {
-            telemetry.addData("", "Camera failure... using odo.");
-            robot.GoTo(new Pose2d(0, -40, 0), new Pose2d(0.75, 0.75, 0.75));
-        }else{
-            if (Math.abs(robot.getPos().getY()) > 39) {
-                if (robot.drive.followLine(false, 1.2, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3)) {
-                    robot.arm.GrabberClose();
-                } else {
-                    robot.arm.GrabberOpen();
-                }
-            } else if (Math.abs(robot.getPos().getY()) > 25) {
-                robot.arm.GrabberOpen();
-                robot.drive.followLine(false, -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), LineFollower.midMaxPoint.x, 0.3, 0.3);
-            } else {
-                robot.arm.GrabberOpen();
-                robot.drive.followLine(false, -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), LineFollower.midMaxPoint.x, 0.75, 0.75);
-            }
 
-            robot.updatePos();
-            robot.drive.write();
+        switch (mRobotState){
+
+            case DRIVING:
+                robot.arm.GrabberOpen();
+                telemetry.addData("IS EMPTY?", LineFollower.isEmpty());
+
+                double heading = 0;
+
+                if(robot.getPos().getHeading() <= Math.PI){
+                    heading = robot.getPos().getHeading();
+                }else{
+                    heading = -((2 * Math.PI ) - robot.getPos().getHeading());
+                }
+
+                if((Math.abs(Math.toDegrees(heading)) > 12 && Math.abs(robot.getPos().getY()) < 39) || LineFollower.isEmpty()) {
+                    telemetry.addData("", "Camera failure... using odo.");
+                    robot.GoTo(new Pose2d(0, -40, 0), new Pose2d(0.75, 0.75, 0.75));
+                }else{
+                    if (Math.abs(robot.getPos().getY()) > 35) {
+                        robot.drive.followLine(true, 1.2, bufferHeading , distance, robot.getPos().getHeading(), 0.3, 0.3);
+                        if(Math.abs(bufferHeading - robot.getPos().getHeading()) < Math.toRadians(1.5) && Math.abs(1.2 - distance) < 0.5){
+                            mRobotState = STATE.GRABBING;
+                        }
+                    } else if (Math.abs(robot.getPos().getY()) > 25) {
+                        bufferHeading = robot.getPos().getHeading();
+                        robot.drive.followLine(false, -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), LineFollower.midMaxPoint.x, 0.3, 0.3);
+                    } else {
+                        bufferHeading = robot.getPos().getHeading();
+                        robot.drive.followLine(false, -42, VisionConstants.LineFollowerTarget, robot.getPos().getY(), LineFollower.midMaxPoint.x, 0.75, 0.75);
+                    }
+                    robot.drive.write();
+                    robot.updatePos();
+                }
+                break;
+            case GRABBING:
+                robot.drive.setPower(0,0,0);
+                robot.arm.GrabberClose();
+                robot.drive.write();
+                break;
         }
+
 
         telemetry.addData("Distance", distance);
         telemetry.addData("position", robot.getPos());
         telemetry.addData("target", target);
+        telemetry.addData("State", mRobotState);
+        telemetry.addData("BufferHeading", Math.toDegrees(bufferHeading));
         robot.arm.write();
-        robot.slides.write();
+
         robot.update();
     }
 }

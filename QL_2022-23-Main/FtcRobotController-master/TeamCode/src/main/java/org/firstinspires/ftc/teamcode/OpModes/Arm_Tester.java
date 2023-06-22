@@ -21,6 +21,7 @@ public class Arm_Tester extends LinearOpMode {
     private double pos;
     private double pos1;
     private double pos2;
+    private double pos3;
 
     GamepadEx gamepadEx;
     private boolean servoToPosToggle = true;
@@ -34,6 +35,7 @@ public class Arm_Tester extends LinearOpMode {
         arm =  new V4B_Arm(hardwareMap);
         pos = ArmTester.pos;
         pos2 = ArmTester.pos2;
+        pos3 = ArmTester.pos3;
         waitForStart();
         while (opModeIsActive()) {
         //slides.setPosition(100);
@@ -43,6 +45,7 @@ public class Arm_Tester extends LinearOpMode {
                 telemetry.addData("    ", "You can tune this position through dashboard.");
                 arm.manualSetPosition(ArmTester.pos);
                 arm.grabberPos(ArmTester.pos2);
+                arm.flicker.setPosition(ArmTester.pos3);
             } else {
                 if (gamepad1.dpad_up) {
                     if (pos < 1) {
@@ -74,4 +77,5 @@ class ArmTester {
     //Set the set/start position of the servo in dashboard
     public static double pos = 0.5;
     public static double pos2 = 0.51;
+    public static double pos3 = 0.5;
 }

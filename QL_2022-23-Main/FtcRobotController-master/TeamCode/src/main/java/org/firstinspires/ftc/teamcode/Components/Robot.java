@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Odometry.S4T_Localizer_3;
 import org.firstinspires.ftc.teamcode.OpModes.LinearTeleOp;
 import org.firstinspires.ftc.teamcode.Vision.BlueSleeveDetector;
 import org.firstinspires.ftc.teamcode.Vision.LineFollower;
+import org.firstinspires.ftc.teamcode.Vision.LineFollowerBlue;
 import org.firstinspires.ftc.teamcode.Vision.SleeveDetector;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -28,14 +29,17 @@ public class Robot {
     public Slides slides;
     public S4T_Localizer_3 localizer;
     private S4T_Encoder encoderLY;
-    private S4T_Encoder encoderLX;
+    //private S4T_Encoder encoderLX;
     private S4T_Encoder encoderRY;
     private S4T_Encoder encoderRX;
     private HardwareMap hardwareMap;
+    private int cameraMonitorViewId;
 
     OpenCvCamera webcam;
     public OpenCvPipeline detector;
     OpenCvPipeline blueDetector;
+
+    private Pose2d OFFSET = new Pose2d(0, 0, 0);
 
     private Telemetry telemetry;
 
@@ -43,6 +47,7 @@ public class Robot {
     List<LynxModule> allHubs;
 
     public Robot(HardwareMap map, Telemetry telemetry){
+        cameraMonitorViewId = -2;
         this.hardwareMap = map;
         this.telemetry = telemetry;
         startPos = new Pose2d(0, 0, 0);
@@ -108,10 +113,10 @@ public class Robot {
 
 
     public void initializeWebcam(){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 2"), cameraMonitorViewId);
 
-        detector = new SleeveDetector(telemetry);
+        detector = new SleeveDetector();
         webcam.setPipeline(detector);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
@@ -130,8 +135,14 @@ public class Robot {
         });
     }
 
+    public void closeCamera(){
+        webcam.closeCameraDevice();
+    }
+
     public void coneWebcam(){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        if(cameraMonitorViewId == -2){
+            cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        }
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
         detector = new LineFollower(telemetry);
@@ -153,12 +164,14 @@ public class Robot {
         });
     }
 
-    public void blueInitializeWebcam(){
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+    public void blueConeWebcam(){
+        if(cameraMonitorViewId == -2) {
+            cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        }
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
-        blueDetector = new BlueSleeveDetector(telemetry);
-        webcam.setPipeline(blueDetector);
+        detector = new LineFollowerBlue(telemetry);
+        webcam.setPipeline(detector);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -224,11 +237,15 @@ public class Robot {
     }
 
     public Pose2d getPos(){
-        return new Pose2d(localizer.getPose().getX() + startPos.getX(), localizer.getPose().getY() + startPos.getY(), localizer.getPose().getHeading());
+        return new Pose2d(localizer.getPose().getX() + startPos.getX() - OFFSET.getX(), localizer.getPose().getY() + startPos.getY() - OFFSET.getY(), localizer.getPose().getHeading());
     }
 
     public Pose2d getStartPos(){
         return startPos;
+    }
+
+    public void setOffset(Pose2d offset){
+        this.OFFSET = offset;
     }
 
     public void GoTo(Pose2d pose, Pose2d speedLimits){

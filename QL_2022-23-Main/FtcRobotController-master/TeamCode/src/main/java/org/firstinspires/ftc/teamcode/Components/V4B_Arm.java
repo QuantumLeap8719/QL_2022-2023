@@ -22,6 +22,7 @@ public class V4B_Arm {
     public ARM_STATE mRobotState;
     Caching_Servo rightArm;
     Caching_Servo leftArm;
+    public Caching_Servo flicker;
     public Caching_Servo grabber;
     Robot robot;
 
@@ -38,11 +39,13 @@ public class V4B_Arm {
 
     private double out = .83;
     private double front = 0.05;
-    private double hover = 0.14;
+    private double hover = 0.17;
     private double terminal = 0.02;
     public static double grabberOpen = 0.83;
     public static double grabberClose = 0.62;
     public static double grabberDeposit = 0.71;
+    public double flickerClose = 0.55;
+    public double flickerOut = 0.42;
 
     private double stack_five = 0.11;
     private double stack_four = 0.15;
@@ -60,11 +63,13 @@ public class V4B_Arm {
     private int dropToggle = 0;
     private boolean tipped = false;
     private boolean grabbing = false;
+    public static boolean moved = false;
 
     public V4B_Arm(HardwareMap map){
         mRobotState = ARM_STATE.NORMAL;
         rightArm = new Caching_Servo(map, "rightarm");
         leftArm = new Caching_Servo(map, "leftarm");
+        flicker = new Caching_Servo(map, "flicker");
         grabber = new Caching_Servo(map,"grabber");
         leftArm.setZeros(.01, 1);
         rightArm.setZeros(.01, 0.96);
@@ -131,6 +136,16 @@ public class V4B_Arm {
         grabber.setPosition(grabberDeposit);
     }
 
+    public void flickerOut(){
+        flicker.setPosition(flickerOut);
+    }
+
+
+    public void flickerClose(){
+        flicker.setPosition(flickerClose);
+    }
+
+
     public void operate(GamepadEx gamepad, GamepadEx gamepad2, Telemetry telemetry) {
 
         switch(mRobotState){
@@ -170,8 +185,12 @@ public class V4B_Arm {
                         manualSetPosition(front);
                     }
                 } else if(grabberToggle == 2){
+                    moved = true;
                     manualSetPosition(out);
                 } else if(grabberToggle == 3){
+                    if(Math.abs(gamepad.gamepad.left_stick_y) > 0.1 || Math.abs(gamepad.gamepad.right_stick_x) > 0.1 || Math.abs(gamepad.gamepad.left_stick_x) > 0.1 ){
+                        moved = false;
+                    }
                     if(time.time() > 0.1){
                         if(time.time() > 0.35){ //
                             GrabberClose();
@@ -410,6 +429,7 @@ public class V4B_Arm {
         rightArm.write();
         leftArm.write();
         grabber.write();
+        flicker.write();
     }
 }
 /*

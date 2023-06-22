@@ -13,12 +13,13 @@ import org.firstinspires.ftc.teamcode.Components.Robot;
 import org.firstinspires.ftc.teamcode.Components.V4B_Arm;
 import org.firstinspires.ftc.teamcode.PurePusuit.CurvePoint;
 import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
-import org.firstinspires.ftc.teamcode.Vision.*;
+import org.firstinspires.ftc.teamcode.Vision.LineFollower;
+import org.firstinspires.ftc.teamcode.Vision.VisionConstants;
 
 import java.util.ArrayList;
 
-@Autonomous(name="MainAuto")
-public class States_Auto extends LinearOpMode {
+@Autonomous(name="MainAutoREEE")
+public class States_Auto_AngleCurve extends LinearOpMode {
 
     private enum State {
         DRIVE_TO_DEPOSIT_PRELOAD,
@@ -39,25 +40,26 @@ public class States_Auto extends LinearOpMode {
 
     public Pose2d OFFSET = new Pose2d(0,0,0);
     
-    public Pose2d PRE_LOAD_CLEAR = new Pose2d(7, 23, Math.toRadians(0));
-    public Pose2d PRE_LOAD_CLEAR2 = new Pose2d(2.5, 51, Math.toRadians(0));
-    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(13.2, 64, Math.toRadians(36.5));
+    public Pose2d PRE_LOAD_CLEAR = new Pose2d(-3.924, 15.502, Math.toRadians(0));
+    public Pose2d PRE_LOAD_CLEAR2 = new Pose2d(-4.012, 43, Math.toRadians(0));
+    public Pose2d PRE_LOAD_CLEAR3 = new Pose2d(-12, 54, Math.toRadians(90));
+    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(6.15, 61.476, Math.toRadians(0));
     public Pose2d PRE_LOAD_DEPOSIT_FORWARD = new Pose2d(2, 50, Math.toRadians(90));
-    public Pose2d INTAKE_CLEAR = new Pose2d(0, 52, Math.toRadians(90));
-    public Pose2d INTAKE_FAR_CLEAR = new Pose2d(13, 52, Math.toRadians(90));
-    public Pose2d BACk_FAR_CLEAR = new Pose2d(13, 55, Math.toRadians(90));
-    public Pose2d DEPOSIT_HIGH_FAR_CLEAR = new Pose2d(27.5, 54, Math.toRadians(90));
-    public static Pose2d DEPOSIT_HIGH_FAR1 = new Pose2d(40.1, 43.4, Math.toRadians(134)); //SECOND HIGH
+    public Pose2d INTAKE_CLEAR = new Pose2d(-15.622, 52.665, Math.toRadians(90));
+    public Pose2d INTAKE_FAR_CLEAR = new Pose2d(13, 52, Math.toRadians(0));
+    public Pose2d BACk_FAR_CLEAR = new Pose2d(13, 55, Math.toRadians(0));
+    public Pose2d DEPOSIT_HIGH_FAR_CLEAR = new Pose2d(11.606, 51.937, Math.toRadians(90));
+    public static Pose2d DEPOSIT_HIGH_FAR1 = new Pose2d(29.348, 43.399, Math.toRadians(134)); //SECOND HIGH
     public static Pose2d DEPOSIT_HIGH_FAR2 = new Pose2d(36.8, 43.4, Math.toRadians(129)); //SECOND HIGH
     public static Pose2d DEPOSIT_HIGH_FAR3 = new Pose2d(36.8, 43.4, Math.toRadians(129)); //SECOND HIGH
     public static Pose2d DEPOSIT_HIGH_FAR4 = new Pose2d(36.8, 43.4, Math.toRadians(129)); //SECOND HIGH
 
 
     public Pose2d DEPOSIT_HIGH = new Pose2d(1, 49, Math.toRadians(65));
-    public Pose2d DEPOSIT_MID = new Pose2d(12, 42.4, Math.toRadians(116));
-    public Pose2d DEPOSIT_MID_FORWARD = new Pose2d(4, 45, Math.toRadians(116));
-    public static Pose2d DEPOSIT_HIGH_FAR_FORWARD = new Pose2d(31, 52, Math.toRadians(134)); //SECOND HIGH
-    public Pose2d DEPOSIT_HIGH_FAR_FORWARD_CLEAR = new Pose2d(10, 54, Math.toRadians(90));
+    public Pose2d DEPOSIT_MID = new Pose2d(3.584, 42.619, Math.toRadians(116));
+    public Pose2d DEPOSIT_MID_FORWARD = new Pose2d(-4, 50, Math.toRadians(90));
+    public static Pose2d DEPOSIT_HIGH_FAR_FORWARD = new Pose2d(15, 60, Math.toRadians(90)); //SECOND HIGH
+    public Pose2d DEPOSIT_HIGH_FAR_FORWARD_CLEAR = new Pose2d(2, 54, Math.toRadians(90));
 
 
     //public Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-19.5, -43.5, Math.toRadians(113));
@@ -75,6 +77,7 @@ public class States_Auto extends LinearOpMode {
 
     double coneCase;
     boolean gtp = false;
+    boolean PPIND = false;
     boolean isDown = true;
     int cycle = 0;
     double bufferHeading = 0;
@@ -113,7 +116,7 @@ public class States_Auto extends LinearOpMode {
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
         time = new ElapsedTime();
         robot.resetOdo();
-        robot.setStartPose(new Pose2d(8.253, 0, 0));
+        robot.setStartPose(new Pose2d(0, 0, 0));
         robot.arm.GrabberClose();
         robot.arm.V4BOutPose();
         robot.arm.flickerClose();
@@ -146,13 +149,16 @@ public class States_Auto extends LinearOpMode {
 
             switch (mRobotState) {
                 case DRIVE_TO_DEPOSIT_PRELOAD:
+                    PPIND = false;
+                    gtp = false;
+
                     points.add(new CurvePoint(new Pose2d(0, 0, 0),moveSpeed,turnSpeed,10));
                     points.add(new CurvePoint(PRE_LOAD_CLEAR,moveSpeed,turnSpeed,10));
                     points.add(new CurvePoint(PRE_LOAD_CLEAR2,moveSpeed,turnSpeed,10));
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT,moveSpeed,turnSpeed,10));
 
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 2.25 && Math.abs(robot.slides.getPosition() - depositHeightPreload) < 13 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1.5)) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 2.25 && Math.abs(robot.slides.getPosition() - depositHeightPreload) < 13) {
                         newState(State.PRELOAD_DEPOSIT);
                     }else{
                         time.reset();
@@ -179,9 +185,11 @@ public class States_Auto extends LinearOpMode {
                     break;
 
                 case PRELOAD_DEPOSIT:
+                    PPIND = false;
                     gtp = true;
-                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
-                        robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
+
+                    points.add(new CurvePoint(RobotMovement.getLastFollowMe(),1.0,1.0,10));
+                    robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
 
                     if(time.time() > 0.4 && time.time() < 0.6) {
                         robot.arm.GrabberDeposit();
@@ -196,11 +204,12 @@ public class States_Auto extends LinearOpMode {
                     }
 
                     if(time.time() > 0.9) {
-                        gtp = false;
                         newState(State.PRELOAD_FORWARD);
                     }
                     break;
                 case PRELOAD_FORWARD:
+                    PPIND = true;
+                    gtp = false;
                     robot.slides.setPosition(depositHeightPreload - 50, -0.3, 1);
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARD,1.0,1.0,10));
@@ -221,6 +230,8 @@ public class States_Auto extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_INTAKE:
+                    gtp = false;
+                    PPIND = false;
                     if(isDown && robot.localizer.getPose().getX() > 25) {
                         if (robot.slides.isDown()) {
                             robot.slides.reset();
@@ -277,6 +288,8 @@ public class States_Auto extends LinearOpMode {
 
                     break;
                 case GRAB:
+                    gtp = true;
+                    PPIND = false;
                     points.add(new CurvePoint(GRAB,0.8,0.8,10));
                     if (cycle == 0) {
                         robot.slides.setPosition(slideHeightOne - 30, -0.3, 1);
@@ -307,6 +320,8 @@ public class States_Auto extends LinearOpMode {
                     }
                     break;
                 case DRIVE_TO_DEPOSIT_MID:
+                    gtp = false;
+                    PPIND = false;
                     points.add(new CurvePoint(GRAB,1.0,1.0,10));
                     points.add(new CurvePoint(INTAKE_CLEAR,0.8,0.8,10));
                     points.add(new CurvePoint(DEPOSIT_MID,0.7,0.7,10));
@@ -315,12 +330,14 @@ public class States_Auto extends LinearOpMode {
 
                     robot.arm.GrabberClose();
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.25 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(1)) {
-                        newState(State.DEPOSIT);
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.25) {
+                         newState(State.DEPOSIT);
                     }
                     break;
 
                 case MID_FORWARD:
+                    PPIND = true;
+                    gtp = false;
                     points.add(new CurvePoint(DEPOSIT_MID,1.0,1.0,10));
                     points.add(new CurvePoint(DEPOSIT_MID_FORWARD,1.0,1.0,10));
                     points.add(new CurvePoint(INTAKE_CLEAR,1.0,1.0,10));
@@ -341,6 +358,8 @@ public class States_Auto extends LinearOpMode {
                     }
                     break;
                 case DRIVE_TO_DEPOSIT_HIGH_FAR:
+                    PPIND = false;
+                    gtp = false;
                     double slideHeight = 0;
 
                     points.add(new CurvePoint(GRAB,moveSpeed,turnSpeed,10));
@@ -383,12 +402,14 @@ public class States_Auto extends LinearOpMode {
                     }
 
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.75 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(2.0)) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.75) {
                         newState(State.DEPOSIT);
                     }
                     break;
 
                 case HIGH_FAR_FORWARD:
+                    PPIND = true;
+                    gtp = false;
                     points.add(new CurvePoint(DEPOSIT_HIGH_FAR1,1.0,1.0,10));
                     points.add(new CurvePoint(DEPOSIT_HIGH_FAR_FORWARD,1.0,1.0,10));
                     points.add(new CurvePoint(DEPOSIT_HIGH_FAR_FORWARD_CLEAR,1.0,1.0,10));
@@ -412,14 +433,10 @@ public class States_Auto extends LinearOpMode {
                         }
                     }
                     break;
-
                 case DEPOSIT:
-                    if(cycle == 0) {
-                        points.add(new CurvePoint(DEPOSIT_MID, 1.0, 1.0, 10));
-                    } else {
-                        points.add(new CurvePoint(DEPOSIT_HIGH_FAR1,1.0,1.0,10));
-                    }
-
+                    PPIND = false;
+                    gtp = true;
+                    points.add(new CurvePoint(RobotMovement.getLastFollowMe(), 1.0, 1.0, 10));
                     robot.slides.setPosition((cycle == 0 ? depositHeightMid : depositHeightFarHigh) - 65, -0.3, 1);
 
                     if (time.time() > 0.4 && time.time() < 0.6) {
@@ -445,6 +462,7 @@ public class States_Auto extends LinearOpMode {
 
                     break;
                 case PARK:
+                    PPIND = false;
                     gtp = true;
                     if(coneCase == 0){
                         points.add(new CurvePoint(PARK_CASE_1,1.0,1.0,15));
@@ -454,7 +472,7 @@ public class States_Auto extends LinearOpMode {
                         points.add(new CurvePoint(PARK_CASE_3,1.0,1.0,15));
                     }
 
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 2.0  && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(2.0)) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 2.0) {
                         newState(State.IDLE);
                     } else {
                         robot.arm.V4BFrontHoldPos();
@@ -472,10 +490,12 @@ public class States_Auto extends LinearOpMode {
             }
 
             if (points.size() != 0) {
-                if (!gtp) {
+                if(PPIND){
                     RobotMovement.followCurve(points, robot, telemetry);
-                } else {
+                }else if(gtp){
                     robot.GoTo(points.get(points.size() - 1).toPose(), new Pose2d(points.get(points.size() - 1).moveSpeed, points.get(points.size() - 1).moveSpeed, points.get(points.size() - 1).turnSpeed));
+                }else{
+                    RobotMovement.followCurveAngled(points, robot, telemetry);
                 }
             } else if(mRobotState == State.DRIVE_TO_INTAKE){
                 robot.drive.write();
@@ -504,6 +524,7 @@ public class States_Auto extends LinearOpMode {
             telemetry.addData("IsDown", isDown);
             telemetry.addData("Touch Sensor", robot.slides.isDown());
             telemetry.addData("Buffer Heading", Math.toDegrees(bufferHeading));
+            telemetry.addData("FollowMe", RobotMovement.getLastFollowMe());
             telemetry.update();
         }
     }

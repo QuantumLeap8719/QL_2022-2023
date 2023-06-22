@@ -15,6 +15,7 @@ public class RobotMovement {
     private static int previous_index = 0;
     private static CurvePoint followMe = new CurvePoint(0, 0, 0, 0, 0, 0);
     private static Telemetry thisTelemetry;
+    private static Pose2d followPoint = new Pose2d(0,0,0);
 
     public static void followCurve(ArrayList<CurvePoint> allPoints, Robot robot, Telemetry telemetry){
         thisTelemetry = telemetry;
@@ -31,10 +32,13 @@ public class RobotMovement {
         robot.GoTo(followMe.x, followMe.y, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).heading, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).moveSpeed, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).moveSpeed, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).turnSpeed);
     }
 
+    public static Pose2d getLastFollowMe(){
+        return followPoint;
+    }
+
     public static void followCurveAngled(ArrayList<CurvePoint> allPoints, Robot robot, Telemetry telemetry){
         thisTelemetry = telemetry;
-        if(index >= allPoints.size() - 2 && robot.getPos().vec().distTo(new Vector2d(allPoints.get(allPoints.size() - 1).x, allPoints.get(allPoints.size() - 1).y)) <= 25){
-
+        if(index >= allPoints.size() - 2 && robot.getPos().vec().distTo(new Vector2d(allPoints.get(allPoints.size() - 1).x, allPoints.get(allPoints.size() - 1).y)) <= allPoints.get(Range.clip(index, 0, allPoints.size() - 1)).followDistance){
             followMe = allPoints.get(allPoints.size() - 1);
         }else{
             followMe = getFollowPointPath(allPoints, new Pose2d(robot.getPos().getX(), robot.getPos().getY(), robot.getPos().getHeading()), allPoints.get(index).followDistance);
@@ -47,19 +51,17 @@ public class RobotMovement {
 
         telemetry.addData("PURE PURESUIT POS", robot.getPos());
 
-        robot.GoTo(followMe.x, followMe.y, getFollowAngle(0, allPoints.get(index), allPoints.get(Math.min(index + 1, allPoints.size() - 1))), allPoints.get(Math.min(index + 1, allPoints.size() - 1)).moveSpeed, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).moveSpeed, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).turnSpeed);
+        double target_angle = getFollowAngle(robot.getPos(), allPoints.get(Math.min(index + 1, allPoints.size() - 1)), 0);
+        telemetry.addData("PP ANGLE", Math.toDegrees(target_angle));
+        followPoint = new Pose2d(followMe.x, followMe.y, target_angle);
+        robot.GoTo(followMe.x, followMe.y, target_angle, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).moveSpeed, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).moveSpeed, allPoints.get(Math.min(index + 1, allPoints.size() - 1)).turnSpeed);
     }
 
     public static double getFollowAngle(Pose2d p, CurvePoint followMe, double preferredAngle){
-        double absoluteAngleToTarget = Math.atan2(followMe.y-p.getY(),followMe.x-p.getX());
-        double relativeAngleToPoint = Math_Functions.AngleWrap(absoluteAngleToTarget - (p.getHeading() - Math.toRadians(90)));
+        //double relativeAngleToPoint = Math_Functions.AngleWrap(absoluteAngleToTarget - p.getHeading());
 
-        return relativeAngleToPoint - Math.toRadians(180) + preferredAngle;
-    }
-
-    public static double getFollowAngle(double preferredAngle, CurvePoint p1, CurvePoint p2){
-        double absoluteAngle = Math_Functions.AngleWrap(Math.atan2(p2.y - p1.y, p2.x - p1.x) + preferredAngle);
-        return absoluteAngle;
+        //return relativeAngleToPoint - Math.toRadians(180) + preferredAngle;
+        return Math.atan2(followMe.x-p.getX(), followMe.y-p.getY());
     }
 
     public static void resetIndex(){

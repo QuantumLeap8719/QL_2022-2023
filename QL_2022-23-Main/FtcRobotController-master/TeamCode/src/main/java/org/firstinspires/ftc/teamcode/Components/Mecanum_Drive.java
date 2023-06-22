@@ -39,9 +39,9 @@ public class Mecanum_Drive{
     public static double kir = 0;
     public static double kdr = 0.115;
 
-    public static double kpc = 0.002;
+    public static double kpc = 0.004;
     public static double kic = 0.0;
-    public static double kdc = 0.0005;
+    public static double kdc = 0.0004;
 
     TelemetryPacket packet = new TelemetryPacket();
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -57,10 +57,10 @@ public class Mecanum_Drive{
         motors[2] = new Caching_Motor(map, "bleft");
         motors[3] = new Caching_Motor(map, "bright");
 
-        motors[0].motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        /*motors[0].motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motors[1].motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motors[2].motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motors[3].motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motors[3].motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);*/
 
         motors[0].motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motors[1].motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -202,7 +202,8 @@ public class Mecanum_Drive{
         }
     }
 
-    public boolean followLine(boolean negative, double target_y, double targetPixel, double current_y, double currentPixel, double yspeed, double zspeed){
+    public void followLine(boolean turnPID, double target_y, double targetPixel, double current_y, double currentPixel, double yspeed, double zspeed){
+        PID_Z.setOutputBounds(-zspeed, zspeed);
         PID_Y.setOutputBounds(-yspeed, yspeed);
         PID_CAM.setOutputBounds(-zspeed, zspeed);
 
@@ -210,25 +211,30 @@ public class Mecanum_Drive{
         telemetry.addData("Rotational Error", targetPixel - currentPixel);
 
         PID_Y.setTargetPosition(target_y);
-        PID_CAM.setTargetPosition(targetPixel);
 
-        double rot_power = PID_CAM.update(currentPixel);
+        double heading = 0;
+        double target_heading = targetPixel;
 
-
-        if(Math.abs(PID_CAM.getLastError()) < 20 && Math.abs(PID_Y.getLastError()) < 1.5) {
-            rot_power = 0;
-        }
-
-        if(negative) {
-            setPower(0, -PID_Y.update(current_y), rot_power);
-        } else {
-            setPower(0, PID_Y.update(current_y), rot_power);
-        }
-
-        if(Math.abs(PID_CAM.getLastError()) < 20 && Math.abs(PID_Y.getLastError()) < 0.5){
-            return true;
+        if(currentPixel <= Math.PI){
+            heading = currentPixel;
         }else{
-            return false;
+            heading = -((2 * Math.PI ) - currentPixel);
         }
+
+        if(turnPID) {
+            if(Math.abs(targetPixel - heading) >= Math.toRadians(180.0)){
+                target_heading = -((2 * Math.PI) - targetPixel);
+            }
+            PID_Z.setTargetPosition(target_heading);
+        } else {
+            PID_CAM.setTargetPosition(targetPixel);
+        }
+        double rot_power = 0;
+        if(turnPID) {
+             rot_power = -PID_Z.update(heading);
+        } else {
+            rot_power = PID_CAM.update(currentPixel);
+        }
+        setPower(0, PID_Y.update(current_y), rot_power);
     }
 }

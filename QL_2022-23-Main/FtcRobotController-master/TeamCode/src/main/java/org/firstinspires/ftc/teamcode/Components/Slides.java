@@ -43,12 +43,14 @@ public class Slides {
     public STATE mRobotState;
     DigitalChannel digitalTouch;
     ElapsedTime time;
+    double startTime = 0;
 
     public enum STATE{
         AUTOMATION,
         MANUAL,
         DEPOSIT,
-        DOWN
+        DOWN,
+        IDLE
     }
 
     public Slides(HardwareMap map, Telemetry telemetry){
@@ -187,10 +189,25 @@ public class Slides {
             case DOWN:
                 if(isDown()){
                     reset();
-                    setPowerTele(0.0);
+                    mRobotState = STATE.IDLE;
                 }else{
                     setPowerTele(downPower);
                 }
+                if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
+                    mRobotState = STATE.MANUAL;
+                }
+
+                if(V4B_Arm.grabberToggle == 2){
+                    mRobotState = STATE.AUTOMATION;
+                }
+
+                if(V4B_Arm.stackCase == 2){
+                    mRobotState = STATE.AUTOMATION;
+                }
+
+                break;
+
+            case IDLE:
                 if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
                     mRobotState = STATE.MANUAL;
                 }
@@ -210,11 +227,15 @@ public class Slides {
             time.reset();
         }
 
-        if(V4B_Arm.grabberToggle == 3){
+        if(V4B_Arm.grabberToggle == 0){
+            mRobotState = STATE.DOWN;
+        }
+
+        if(V4B_Arm.grabberToggle == 3 && V4B_Arm.moved){
              mRobotState = STATE.DEPOSIT;
         }
 
-        if(V4B_Arm.stackCase == 3){
+        if(V4B_Arm.stackCase == 3 && V4B_Arm.moved){
             mRobotState = STATE.DEPOSIT;
         }
 
@@ -264,13 +285,17 @@ public class Slides {
 
 
         if(V4B_Arm.grabberToggle == 3){
-            if(time.time() > 0.55){
-                mRobotState = STATE.DOWN;
+            if(Math.abs(gamepad1.gamepad.left_stick_y) > 0.1 || Math.abs(gamepad1.gamepad.right_stick_x) > 0.1 || Math.abs(gamepad1.gamepad.left_stick_x) > 0.1 ){
+                if(time.time() - startTime > 0.4) {
+                    mRobotState = STATE.DOWN;
+                }
+            }else{
+                startTime = time.time();
             }
         }
 
         if(V4B_Arm.stackCase == 3){
-            if(time.time() > 0.55){
+            if(gamepad1.gamepad.left_stick_y > 0.1 || gamepad1.gamepad.right_stick_x > 0.1 || gamepad1.gamepad.left_stick_x > 0.1){
                 mRobotState = STATE.DOWN;
             }
         }
