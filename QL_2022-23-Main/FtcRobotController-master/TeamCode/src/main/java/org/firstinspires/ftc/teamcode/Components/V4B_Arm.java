@@ -188,7 +188,7 @@ public class V4B_Arm {
                     moved = true;
                     manualSetPosition(out);
                 } else if(grabberToggle == 3){
-                    if(Math.abs(gamepad.gamepad.left_stick_y) > 0.1 || Math.abs(gamepad.gamepad.right_stick_x) > 0.1 || Math.abs(gamepad.gamepad.left_stick_x) > 0.1 ){
+                    if(Math.abs(gamepad.gamepad.left_stick_y) > 0.1 || Math.abs(gamepad.gamepad.right_stick_x) > 0.1 || Math.abs(gamepad.gamepad.left_stick_x) > 0.1){
                         moved = false;
                     }
                     if(time.time() > 0.1){

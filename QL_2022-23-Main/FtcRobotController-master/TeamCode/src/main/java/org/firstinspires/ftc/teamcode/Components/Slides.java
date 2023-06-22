@@ -136,14 +136,14 @@ public class Slides {
     }
 
     public void operate(GamepadEx gamepad1, GamepadEx gamepad2){
-        switch (mRobotState){
+        switch (mRobotState) {
             case MANUAL:
-                if(gamepad2.gamepad.left_stick_y > 0.1){
+                if (gamepad2.gamepad.left_stick_y > 0.1) {
                     setPowerTele(gamepad2.gamepad.left_stick_y * 0.5);
-                } else if(gamepad2.gamepad.left_stick_y < -0.1){
+                } else if (gamepad2.gamepad.left_stick_y < -0.1) {
                     setPowerTele(gamepad2.gamepad.left_stick_y * 0.5);
-                }else{
-                    if(getPosition() > 500){
+                } else {
+                    if (getPosition() > 500) {
                         setPowerTele(0.05);
                     } else {
                         setPowerTele(0);
@@ -161,62 +161,47 @@ public class Slides {
  */
                 break;
             case DEPOSIT:
-                if (goalToggle == 0){
+                if (goalToggle == 0) {
                     setPosition(low_goal_position - 50, -0.3, 1);
-                } else if (goalToggle == 1){
+                } else if (goalToggle == 1) {
                     setPosition(mid_goal_position - 50, -0.3, 1);
-                } else if (goalToggle == 2){
+                } else if (goalToggle == 2) {
                     setPosition(high_goal_position - 50, -0.3, 1);
                 }
                 break;
             case AUTOMATION:
-                if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
+                if (gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1) {
                     mRobotState = STATE.MANUAL;
                 }
 
-                if (goalToggle == 0){
+                if (goalToggle == 0) {
                     setPosition(low_goal_position);
-                } else if (goalToggle == 1){
+                } else if (goalToggle == 1) {
                     setPosition(mid_goal_position);
-                } else if (goalToggle == 2){
+                } else if (goalToggle == 2) {
                     setPosition(high_goal_position);
                 }
 
-                if(gamepad2.isPress(GamepadEx.Control.right_trigger)){
+                if (gamepad2.isPress(GamepadEx.Control.right_trigger)) {
                     mRobotState = STATE.DOWN;
                 }
                 break;
             case DOWN:
-                if(isDown()){
+                if (isDown()) {
                     reset();
-                    mRobotState = STATE.IDLE;
-                }else{
+                    setPowerTele(0.0);
+                } else {
                     setPowerTele(downPower);
                 }
-                if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
+                if (gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1) {
                     mRobotState = STATE.MANUAL;
                 }
 
-                if(V4B_Arm.grabberToggle == 2){
+                if (V4B_Arm.grabberToggle == 2) {
                     mRobotState = STATE.AUTOMATION;
                 }
 
-                if(V4B_Arm.stackCase == 2){
-                    mRobotState = STATE.AUTOMATION;
-                }
-
-                break;
-
-            case IDLE:
-                if(gamepad2.gamepad.left_stick_y > 0.1 || gamepad2.gamepad.left_stick_y < -0.1){
-                    mRobotState = STATE.MANUAL;
-                }
-
-                if(V4B_Arm.grabberToggle == 2){
-                    mRobotState = STATE.AUTOMATION;
-                }
-
-                if(V4B_Arm.stackCase == 2){
+                if (V4B_Arm.stackCase == 2) {
                     mRobotState = STATE.AUTOMATION;
                 }
 
@@ -233,6 +218,14 @@ public class Slides {
 
         if(V4B_Arm.grabberToggle == 3 && V4B_Arm.moved){
              mRobotState = STATE.DEPOSIT;
+        } else if (V4B_Arm.grabberToggle == 3 && V4B_Arm.moved == false){
+            if(Math.abs(gamepad1.gamepad.left_stick_y) > 0.1 || Math.abs(gamepad1.gamepad.right_stick_x) > 0.1 || Math.abs(gamepad1.gamepad.left_stick_x) > 0.1 ){
+                if(time.time() - startTime > 0.4) {
+                    mRobotState = STATE.DOWN;
+                }
+            }else{
+                startTime = time.time();
+            }
         }
 
         if(V4B_Arm.stackCase == 3 && V4B_Arm.moved){
@@ -284,15 +277,7 @@ public class Slides {
         }
 
 
-        if(V4B_Arm.grabberToggle == 3){
-            if(Math.abs(gamepad1.gamepad.left_stick_y) > 0.1 || Math.abs(gamepad1.gamepad.right_stick_x) > 0.1 || Math.abs(gamepad1.gamepad.left_stick_x) > 0.1 ){
-                if(time.time() - startTime > 0.4) {
-                    mRobotState = STATE.DOWN;
-                }
-            }else{
-                startTime = time.time();
-            }
-        }
+
 
         if(V4B_Arm.stackCase == 3){
             if(gamepad1.gamepad.left_stick_y > 0.1 || gamepad1.gamepad.right_stick_x > 0.1 || gamepad1.gamepad.left_stick_x > 0.1){
