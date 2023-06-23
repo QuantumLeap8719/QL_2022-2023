@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Vision.LineDetector;
+import org.firstinspires.ftc.teamcode.Vision.LineFollower;
 import org.firstinspires.ftc.teamcode.Vision.LineFollowerBlue;
 import org.firstinspires.ftc.teamcode.Vision.SleeveDetector;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -49,7 +50,7 @@ public class MultiCamTester extends OpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
-        detector = new LineFollowerBlue(telemetry);
+        detector = new LineFollower(telemetry);
         webcam.setPipeline(detector);
 
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()

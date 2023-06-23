@@ -268,7 +268,8 @@ public class States_Auto_AngleCurve extends LinearOpMode {
                     } else {
                         if (robot.getPos().getX() < -15) {
                             telemetry.addLine("Here 1");
-                            robot.drive.followLine(true, 1.2, bufferHeading, distance, robot.getPos().getHeading(), 0.3, 0.3);
+                            //robot.drive.followLine(true, 1.2, bufferHeading, distance, robot.getPos().getHeading(), 0.3, 0.3);
+                            robot.drive.followLine(false, 1.2, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3);
                             if(Math.abs(bufferHeading - robot.getPos().getHeading()) < Math.toRadians(1.5) && Math.abs(1.2 - distance) < 0.5){
                                 GRAB = robot.getPos();
                                 //OFFSET = new Pose2d(GRAB.getX() - OG_GRAB.getX(), GRAB.getY() - OG_GRAB.getY(), 0);

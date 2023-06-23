@@ -24,11 +24,11 @@ public class VisionConstants {
     public static double relX = 3.375;
     public static double relY = 3.95625;
 
-    public static double dilationConstant = 3.5;
+    public static double dilationConstant = 10;
     public static double erosionConstant = 2.5;
     public static double blurConstant = 3;
     public static double LineFollowerTarget = 320;
 
     public static int minArea = 1000;
-    public static int horizon = 200;
+    public static int horizon = 230;
 }
