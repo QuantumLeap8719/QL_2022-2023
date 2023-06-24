@@ -1,29 +1,27 @@
 package org.firstinspires.ftc.teamcode.Vision;
 
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.BOUNDING_BOX;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerGreenH;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerGreenS;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerGreenV;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerPurpleH;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerPurpleS;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerPurpleV;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerYellowH;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerYellowS;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.lowerYellowV;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperGreenH;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperGreenS;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperGreenV;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperPurpleH;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperPurpleS;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperPurpleV;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperYellowH;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperYellowS;
-import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2Constants.upperYellowV;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.BOUNDING_BOX;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerGreenH;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerGreenS;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerGreenV;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerPurpleH;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerPurpleS;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerPurpleV;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerYellowH;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerYellowS;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.lowerYellowV;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperGreenH;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperGreenS;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperGreenV;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperPurpleH;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperPurpleS;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperPurpleV;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperYellowH;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperYellowS;
+import static org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2ConstantsRight.upperYellowV;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -35,11 +33,10 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
-public class SleeveDetectorV2 extends OpenCvPipeline {
+public class SleeveDetectorV2Right extends OpenCvPipeline {
     public final Scalar COLOR = new Scalar(0, 255, 0);
 
     Mat HSVMat = new Mat();
@@ -49,6 +46,10 @@ public class SleeveDetectorV2 extends OpenCvPipeline {
     private double H = 0.0;
 
     private int coneCase = 0;
+
+    public SleeveDetectorV2Right(){
+
+    }
 
     @Override
     public Mat processFrame(Mat input){
@@ -78,9 +79,9 @@ public class SleeveDetectorV2 extends OpenCvPipeline {
         List<MatOfPoint> greenContours = new ArrayList<>();
         List<MatOfPoint> purpleContours = new ArrayList<>();
 
-        /*Imgproc.findContours(yellowMask, yellowContours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(yellowMask, yellowContours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         Imgproc.findContours(greenMask, greenContours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        Imgproc.findContours(purpleMask, purpleContours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);*/
+        Imgproc.findContours(purpleMask, purpleContours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
         Imgproc.GaussianBlur(purpleMask, purpleMask, new Size(VisionConstants.blurConstant, VisionConstants.blurConstant), 0);
         Imgproc.GaussianBlur(greenMask, greenMask, new Size(VisionConstants.blurConstant, VisionConstants.blurConstant), 0);
@@ -103,9 +104,6 @@ public class SleeveDetectorV2 extends OpenCvPipeline {
 
         coneCase = maxIndex;
 
-        //FtcDashboard.getInstance().getTelemetry().addData("Area", Imgproc.contourArea(purpleContours.get(0)));
-        //FtcDashboard.getInstance().getTelemetry().update();
-
         return purpleMask;
     }
 
@@ -115,7 +113,7 @@ public class SleeveDetectorV2 extends OpenCvPipeline {
 }
 
 @Config
-class SleeveDetectorV2Constants {
+class SleeveDetectorV2ConstantsRight {
     public static double lowerPurpleH = 180;
     public static double lowerPurpleS = 40;
     public static double lowerPurpleV = 40;
@@ -138,8 +136,8 @@ class SleeveDetectorV2Constants {
     public static double upperYellowV = 255;
 
     public static Rect BOUNDING_BOX  = new Rect(
-            new Point(385, 280),
-            new Point(310, 170)
+            new Point(595, 280),
+            new Point(520, 170)
     );;
 
 

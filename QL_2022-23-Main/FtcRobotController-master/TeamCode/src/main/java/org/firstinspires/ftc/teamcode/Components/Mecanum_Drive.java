@@ -39,7 +39,7 @@ public class Mecanum_Drive{
     public static double kir = 0;
     public static double kdr = 0.115;
 
-    public static double kpc = 0.002;
+    public static double kpc = 0.0018;
     public static double kic = 0.0;
     public static double kdc = 0.0004;
 
@@ -236,5 +236,46 @@ public class Mecanum_Drive{
             rot_power = PID_CAM.update(currentPixel);
         }
         setPower(0, PID_Y.update(current_y), rot_power);
+    }
+
+    public void followLine(boolean negative, boolean turnPID, double target_y, double targetPixel, double current_y, double currentPixel, double yspeed, double zspeed){
+        PID_Z.setOutputBounds(-zspeed, zspeed);
+        PID_Y.setOutputBounds(-yspeed, yspeed);
+        PID_CAM.setOutputBounds(-zspeed, zspeed);
+
+        telemetry.addData("Translational Error", target_y - current_y);
+        telemetry.addData("Rotational Error", targetPixel - currentPixel);
+
+        PID_Y.setTargetPosition(target_y);
+
+        double heading = 0;
+        double target_heading = targetPixel;
+
+        if(currentPixel <= Math.PI){
+            heading = currentPixel;
+        }else{
+            heading = -((2 * Math.PI ) - currentPixel);
+        }
+
+        if(turnPID) {
+            if(Math.abs(targetPixel - heading) >= Math.toRadians(180.0)){
+                target_heading = -((2 * Math.PI) - targetPixel);
+            }
+            PID_Z.setTargetPosition(target_heading);
+        } else {
+            PID_CAM.setTargetPosition(targetPixel);
+        }
+        double rot_power = 0;
+        if(turnPID) {
+            rot_power = -PID_Z.update(heading);
+        } else {
+            rot_power = PID_CAM.update(currentPixel);
+        }
+        if(negative) {
+            setPower(0, -PID_Y.update(current_y), rot_power);
+        } else {
+            setPower(0, PID_Y.update(current_y), rot_power);
+
+        }
     }
 }

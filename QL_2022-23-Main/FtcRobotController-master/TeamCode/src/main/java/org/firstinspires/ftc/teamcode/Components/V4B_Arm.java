@@ -41,9 +41,9 @@ public class V4B_Arm {
     private double front = 0.05;
     private double hover = 0.17;
     private double terminal = 0.02;
-    public static double grabberOpen = 0.83;
-    public static double grabberClose = 0.62;
-    public static double grabberDeposit = 0.71;
+    public static double grabberOpen = .48; //0.83
+    public static double grabberClose = 0.25; //0.62
+    public static double grabberDeposit = 0.375; //0.71
     public double flickerClose = 0.55;
     public double flickerOut = 0.42;
 
@@ -185,12 +185,8 @@ public class V4B_Arm {
                         manualSetPosition(front);
                     }
                 } else if(grabberToggle == 2){
-                    moved = true;
                     manualSetPosition(out);
                 } else if(grabberToggle == 3){
-                    if(Math.abs(gamepad.gamepad.left_stick_y) > 0.1 || Math.abs(gamepad.gamepad.right_stick_x) > 0.1 || Math.abs(gamepad.gamepad.left_stick_x) > 0.1){
-                        moved = false;
-                    }
                     if(time.time() > 0.1){
                         if(time.time() > 0.35){ //
                             GrabberClose();
@@ -201,6 +197,8 @@ public class V4B_Arm {
                             manualSetPosition(mid_hold);
                         }
                     }
+                } else if(grabberToggle == 4){
+                    manualSetPosition(mid_hold);
                 }
                 else if (grabberToggle == 7){
                     manualSetPosition(mid_hold);

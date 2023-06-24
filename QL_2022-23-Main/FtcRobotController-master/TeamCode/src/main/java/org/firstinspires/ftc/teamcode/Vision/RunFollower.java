@@ -43,7 +43,7 @@ public class RunFollower extends OpMode {
         bufferHeading = 0;
         target = new Pose2d();
         robot = new Robot(hardwareMap, telemetry);
-        robot.resetOdo();
+        robot.stopAndResetEncoders();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);

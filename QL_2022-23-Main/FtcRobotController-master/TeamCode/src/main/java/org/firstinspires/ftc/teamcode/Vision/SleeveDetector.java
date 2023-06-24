@@ -20,8 +20,8 @@ public class SleeveDetector extends OpenCvPipeline {
     Mat matrix = new Mat();
 
     public static Rect BOUNDING_BOX  = new Rect(
-            new Point(455, 250),
-            new Point(440, 190)
+            new Point(375, 250),
+            new Point(360, 190)
     );;
 
     private double H = 0.0;
@@ -56,11 +56,11 @@ public class SleeveDetector extends OpenCvPipeline {
     }
 
     public int getCase(){
-        if(H < 30){
+        if(H < 110){
             return 2; //Blue = 10
-        }else if(H < 100 && H > 30){
+        }else if(H < 200 && H > 110){
             return 1; //Green = 90
-        }else if(H > 100){
+        }else if(H > 200){
             return 0; //Red = 160
         }
         return 0;

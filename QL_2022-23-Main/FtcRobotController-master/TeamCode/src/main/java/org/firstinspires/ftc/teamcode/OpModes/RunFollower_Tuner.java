@@ -27,9 +27,9 @@ public class RunFollower_Tuner extends OpMode {
         robot = new Robot(hardwareMap, telemetry);
         packet = new TelemetryPacket();
         robot.setStartPose(new Pose2d(0, 0, 0));
-        robot.resetOdo();
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
         robot.arm.V4BHoldPos();
+        robot.stopAndResetEncoders();
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);

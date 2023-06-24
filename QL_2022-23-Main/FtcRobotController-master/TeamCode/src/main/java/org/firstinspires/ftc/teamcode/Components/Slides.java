@@ -29,7 +29,7 @@ public class Slides {
     public static double high_goal_position = 530;//326;
     public static double mid_goal_position = 340;
     public static double low_goal_position = 130;
-    public static double downPower = -0.3;//0.245;
+    public static double downPower = -0.2501;//0.245;
 
     public static int goalToggle = 0;
     boolean low;
@@ -212,23 +212,15 @@ public class Slides {
             time.reset();
         }
 
-        if(V4B_Arm.grabberToggle == 0){
+        if(V4B_Arm.grabberToggle == 0 || V4B_Arm.grabberToggle == 4){
             mRobotState = STATE.DOWN;
         }
 
-        if(V4B_Arm.grabberToggle == 3 && V4B_Arm.moved){
-             mRobotState = STATE.DEPOSIT;
-        } else if (V4B_Arm.grabberToggle == 3 && V4B_Arm.moved == false){
-            if(Math.abs(gamepad1.gamepad.left_stick_y) > 0.1 || Math.abs(gamepad1.gamepad.right_stick_x) > 0.1 || Math.abs(gamepad1.gamepad.left_stick_x) > 0.1 ){
-                if(time.time() - startTime > 0.4) {
-                    mRobotState = STATE.DOWN;
-                }
-            }else{
-                startTime = time.time();
-            }
+        if(V4B_Arm.grabberToggle == 3){
+                mRobotState = STATE.DEPOSIT;
         }
 
-        if(V4B_Arm.stackCase == 3 && V4B_Arm.moved){
+        if(V4B_Arm.stackCase == 3){
             mRobotState = STATE.DEPOSIT;
         }
 

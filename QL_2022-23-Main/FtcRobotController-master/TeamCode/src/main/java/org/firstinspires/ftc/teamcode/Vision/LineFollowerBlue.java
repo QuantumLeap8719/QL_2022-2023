@@ -97,10 +97,10 @@ public class LineFollowerBlue extends OpenCvPipeline {
             Point secondMaxPoint = null;
 
             for (Point point : points) {
-                if (maxPoint == null || point.y > maxPoint.y) {
+                if (maxPoint == null || point.y < maxPoint.y) {
                     secondMaxPoint = maxPoint;
                     maxPoint = point;
-                } else if (secondMaxPoint == null || point.y > secondMaxPoint.y) {
+                } else if (secondMaxPoint == null || point.y < secondMaxPoint.y) {
                     secondMaxPoint = point;
                 }
             }

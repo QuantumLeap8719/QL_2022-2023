@@ -15,9 +15,8 @@ public class S4T_Localizer_3 {
     public static double AUX_WIDTH = -4.51356273;
 
     private final double EPSILON = 1e-6;
-    private static Pose2d myPose = new Pose2d(0, 0,0);
+    private Pose2d myPose = new Pose2d(0, 0,0);
 
-    private static double spikeBuffer = 0;
     double prevHeading = 0;
 
     double prevx = 0;
@@ -31,7 +30,7 @@ public class S4T_Localizer_3 {
     double preveryRaw = 0;
     double preverxRaw = 0;
 
-    private static double heading = 0;
+    private double heading = 0;
     Telemetry telemetry;
     public double TICKS_TO_INCHES_VERT = 197.958333;//303.547368;
     public double TICKS_TO_INCHES_STRAFE = 197.958333;//335.381388888888888;
@@ -64,14 +63,10 @@ public class S4T_Localizer_3 {
     public Pose2d dashboardPos = new Pose2d(0, 0, 0);
 
     public void update(double elyRaw, double erxRaw, double eryRaw){
-        heading = (eryRaw - elyRaw) / TRACK_WIDTH + spikeBuffer;
+        heading = (eryRaw - elyRaw) / TRACK_WIDTH;
 
         dtheta = heading - prevHeading;
 
-        if(dtheta > Math.toRadians(10) && !start){
-            spikeBuffer = dtheta;
-            return;
-        }
 
         double y = ((elyRaw + eryRaw)/2) / TICKS_TO_INCHES_VERT;
         double x = erxRaw / TICKS_TO_INCHES_STRAFE;
@@ -104,7 +99,6 @@ public class S4T_Localizer_3 {
         addPacket("Y Pos: ", myPose.getY());
         addPacket("Theta Pos: ", Math.toDegrees(myPose.getHeading()));
         addPacket("D Theta: ", Math.toDegrees(dtheta));
-        addPacket("Buffer ", Math.toDegrees(spikeBuffer));
         addPacket("Raw Right Y: ", eryRaw);
         addPacket("Raw Left Y: ", elyRaw);
         addPacket("Raw Right X: ", erxRaw);
@@ -118,8 +112,8 @@ public class S4T_Localizer_3 {
     public void reset(){
         myPose = new Pose2d(0, 0, 0);
         heading = 0;
-        spikeBuffer = 0;
     }
+
 
     public double angleWrap(double angle){
         return ((2 * Math.PI) + angle) % (2 * Math.PI);

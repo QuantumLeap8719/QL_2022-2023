@@ -1,0 +1,472 @@
+package org.firstinspires.ftc.teamcode.OpModes;
+
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Components.Robot;
+import org.firstinspires.ftc.teamcode.Components.V4B_Arm;
+import org.firstinspires.ftc.teamcode.PurePusuit.CurvePoint;
+import org.firstinspires.ftc.teamcode.PurePusuit.RobotMovement;
+import org.firstinspires.ftc.teamcode.Vision.LineFollowerBlue;
+import org.firstinspires.ftc.teamcode.Vision.VisionConstants;
+
+import java.util.ArrayList;
+
+@Autonomous(name="BlueAllMid")
+public class BlueAllMid extends LinearOpMode {
+
+    private enum State {
+        DRIVE_TO_DEPOSIT_PRELOAD,
+        PRELOAD_DEPOSIT,
+        PRELOAD_TURN,
+        PRELOAD_FORWARD,
+        DRIVE_TO_INTAKE,
+        GRAB,
+        DRIVE_TO_DEPOSIT_MID,
+        MID_FORWARD,
+        DRIVE_TO_DEPOSIT_HIGH_FAR,
+        HIGH_FAR_FORWARD,
+        DEPOSIT,
+        PARK,
+        IDLE
+    }
+
+    State mRobotState = State.DRIVE_TO_DEPOSIT_PRELOAD;
+
+    public Pose2d PRE_LOAD_CLEAR = new Pose2d(1.5, 22, Math.toRadians(0));
+    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(-5.5, 36.4, Math.toRadians(330));
+    public Pose2d PRE_LOAD_DEPOSIT_TURN = new Pose2d(-2.9, 42.5, Math.toRadians(250));
+    public Pose2d PRE_LOAD_DEPOSIT_FORWARD = new Pose2d(7, 54, Math.toRadians(250));
+    public Pose2d PRE_LOAD_DEPOSIT_FORWARDGRAB = new Pose2d(10, 52, Math.toRadians(270));
+    public Pose2d INTAKE_CLEAR = new Pose2d(15.622, 52.665, Math.toRadians(270));
+
+    public Pose2d DEPOSIT_MID = new Pose2d(-3.584, 42.619, Math.toRadians(244));
+    public Pose2d DEPOSIT_MID_FORWARD = new Pose2d(4, 50, Math.toRadians(270));
+
+    public Pose2d GRAB = new Pose2d(19, 51.25, -Math.toRadians(270));
+
+    public static Pose2d PARK_CASE_1 = new Pose2d(23, 51, Math.toRadians(270));
+    public static Pose2d PARK_CASE_3 = new Pose2d(-2, 51, Math.toRadians(270));
+    public static Pose2d PARK_CASE_2 = new Pose2d(-9, 51, Math.toRadians(270));
+
+    double coneCase;
+    boolean gtp = false;
+    boolean PPIND = false;
+    boolean isDown = true;
+    int cycle = 0;
+    double bufferHeading = 0;
+    double moveSpeed = 1.0;
+    double turnSpeed = 1.0;
+
+    //double armCycleOne = 0;
+    //double armCycleTwo = 0.17;
+    // double armCycleThree = 0.10;
+    double armCycleFour = 0.055;
+    double armCycleFive = 0.0;
+
+    double slideHeightOne = 120;
+    double slideHeightTwo = 105;
+    double slideHeightThree = 70;
+    double slideHeightFour = 45;
+
+    int depositHeightPreload = 530;
+    int depositHeightMid = 330;
+    int depositHeightFarHigh = 550;
+
+    double grabberCycleOne = 0.6;
+    double grabberCycleTwo = 0.66;
+    double grabberCycleThree = 0.64;
+    double grabberCycleFour = V4B_Arm.grabberOpen;
+    double grabberCycleFive = V4B_Arm.grabberClose;
+
+    double endtime = 0;
+
+    int numCycles = 6;
+    ElapsedTime time;
+    ElapsedTime timer;
+    NormalizedColorSensor colorSensor;
+    Robot robot;
+
+    @Override
+    public void runOpMode() {
+        robot = new Robot(hardwareMap, telemetry);
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
+        time = new ElapsedTime();
+        timer = new ElapsedTime();
+        robot.setStartPose(new Pose2d(0, 0, 0));
+        robot.arm.GrabberClose();
+        robot.arm.V4BOutPose();
+        robot.arm.flickerClose();
+        robot.arm.write();
+        robot.stopAndResetEncoders();
+
+        boolean slidesKickout = false;
+
+        robot.blueInitializeWebcam();
+        //robot.blueConeWebcam();
+        while (!isStarted() && !isStopRequested()) {
+            coneCase = robot.rightConeCase();
+            //coneCase = 0;
+            telemetry.addData("Robot Pos", robot.getPos());
+            robot.update();
+            robot.updatePos();
+            telemetry.addData("Case", coneCase);
+            telemetry.update();
+        }
+
+        waitForStart();
+
+        robot.closeCamera();
+
+        robot.blueConeWebcam();
+
+        time.startTime();
+        timer.startTime();
+
+        while (opModeIsActive()) {
+            ArrayList<CurvePoint> points = new ArrayList<>();
+
+            switch (mRobotState) {
+                case DRIVE_TO_DEPOSIT_PRELOAD:
+                    PPIND = false;
+                    gtp = false;
+
+                    points.add(new CurvePoint(new Pose2d(0, 0, 0),moveSpeed,turnSpeed,10));
+                    points.add(new CurvePoint(PRE_LOAD_CLEAR,moveSpeed,turnSpeed,10));
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,moveSpeed,turnSpeed,10));
+
+
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1) {
+                        newState(State.PRELOAD_DEPOSIT);
+                    }else{
+                        time.reset();
+                        robot.arm.V4BOutPose();
+                        robot.arm.GrabberClose();
+
+                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 32.5){
+                            robot.slides.setPosition(depositHeightMid);
+                        }
+
+                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 10){
+                            robot.arm.flickerOut();
+                        }
+                    }
+                    break;
+
+                case PRELOAD_DEPOSIT:
+                    PPIND = false;
+                    gtp = true;
+
+                    points.add(new CurvePoint(RobotMovement.getLastFollowMe(),1.0,1.0,10));
+                    robot.slides.setPosition(depositHeightMid - 50, -0.3, 1);
+
+                    if(time.time() > 0.2 && time.time() < 0.4) {
+                        robot.arm.GrabberDeposit();
+                    }
+
+                    if(time.time() > 0.4 && time.time() < 0.5){
+                        robot.arm.GrabberClose();
+                    }
+
+                    if(time.time() > 0.5){
+                        robot.arm.V4BAutoHold();
+                    }
+
+                    if(time.time() > 0.7) {
+                        newState(State.PRELOAD_TURN);
+                    }
+                    break;
+                case PRELOAD_TURN:
+                    PPIND = true;
+                    gtp = false;
+                    robot.slides.setPosition(depositHeightMid - 50, -0.3, 1);
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_TURN,1.0,1.0,10));
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 3.0 && Math.abs(robot.getPos().getHeading() - Math.toRadians(270)) < Math.toRadians(5)) {
+                        turnSpeed = 0.0;
+                        newState(State.PRELOAD_FORWARD);
+                    } else {
+                        time.reset();
+                        robot.arm.V4BFrontPose();
+                        robot.arm.GrabberOpen();
+                    }
+                    break;
+
+                case PRELOAD_FORWARD:
+                    PPIND = true;
+                    gtp = false;
+                    robot.slides.setPosition(depositHeightMid - 50, -0.3, 1);
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARD,1.0,turnSpeed,10));
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARDGRAB,1.0,turnSpeed,10));
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 6.0 && Math.abs(robot.getPos().getHeading() - Math.toRadians(270)) < Math.toRadians(5)) {
+                        newState(State.DRIVE_TO_INTAKE);
+                    } else {
+                        time.reset();
+                        robot.arm.V4BFrontPose();
+                        robot.arm.GrabberOpen();
+                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 5.0) {
+                            turnSpeed = 1.0;
+                        }
+                    }
+                    break;
+
+
+                case DRIVE_TO_INTAKE:
+                    gtp = false;
+                    PPIND = false;
+                    if (robot.slides.isDown()) {
+                        robot.slides.reset();
+                        robot.slides.setPower(0.0);
+                        isDown = false;
+                    } else {
+                        robot.slides.setPower(-0.3);
+                    }
+                    if(isDown && robot.localizer.getPose().getX() > 25) {
+                        if (robot.slides.isDown()) {
+                            robot.slides.reset();
+                            robot.slides.setPower(0.0);
+                            isDown = false;
+                        } else {
+                            robot.slides.setPower(-0.3);
+                        }
+                    } else {
+                        if (cycle == 0) {
+                            robot.slides.setPosition(slideHeightOne, -0.3, 1);
+                            robot.arm.manualSetPosition(0.11);
+                        } else if (cycle == 1) {
+                            robot.slides.setPosition(slideHeightTwo, -0.3, 1);
+                            robot.arm.manualSetPosition(0.11);
+                        } else if (cycle == 2) {
+                            robot.slides.setPosition(slideHeightThree, -0.3, 1);
+                            robot.arm.manualSetPosition(0.11);
+                        } else if (cycle == 3){
+                            robot.slides.setPosition(slideHeightFour, -0.3, 1);
+                            robot.arm.manualSetPosition(0.11);
+                        }  else if (cycle == 4){
+                            robot.arm.manualSetPosition(0.2);
+                        }
+                    }
+
+                    robot.arm.GrabberOpen();
+                    telemetry.addData("IS EMPTY?", LineFollowerBlue.isEmpty());
+
+                    double distance = ((DistanceSensor) colorSensor).getDistance(DistanceUnit.INCH);
+                    if((Math.abs(270 - Math.toDegrees(robot.getPos().getHeading())) > 25 && Math.abs(robot.getPos().getX()) > 17) || LineFollowerBlue.isEmpty()) {
+                        telemetry.addData("", "Camera failure... using odo.");
+                        robot.GoTo(new Pose2d(28, 51.25, Math.toRadians(270)), new Pose2d(0.75, 0.75, 0.75));
+                    } else {
+                        if(robot.getPos().getX() > 13){
+                            telemetry.addLine("Here 1");
+                            //robot.drive.followLine(true, 1.2, bufferHeading, distance, robot.getPos().getHeading(), 0.3, 0.3);
+                            robot.drive.followLine(false,false, 1, VisionConstants.LineFollowerTarget, distance, LineFollowerBlue.midMaxPoint.x, 0.3, 0.3);
+                            //if(Math.abs(bufferHeading - robot.getPos().getHeading()) < Math.toRadians(1.5) && Math.abs(1.2 - distance) < 0.5){
+                            if(Math.abs(LineFollowerBlue.midMaxPoint.x - VisionConstants.LineFollowerTarget) < 25 && Math.abs(1 - distance) < 0.75){
+                                GRAB = robot.getPos();
+                                robot.arm.manualSetPosition(0.11);
+                                //OFFSET = new Pose2d(GRAB.getX() - OG_GRAB.getX(), GRAB.getY() - OG_GRAB.getY(), 0);
+                                //robot.setOffset(OFFSET);
+                                newState(State.GRAB);
+                            }
+                        }/*else if (robot.getPos().getX() < -18) {
+                            telemetry.addLine("Here 1");
+                            robot.drive.followLine(false, 1.2, VisionConstants.LineFollowerTarget, distance, LineFollower.midMaxPoint.x, 0.3, 0.3); //0.3
+                            //robot.drive.followLine(true, 1.2, bufferHeading, distance, robot.getPos().getHeading(), 0.3, 0.3);
+                            //if(Math.abs(bufferHeading - robot.getPos().getHeading()) < Math.toRadians(1.5) && Math.abs(1.2 - distance) < 0.5){
+                        } */else if (robot.getPos().getX() > 15) { //-11 //-3
+                            telemetry.addLine("Here 2");
+                            bufferHeading = robot.getPos().getHeading();
+                            double speed = (((robot.getPos().vec().distTo(GRAB.vec())) / 43) * 0.55) + 0.4;
+                            robot.drive.followLine(true,false, 28, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollowerBlue.midMaxPoint.x, speed, speed); //0.3
+                        } else {
+                            telemetry.addLine("Here 3");
+                            bufferHeading = robot.getPos().getHeading();
+                            robot.drive.followLine(true,false, 28, VisionConstants.LineFollowerTarget, robot.getPos().getX(), LineFollowerBlue.midMaxPoint.x, 0.6, 0.6  );
+                        }
+                    }
+
+                    break;
+                case GRAB:
+                    gtp = true;
+                    PPIND = false;
+                    points.add(new CurvePoint(GRAB,0.8,0.8,10));
+                    if (cycle == 0) {
+                        robot.slides.setPosition(slideHeightOne - 30, -0.3, 1);
+                    } else if (cycle == 1) {
+                        robot.slides.setPosition(slideHeightTwo - 30, -0.3, 1);
+                    } else if (cycle == 2) {
+                        robot.slides.setPosition(slideHeightThree - 30, -0.3, 1);
+                    }else if (cycle == 3){
+                        robot.slides.setPosition(slideHeightFour - 30, -0.3, 1);
+                    } else if(cycle == 4){
+                        robot.arm.manualSetPosition(0.05);
+                    }
+
+                    if(time.time() > 0.1) {
+                        robot.arm.GrabberClose();
+                    }
+                    if(time.time() > 0.4){
+                        robot.arm.V4BOutPose();
+                    }
+                    if(time.time() > 0.6) {
+                            moveSpeed = 1.0;
+                            turnSpeed = 1.0;
+                            newState(State.DRIVE_TO_DEPOSIT_MID);
+                    }
+                    break;
+                case DRIVE_TO_DEPOSIT_MID:
+                    gtp = false;
+                    PPIND = false;
+                    points.add(new CurvePoint(GRAB,1.0,1.0,10));
+                    points.add(new CurvePoint(INTAKE_CLEAR,0.8,0.8,10));
+                    points.add(new CurvePoint(DEPOSIT_MID,0.7,0.7,10));
+
+                    robot.slides.setPosition(depositHeightMid);
+
+                    robot.arm.GrabberClose();
+
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.25) {
+                         newState(State.DEPOSIT);
+                    }
+                    break;
+
+                case MID_FORWARD:
+                    PPIND = true;
+                    gtp = false;
+                    points.add(new CurvePoint(DEPOSIT_MID,1.0,1.0,10));
+                    points.add(new CurvePoint(DEPOSIT_MID_FORWARD,1.0,1.0,10));
+                    points.add(new CurvePoint(INTAKE_CLEAR,1.0,1.0,10));
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 3.5) {
+                        robot.arm.V4BAutoHold();
+                        isDown = true;
+                        if(cycle + 1 == numCycles){
+                            newState(State.PARK);
+                        } else {
+                            newState(State.DRIVE_TO_INTAKE);
+                        }
+                    } else {
+                        time.reset();
+                        robot.arm.V4BAutoHold();
+                        robot.slides.setPosition(depositHeightMid - 90, -0.3, 1);
+                        if (robot.slides.isDown()) {
+                            robot.slides.reset();
+                            robot.slides.setPower(0.0);
+                            isDown = false;
+                        } else {
+                            robot.slides.setPower(-0.3);
+                        }
+                    }
+                    break;
+
+                case DEPOSIT:
+                    PPIND = false;
+                    gtp = true;
+                    points.add(new CurvePoint(RobotMovement.getLastFollowMe(), 1.0, 1.0, 10));
+                    robot.slides.setPosition((depositHeightMid) - 90, -0.3, 1);
+
+                    if (time.time() > 0.3 && time.time() < 0.7) {
+                        robot.arm.GrabberDeposit();
+                    }
+                    if(time.time() > 0.7 && time.time() < 0.8){
+                        robot.arm.GrabberClose();
+                    }
+                    if(time.time() > 0.8) {
+                        if ((cycle + 1) == numCycles) {
+                            newState(State.PARK);
+                        } else {
+                            cycle++;
+                            newState(State.MID_FORWARD);
+                        }
+                    }
+
+                    break;
+                case PARK:
+                    PPIND = false;
+                    gtp = true;
+                    if(coneCase == 0){
+                        points.add(new CurvePoint(PARK_CASE_1,0.4,0.4,15));
+                    }else if(coneCase == 1){
+                        points.add(new CurvePoint(PARK_CASE_2,0.4,0.4,15));
+                    }else if(coneCase == 2){
+                        points.add(new CurvePoint(PARK_CASE_3,0.4,0.4,15));
+                    }
+
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 2.0) {
+                        endtime = timer.time();
+                        newState(State.IDLE);
+                    } else {
+                        robot.arm.V4BFrontHoldPos();
+                        if (robot.slides.isDown()) {
+                            robot.slides.reset();
+                            robot.slides.setPower(0.0);
+                        } else {
+                            robot.slides.setPower(-0.3);
+                        }
+                    }
+                    break;
+                case IDLE:
+                    telemetry.addData("TIME", endtime);
+                    robot.drive.setPower(0, 0, 0);
+                    robot.drive.write();
+                    break;
+            }
+
+            if (points.size() != 0) {
+                if(PPIND){
+                    RobotMovement.followCurve(points, robot, telemetry);
+                }else if(gtp){
+                    robot.GoTo(points.get(points.size() - 1).toPose(), new Pose2d(points.get(points.size() - 1).moveSpeed, points.get(points.size() - 1).moveSpeed, points.get(points.size() - 1).turnSpeed));
+                }else{
+                    RobotMovement.followCurveAngled(points, robot, telemetry);
+                }
+            } else if(mRobotState == State.DRIVE_TO_INTAKE){
+                robot.drive.write();
+                robot.updatePos();
+            }else {
+                telemetry.addLine("HERE!!!!");
+                robot.drive.setPower(0, 0, 0,0);
+                robot.drive.write();
+                robot.updatePos();
+            }
+
+
+            robot.arm.write();
+            robot.slides.write();
+            robot.update();
+
+            for(int i = 0; i < points.size(); i++){
+                telemetry.addData("Point" + i, points.get(i).toString());
+            }
+
+            telemetry.addData("State", mRobotState);
+            telemetry.addData("Position", robot.getPos());
+            telemetry.addData("Cycle", cycle);
+            telemetry.addData("Grabber position", robot.arm.grabber.getPosition());
+            telemetry.addData("Heading Error", Math.abs(robot.getPos().getHeading() - Math.toRadians(270)));
+            telemetry.addData("IsDown", isDown);
+            telemetry.addData("Touch Sensor", robot.slides.isDown());
+            telemetry.addData("Buffer Heading", Math.toDegrees(bufferHeading));
+            telemetry.addData("FollowMe", RobotMovement.getLastFollowMe());
+            telemetry.update();
+        }
+    }
+
+    public void updateSlidesDown(){
+        if(robot.slides.isDown()){
+            robot.slides.reset();
+            robot.slides.setPower(0.0);
+        } else {
+            robot.slides.setPower(-0.2501);
+        }
+    }
+    
+    public void newState (State state){
+        time.reset();
+        mRobotState = state;
+    }
+}

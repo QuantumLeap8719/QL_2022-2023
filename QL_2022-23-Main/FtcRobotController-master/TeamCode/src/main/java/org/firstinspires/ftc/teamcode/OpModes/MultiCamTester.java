@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Vision.LineDetector;
 import org.firstinspires.ftc.teamcode.Vision.LineFollower;
 import org.firstinspires.ftc.teamcode.Vision.LineFollowerBlue;
 import org.firstinspires.ftc.teamcode.Vision.SleeveDetector;
+import org.firstinspires.ftc.teamcode.Vision.SleeveDetectorV2;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -42,6 +43,11 @@ public class MultiCamTester extends OpMode {
             }
         });
 
+    }
+
+    @Override
+    public void init_loop(){
+        telemetry.addData("Case", ((SleeveDetector)detector).getCase());
     }
 
     @Override
