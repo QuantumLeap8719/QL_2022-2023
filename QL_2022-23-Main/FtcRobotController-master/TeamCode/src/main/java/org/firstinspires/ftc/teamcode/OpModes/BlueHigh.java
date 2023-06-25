@@ -41,7 +41,7 @@ public class BlueHigh extends LinearOpMode {
 
     public Pose2d OFFSET = new Pose2d(0,0,0);
 
-    public Pose2d PRE_LOAD_CLEAR = new Pose2d(-1.5, 22, Math.toRadians(0));
+    public Pose2d PRE_LOAD_CLEAR = new Pose2d(-1.5, 13, Math.toRadians(0));
     public Pose2d PRE_LOAD_CLEAR3 = new Pose2d(-12, 54, Math.toRadians(90));
     public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(5.5, 36.4, Math.toRadians(30));
     public Pose2d PRE_LOAD_DEPOSIT_TURN = new Pose2d(2.9, 42.5, Math.toRadians(110));
@@ -67,7 +67,7 @@ public class BlueHigh extends LinearOpMode {
     //public Pose2d DEPOSIT_HIGH_FAR = new Pose2d(-19.5, -43.5, Math.toRadians(113));
 
     public Pose2d OG_GRAB = new Pose2d(-20.406, 53.301, Math.toRadians(90));
-    public Pose2d GRAB = new Pose2d(-19, 51.25, Math.toRadians(90));
+    public Pose2d GRAB = new Pose2d(-28, 51.25, Math.toRadians(90));
     public Pose2d GRAB2 = new Pose2d(-19, 51.25, Math.toRadians(270));
     public Pose2d GRAB3 = new Pose2d(-19, 51.75, Math.toRadians(270));
     public Pose2d GRAB4 = new Pose2d(-19, 52.75, Math.toRadians(270));
@@ -280,7 +280,7 @@ public class BlueHigh extends LinearOpMode {
                     telemetry.addData("IS EMPTY?", LineFollowerBlue.isEmpty());
 
 
-                    if(time.time() > 5.0){
+                    if(time.time() > 3.0){
                         newState(State.GRAB);
                     }
 
@@ -352,6 +352,8 @@ public class BlueHigh extends LinearOpMode {
                     }
                     break;
                 case DRIVE_TO_DEPOSIT_MID:
+
+
                     gtp = false;
                     PPIND = false;
                     points.add(new CurvePoint(GRAB,1.0,1.0,10));
@@ -359,6 +361,10 @@ public class BlueHigh extends LinearOpMode {
                     points.add(new CurvePoint(DEPOSIT_MID,0.7,0.7,10));
 
                     robot.slides.setPosition(depositHeightMid);
+
+                    if(time.time() > 4.0){
+                        newState(State.DEPOSIT);
+                    }
 
                     robot.arm.GrabberClose();
 
@@ -400,6 +406,10 @@ public class BlueHigh extends LinearOpMode {
 
 
                     robot.arm.GrabberClose();
+
+                    if(time.time() > 4.0){
+                        newState(State.DEPOSIT);
+                    }
 
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 33) {
                         if(cycle == 2){

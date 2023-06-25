@@ -164,7 +164,7 @@ public class Slides {
                 if (goalToggle == 0) {
                     setPosition(low_goal_position - 50, -0.3, 1);
                 } else if (goalToggle == 1) {
-                    setPosition(mid_goal_position - 50, -0.3, 1);
+                    setPosition(mid_goal_position - 70, -0.3, 1);
                 } else if (goalToggle == 2) {
                     setPosition(high_goal_position - 50, -0.3, 1);
                 }

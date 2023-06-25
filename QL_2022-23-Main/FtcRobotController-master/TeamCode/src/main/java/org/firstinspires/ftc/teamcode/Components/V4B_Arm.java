@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Components;
 import android.app.admin.DevicePolicyManager;
 import android.hardware.Sensor;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Wrapper.Caching_Servo;
 import org.firstinspires.ftc.teamcode.Wrapper.GamepadEx;
 
+@Config
 public class V4B_Arm {
     public enum ARM_STATE{
         STACK,
@@ -37,12 +39,13 @@ public class V4B_Arm {
     private double hold = 0.7;
     private double mid_hold = 0.5;
 
-    private double out = .83;
+    public static double out = .86;
     private double front = 0.05;
     private double hover = 0.17;
     private double terminal = 0.02;
     public static double grabberOpen = .48; //0.83
-    public static double grabberClose = 0.25; //0.62
+    public static double grabberClose = .3; //0.62
+    public static double grabberPartialClose = 0.36; //0.62
     public static double grabberDeposit = 0.375; //0.71
     public double flickerClose = 0.55;
     public double flickerOut = 0.42;
@@ -132,6 +135,10 @@ public class V4B_Arm {
         grabber.setPosition(grabberClose);
     }
 
+    public void GrabberPartialClose(){
+        grabber.setPosition(grabberPartialClose);
+    }
+
     public void GrabberDeposit(){
         grabber.setPosition(grabberDeposit);
     }
@@ -189,7 +196,7 @@ public class V4B_Arm {
                 } else if(grabberToggle == 3){
                     if(time.time() > 0.1){
                         if(time.time() > 0.35){ //
-                            GrabberClose();
+                            GrabberPartialClose();
                         }else{
                             GrabberDeposit();
                         }

@@ -36,6 +36,7 @@ public class Robot {
     private S4T_Encoder encoderRX;
     private HardwareMap hardwareMap;
     private int cameraMonitorViewId;
+    private boolean driveToggle = false;
 
     OpenCvCamera webcam;
     public OpenCvPipeline detector;
@@ -80,7 +81,6 @@ public class Robot {
         //drive.setPower(0.5,0.5,0.5,0.5);
 
 
-        drive.driveCentric(gamepad1ex.gamepad, 1, 0.8, getPos().getHeading());
 
         arm.operate(gamepad1ex, gamepad2ex, telemetry);
 
@@ -101,6 +101,18 @@ public class Robot {
             updatePos();
             update();
         }
+
+        if(gamepad2ex.isPress(GamepadEx.Control.start)){
+            driveToggle = !driveToggle;
+        }
+
+        if(driveToggle){
+            drive.drive(gamepad1ex.gamepad, 1.0, 0.8);
+        } else {
+            drive.driveCentric(gamepad1ex.gamepad, 1, 0.8, getPos().getHeading());
+        }
+
+        telemetry.addData("DriveToggle", driveToggle);
     }
 
     public void resetOdo(){

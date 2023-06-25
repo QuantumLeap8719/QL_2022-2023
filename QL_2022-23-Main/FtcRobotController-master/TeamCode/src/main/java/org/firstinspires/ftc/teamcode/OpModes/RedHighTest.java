@@ -18,11 +18,12 @@ import org.firstinspires.ftc.teamcode.Vision.VisionConstants;
 
 import java.util.ArrayList;
 
-@Autonomous(name="RedHigh")
-public class RedHigh extends LinearOpMode {
+@Autonomous(name="RedHighTest")
+public class RedHighTest extends LinearOpMode {
 
     private enum State {
-        DRIVE_TO_DEPOSIT_PRELOAD,
+        PRELOAD_STRAFE,
+        PRELOAD_MOVE,
         PRELOAD_DEPOSIT,
         PRELOAD_TURN,
         PRELOAD_FORWARD,
@@ -37,17 +38,17 @@ public class RedHigh extends LinearOpMode {
         IDLE
     }
 
-    State mRobotState = State.DRIVE_TO_DEPOSIT_PRELOAD;
+    State mRobotState = State.PRELOAD_STRAFE;
 
     public Pose2d OFFSET = new Pose2d(0,0,0);
     
-    public Pose2d PRE_LOAD_CLEAR = new Pose2d(-1.5, 22, Math.toRadians(0));
-    public Pose2d PRE_LOAD_CLEAR3 = new Pose2d(-12, 54, Math.toRadians(90));
-    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(5.5, 36.4, Math.toRadians(30));
-    public Pose2d PRE_LOAD_DEPOSIT_TURN = new Pose2d(2.9, 42.5, Math.toRadians(110));
+    public Pose2d PRE_LOAD_STRAFE = new Pose2d(17.5, 1, Math.toRadians(0));
+    public Pose2d PRE_LOAD_CLEAR = new Pose2d(21, 22, Math.toRadians(90));
+    public Pose2d PRE_LOAD_DEPOSIT = new Pose2d(29.5, 36.4, Math.toRadians(30));
+    public Pose2d PRE_LOAD_DEPOSIT_TURN = new Pose2d(26.9, 42.5, Math.toRadians(110));
     public Pose2d PRE_LOAD_DEPOSIT_FORWARD = new Pose2d(-7, 54, Math.toRadians(110));
     public Pose2d PRE_LOAD_DEPOSIT_FORWARDGRAB = new Pose2d(-10, 52, Math.toRadians(90));
-    public Pose2d INTAKE_CLEAR = new Pose2d(-15.622, 52.665, Math.toRadians(90));
+    public Pose2d INTAKE_CLEAR = new Pose2d(-5, 51, Math.toRadians(90));
     public Pose2d INTAKE_FAR_CLEAR = new Pose2d(13, 52, Math.toRadians(0));
     public Pose2d BACk_FAR_CLEAR = new Pose2d(13, 55, Math.toRadians(0));
     public Pose2d DEPOSIT_HIGH_FAR_CLEAR = new Pose2d(11.606, 51.937, Math.toRadians(90));
@@ -58,8 +59,8 @@ public class RedHigh extends LinearOpMode {
 
 
     public Pose2d DEPOSIT_HIGH = new Pose2d(1, 49, Math.toRadians(65));
-    public Pose2d DEPOSIT_MID = new Pose2d(3.584, 42.619, Math.toRadians(116));
-    public Pose2d DEPOSIT_MID_FORWARD = new Pose2d(-4, 50, Math.toRadians(90));
+    public Pose2d DEPOSIT_MID = new Pose2d(4.8, 42, Math.toRadians(116));
+    public Pose2d DEPOSIT_MID_FORWARD = new Pose2d(-1, 50, Math.toRadians(90));
     public static Pose2d DEPOSIT_HIGH_FAR_FORWARD = new Pose2d(15, 57, Math.toRadians(90)); //SECOND HIGH
     public Pose2d DEPOSIT_HIGH_FAR_FORWARD_CLEAR = new Pose2d(2, 51.5, Math.toRadians(90));
 
@@ -73,7 +74,7 @@ public class RedHigh extends LinearOpMode {
     public Pose2d GRAB4 = new Pose2d(-19, 52.75, Math.toRadians(270));
     public Pose2d GRAB5 = new Pose2d(-19, 53, Math.toRadians(270));
 
-    public static Pose2d PARK_CASE_1 = new Pose2d(-28, 51, Math.toRadians(90));
+    public static Pose2d PARK_CASE_1 = new Pose2d(-24, 51, Math.toRadians(90));
     public static Pose2d PARK_CASE_3 = new Pose2d(21, 51, Math.toRadians(180));
     public static Pose2d PARK_CASE_2 = new Pose2d(-3, 51, Math.toRadians(90));
 
@@ -110,7 +111,7 @@ public class RedHigh extends LinearOpMode {
 
     double endtime = 0;
 
-    int numCycles = 5;
+    int numCycles = 6;
     ElapsedTime time;
     ElapsedTime timer;
     NormalizedColorSensor colorSensor;
@@ -137,6 +138,7 @@ public class RedHigh extends LinearOpMode {
             coneCase = robot.getConeCase();
             //coneCase = 0;
             telemetry.addData("Robot Pos", robot.getPos());
+            robot.arm.grabber.servo.setPosition(V4B_Arm.grabberClose);
             robot.update();
             robot.updatePos();
             telemetry.addData("Case", coneCase);
@@ -156,45 +158,61 @@ public class RedHigh extends LinearOpMode {
             ArrayList<CurvePoint> points = new ArrayList<>();
 
             switch (mRobotState) {
-                case DRIVE_TO_DEPOSIT_PRELOAD:
+                case PRELOAD_STRAFE:
+                    PPIND = false;
+                    gtp = true;
+
+                    points.add(new CurvePoint(new Pose2d(0, 0, 0),moveSpeed,turnSpeed,10));
+                    points.add(new CurvePoint(PRE_LOAD_STRAFE,1.0,1.0,10));
+
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 7){
+                        newState(State.PRELOAD_MOVE);
+                    }else{
+                        time.reset();
+                        robot.arm.GrabberClose();
+
+                    }
+                    break;
+
+                case PRELOAD_MOVE:
                     PPIND = false;
                     gtp = false;
 
-                    points.add(new CurvePoint(new Pose2d(0, 0, 0),moveSpeed,turnSpeed,10));
-                    points.add(new CurvePoint(PRE_LOAD_CLEAR,0.4,0.4,10));
-                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,0.3,0.3,10));
+                    points.add(new CurvePoint(PRE_LOAD_STRAFE,1.0,1.0,10));
+                    points.add(new CurvePoint(PRE_LOAD_CLEAR,1.0,1.0,10));
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT,moveSpeed,turnSpeed,10));
 
-
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 1.25) {
                         newState(State.PRELOAD_DEPOSIT);
-                    }else{
-                        time.reset();
-                        robot.arm.V4BOutPose();
-                        robot.arm.GrabberClose();
+                    }
 
-                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 32.5){
-                            robot.slides.setPosition(depositHeightMid);
-                        }
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 33){
+                        robot.slides.setPosition(depositHeightFarHigh);
+                    }
 
-                        if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 10){
-                            robot.arm.flickerOut();
-                        }
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 35){
+                        turnSpeed = 0.6;
+                        moveSpeed = 0.6;
+                    }
+
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 3){
+                        moveSpeed = 0.6;
                     }
                     break;
 
                 case PRELOAD_DEPOSIT:
-                    PPIND = false;
-                    gtp = true;
+                    PPIND = true;
+                    gtp = false;
 
                     points.add(new CurvePoint(RobotMovement.getLastFollowMe(),1.0,1.0,10));
-                    robot.slides.setPosition(depositHeightMid - 70, -0.3, 1);
+                    robot.slides.setPosition(depositHeightFarHigh - 90, -0.3, 1);
 
                     if(time.time() > 0.2 && time.time() < 0.4) {
                         robot.arm.GrabberDeposit();
                     }
 
                     if(time.time() > 0.4 && time.time() < 0.5){
-                        robot.arm.GrabberClose();
+                        robot.arm.GrabberPartialClose();
                     }
 
                     if(time.time() > 0.5){
@@ -205,13 +223,14 @@ public class RedHigh extends LinearOpMode {
                         newState(State.PRELOAD_TURN);
                     }
                     break;
+
                 case PRELOAD_TURN:
                     PPIND = true;
                     gtp = false;
-                    robot.slides.setPosition(depositHeightMid - 70, -0.3, 1);
+                    robot.slides.setPosition(depositHeightFarHigh - 90, -0.3, 1);
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT,1.0,1.0,10));
                     points.add(new CurvePoint(PRE_LOAD_DEPOSIT_TURN,1.0,1.0,10));
-                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 3.0 && Math.abs(robot.getPos().getHeading() - Math.toRadians(90)) < Math.toRadians(5)) {
+                    if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 3.0 && Math.abs(robot.getPos().getHeading() - points.get(points.size() - 1).heading) < Math.toRadians(5.0)) {
                         turnSpeed = 0.0;
                         newState(State.PRELOAD_FORWARD);
                     } else {
@@ -224,9 +243,10 @@ public class RedHigh extends LinearOpMode {
                 case PRELOAD_FORWARD:
                     PPIND = true;
                     gtp = false;
-                    robot.slides.setPosition(depositHeightMid - 70, -0.3, 1);
-                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARD,1.0,turnSpeed,10));
-                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_FORWARDGRAB,1.0,turnSpeed,10));
+                    robot.slides.setPosition(depositHeightFarHigh - 90, -0.3, 1);
+                    points.add(new CurvePoint(PRE_LOAD_DEPOSIT_TURN,1.0,1.0,10));
+                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR_FORWARD,1.0,turnSpeed,10));
+                    points.add(new CurvePoint(DEPOSIT_HIGH_FAR_FORWARD_CLEAR,1.0,turnSpeed,10));
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 6.0 && Math.abs(robot.getPos().getHeading() - Math.toRadians(90)) < Math.toRadians(5)) {
                         newState(State.DRIVE_TO_INTAKE);
                     } else {
@@ -324,13 +344,13 @@ public class RedHigh extends LinearOpMode {
                     PPIND = false;
                     points.add(new CurvePoint(GRAB,0.8,0.8,10));
                     if (cycle == 0) {
-                        robot.slides.setPosition(slideHeightOne - 30, -0.3, 1);
+                        robot.slides.setPosition(slideHeightOne - 60, -0.3, 1);
                     } else if (cycle == 1) {
-                        robot.slides.setPosition(slideHeightTwo - 30, -0.3, 1);
+                        robot.slides.setPosition(slideHeightTwo - 60, -0.3, 1);
                     } else if (cycle == 2) {
-                        robot.slides.setPosition(slideHeightThree - 30, -0.3, 1);
+                        robot.slides.setPosition(slideHeightThree - 60, -0.3, 1);
                     }else if (cycle == 3){
-                        robot.slides.setPosition(slideHeightFour - 30, -0.3, 1);
+                        robot.slides.setPosition(slideHeightFour - 60, -0.3, 1);
                     } else if(cycle == 4){
                         robot.arm.manualSetPosition(0.05);
                     }
@@ -344,7 +364,7 @@ public class RedHigh extends LinearOpMode {
                     if(time.time() > 0.6) {
                             moveSpeed = 1.0;
                             turnSpeed = 1.0;
-                            if(cycle == 4){
+                            if(cycle == 4 || cycle == 3){
                                 newState(State.DRIVE_TO_DEPOSIT_MID);
                             } else {
                                 newState(State.DRIVE_TO_DEPOSIT_HIGH_FAR);
@@ -468,20 +488,23 @@ public class RedHigh extends LinearOpMode {
                     PPIND = false;
                     gtp = true;
                     points.add(new CurvePoint(RobotMovement.getLastFollowMe(), 1.0, 1.0, 10));
-                    robot.slides.setPosition((cycle == 4 ? depositHeightMid-70 : depositHeightFarHigh-90), -0.3, 1);
+                    robot.slides.setPosition((cycle == 4 || cycle == 3 ? depositHeightMid-70 : depositHeightFarHigh-90), -0.3, 1);
 
                     if (time.time() > 0.2 && time.time() < 0.4) {
                         robot.arm.GrabberDeposit();
                     }
 
                     if (time.time() > 0.4 && time.time() < 0.5){
-                        robot.arm.GrabberClose();
+                        robot.arm.GrabberPartialClose();
                     }
 
                     if(time.time() > 0.5) {
                         if (cycle == 4) {
                             newState(State.PARK);
-                        }else {
+                        }else if(cycle == 3) {
+                            cycle++;
+                            newState(State.MID_FORWARD);
+                        } else {
                             cycle++;
                             newState(State.HIGH_FAR_FORWARD);
                         }
@@ -506,7 +529,7 @@ public class RedHigh extends LinearOpMode {
                     if(robot.getPos().vec().distTo(points.get(points.size() - 1).toVec()) < 2.0) {
                         newState(State.IDLE);
                     } else {
-                        robot.arm.V4BFrontHoldPos();
+                        robot.arm.V4BHoldPos();
                         if (robot.slides.isDown()) {
                             robot.slides.reset();
                             robot.slides.setPower(0.0);

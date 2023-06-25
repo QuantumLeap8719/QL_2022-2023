@@ -106,7 +106,7 @@ public class SleeveDetectorV2 extends OpenCvPipeline {
         //FtcDashboard.getInstance().getTelemetry().addData("Area", Imgproc.contourArea(purpleContours.get(0)));
         //FtcDashboard.getInstance().getTelemetry().update();
 
-        return purpleMask;
+        return yellowMask;
     }
 
     public int getCase(){
@@ -123,18 +123,18 @@ class SleeveDetectorV2Constants {
     public static double upperPurpleS = 225;
     public static double upperPurpleV = 240;
 
-    public static double lowerGreenH = 90;
-    public static double lowerGreenS = 20;
-    public static double lowerGreenV = 120;
+    public static double lowerGreenH = 40;
+    public static double lowerGreenS = 10;
+    public static double lowerGreenV = 10;
     public static double upperGreenH = 130;
-    public static double upperGreenS = 240;
-    public static double upperGreenV = 230;
+    public static double upperGreenS = 255;
+    public static double upperGreenV = 255;
 
-    public static double lowerYellowH = 130;
-    public static double lowerYellowS = 50;
-    public static double lowerYellowV = 0;
-    public static double upperYellowH = 140;
-    public static double upperYellowS = 215;
+    public static double lowerYellowH = 120;
+    public static double lowerYellowS = 70;
+    public static double lowerYellowV = 40;
+    public static double upperYellowH = 170;
+    public static double upperYellowS = 255;
     public static double upperYellowV = 255;
 
     public static Rect BOUNDING_BOX  = new Rect(

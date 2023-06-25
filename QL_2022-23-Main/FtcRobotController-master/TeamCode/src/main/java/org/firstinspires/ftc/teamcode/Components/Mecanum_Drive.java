@@ -156,7 +156,7 @@ public class Mecanum_Drive{
     }
 
     public void drive(Gamepad gamepad, double maxMove, double maxTurn){
-        setPower(Range.clip(gamepad.left_stick_x, -maxMove, maxMove), Range.clip(gamepad.left_stick_y, -maxMove, maxMove), Range.clip(-gamepad.right_stick_x, -maxTurn, maxTurn));
+        setPower(-Range.clip(gamepad.left_stick_x, -maxMove, maxMove), -Range.clip(gamepad.left_stick_y, -maxMove, maxMove), Range.clip(-gamepad.right_stick_x, -maxTurn, maxTurn));
     }
 
     public void driveCentric(Gamepad gamepad, double maxMove, double maxTurn, double heading){
