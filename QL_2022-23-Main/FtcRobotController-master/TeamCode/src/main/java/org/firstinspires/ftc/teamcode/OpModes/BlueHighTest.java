@@ -292,7 +292,12 @@ public class BlueHighTest extends LinearOpMode {
                             robot.slides.setPosition(slideHeightFour, -0.3, 1);
                             robot.arm.manualSetPosition(0.11);
                         }  else if (cycle == 4){
-                            robot.arm.manualSetPosition(0.2);
+                            robot.slides.setPosition(slideHeightFour, -0.3, 1);
+                            if(robot.getPos().getX() < -13) {
+                                robot.arm.manualSetPosition(0.05);
+                            }else{
+                                robot.arm.manualSetPosition(0.11);
+                            }
                         }
                     }
 
@@ -316,7 +321,6 @@ public class BlueHighTest extends LinearOpMode {
                             //if(Math.abs(bufferHeading - robot.getPos().getHeading()) < Math.toRadians(1.5) && Math.abs(1.2 - distance) < 0.5){
                             if(Math.abs(LineFollowerBlue.midMaxPoint.x - VisionConstants.LineFollowerTarget) < 75 && Math.abs(1 - distance) < 0.75){
                                 GRAB = robot.getPos();
-                                robot.arm.manualSetPosition(0.11);
                                 //OFFSET = new Pose2d(GRAB.getX() - OG_GRAB.getX(), GRAB.getY() - OG_GRAB.getY(), 0);
                                 //robot.setOffset(OFFSET);
                                 newState(State.GRAB);
@@ -352,7 +356,7 @@ public class BlueHighTest extends LinearOpMode {
                     }else if (cycle == 3){
                         robot.slides.setPosition(slideHeightFour - 60, -0.3, 1);
                     } else if(cycle == 4){
-                        robot.arm.manualSetPosition(0.05);
+                        robot.slides.setPosition(slideHeightFour - 60, -0.3, 1);
                     }
 
                     if(time.time() > 0.1) {

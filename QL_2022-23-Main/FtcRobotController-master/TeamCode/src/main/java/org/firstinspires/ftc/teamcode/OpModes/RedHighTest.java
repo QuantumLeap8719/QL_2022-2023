@@ -292,7 +292,12 @@ public class RedHighTest extends LinearOpMode {
                             robot.slides.setPosition(slideHeightFour, -0.3, 1);
                             robot.arm.manualSetPosition(0.11);
                         }  else if (cycle == 4){
-                            robot.arm.manualSetPosition(0.2);
+                            robot.slides.setPosition(slideHeightFour, -0.3, 1);
+                            if(robot.getPos().getX() < -13) {
+                                robot.arm.manualSetPosition(0.05);
+                            }else{
+                                robot.arm.manualSetPosition(0.11);
+                            }
                         }
                     }
 
@@ -352,7 +357,7 @@ public class RedHighTest extends LinearOpMode {
                     }else if (cycle == 3){
                         robot.slides.setPosition(slideHeightFour - 60, -0.3, 1);
                     } else if(cycle == 4){
-                        robot.arm.manualSetPosition(0.05);
+                        robot.slides.setPosition(slideHeightFour - 60, -0.3, 1);
                     }
 
                     if(time.time() > 0.1) {
